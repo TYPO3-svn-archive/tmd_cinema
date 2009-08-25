@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>database</type>
+		<description>Language labels for database tables/fields belonging to extension 'tmd_cinema'</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="tmd_cinema_program">Cinema Program</label>
+			<label index="tmd_cinema_program.date">First day of program</label>
+			<label index="tmd_cinema_program.info">Info</label>
+			<label index="tmd_cinema_program.info2">Info2</label>
+			<label index="tmd_cinema_program.nores">No Reservation!</label>
+			<label index="tmd_cinema_program.cinema">Cinema</label>
+			<label index="tmd_cinema_program.showtype">Show Type</label>
+			<label index="tmd_cinema_program.movie">Movie</label>
+			<label index="tmd_cinema_program.program">Program</label>
+			<label index="tmd_cinema_program.week">Week</label>
+			<label index="tmd_cinema_booking">Reservations</label>
+			<label index="tmd_cinema_booking.name">Customer Name</label>
+			<label index="tmd_cinema_booking.email">Customer E-Mail</label>
+			<label index="tmd_cinema_booking.seats">Cutomer Seats</label>
+			<label index="tmd_cinema_booking.note">Customer Note</label>
+			<label index="tmd_cinema_booking.timedate">Date - Time</label>
+			<label index="tmd_cinema_booking.movie">Movie Title</label>
+			<label index="tmd_cinema_booking.cinema">Cinema</label>
+			<label index="tmd_cinema_booking.sentmail">Sent E-Mail</label>
+			<label index="tmd_cinema_showtype">Show Type</label>
+			<label index="tmd_cinema_showtype.showtype">Show Type Name</label>
+			<label index="tmd_cinema_showtype.link">Description</label>
+			<label index="tt_content.list_type_pi1">Cinema Program</label>
+			<label index="tt_content.list_type_pi2">Book Reservation</label>
+		</languageKey>
+		<languageKey index="de" type="array">
+			<label index="tmd_cinema_program">Kino Programm</label>
+			<label index="tmd_cinema_program.date">Erster Programmtag</label>
+			<label index="tmd_cinema_program.info">Besondere Informationen</label>
+			<label index="tmd_cinema_program.info2">Noch mehr besondere Hinweise</label>
+			<label index="tmd_cinema_program.nores">Keine Reservierung möglich!</label>
+			<label index="tmd_cinema_program.cinema">Kino</label>
+			<label index="tmd_cinema_program.showtype">Programmart</label>
+			<label index="tmd_cinema_program.movie">Film</label>
+			<label index="tmd_cinema_program.program">Programm</label>
+			<label index="tmd_cinema_program.week">Woche</label>
+			<label index="tmd_cinema_booking">Reservierungen</label>
+			<label index="tmd_cinema_booking.name">Kundenname</label>
+			<label index="tmd_cinema_booking.email">Kunden E-Mail</label>
+			<label index="tmd_cinema_booking.seats">Platzanzahl</label>
+			<label index="tmd_cinema_booking.note">Kunden Notiz</label>
+			<label index="tmd_cinema_booking.timedate">Zeit</label>
+			<label index="tmd_cinema_booking.movie">Filmtitel</label>
+			<label index="tmd_cinema_booking.cinema">Kino</label>
+			<label index="tmd_cinema_booking.sentmail">Verschickte Nachricht</label>
+			<label index="tmd_cinema_showtype">Programm Art</label>
+			<label index="tmd_cinema_showtype.showtype">Programmart</label>
+			<label index="tmd_cinema_showtype.link">Weiterführender Link</label>
+			<label index="tt_content.list_type_pi1">Kino Programm</label>
+			<label index="tt_content.list_type_pi2">Reservierungen Bearbeiten</label>
+		</languageKey>
+	</data>
+</T3locallang>

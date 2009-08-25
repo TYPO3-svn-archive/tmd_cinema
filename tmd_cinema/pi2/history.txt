@@ -1,0 +1,19 @@
+TODO:
+Fronend Editing
+shortProgramm / longProgramm zusammenfassen
+Kurzes Langes Programm unabh�ngig voneinander gestalten: Anker also in jeder versinon erzeugen -> Kurz/Lang/Single
+Marker f�r Links erzeigen -> siehe ##LINK###tt_products###LINK###
+Marker im Template mit tmd_movie abgleichen
+ExtentionKey �ndern: tmd_cinema
+Programmassistenen schreiben (-> tabelle)
+Programm vorbelegen durch setup-Konfiguration (install)
+Listen Ansicht im BE: Name des Filmes nicht die uid anzeigen (idee?)
+Druckversion: Internet ausblenden (CSS)
+lokalisieren
+Erster Tag der Woche �ndern (flexibel)
+Tonsysteme: nur erlaubte anzeigen (Kino abh�ngig)
+Reservierung: Namen des Users der Datensatz bearbeitet ablegen (uid?)
+		
+History:
+
+08-02-16	Reservierung: Liste sortierstandard jetzt film, datum ASC

@@ -1,0 +1,27 @@
+TODO:
+Fronend Editing
+Marker im Template mit tmd_movie abgleichen
+Programm vorbelegen durch setup-Konfiguration (install)
+Listen Ansicht im BE: Name des Filmes nicht die uid anzeigen (idee?)
+lokalisieren
+Erster Tag der Woche ändern (flexibel)
+Reservierung: Namen des Users der Datensatz bearbeitet ablegen (uid?)
+		
+History:
+18.07.09	* extra wraps für Newsletter
+			* ext-key auf tmd_cinema geändert
+20.03.08	* shortProgramm / longProgramm zusammenfassen
+			* Kino in FF berücksichtigen
+19.03.08	* ShowType: Hauptprogramm etc. Wird rot dargestellt
+			* TS.hideType id -> nicht anzeigen
+			* Tonsysteme: nur erlaubte anzeigen (Kino abh�ngig)
+			* Druckversion: Internet ausblenden (CSS)
+			* Programmassistenen schreiben (-> tabelle)
+			* Kino wird von Datensatz referenziert.
+			* Sortierung nach Datum, sorting
+24.07.07	* timecode und uid für die Reservierung sind jetzt verschlüsselt.		
+12.06.07	* Spammerschutz: übewrmittelter Timestamp muss größer als "heute" sein.
+			* Vorbelegung in der Programmtabelle im BE
+			* Media-File raus. Hat sich nicht bewärt. dafür mehr Plakate möglich
+20.02.07	* Programmdatensätze werden jetzt durch Feld Sorting gesteuert
+			* enableFileds werden ausgewertet (verstecken)

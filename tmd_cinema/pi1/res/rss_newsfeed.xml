@@ -1,0 +1,43 @@
+<!-- ###PROGRAMM_RSS2### begin -->###XML_DECLARATION###
+<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+	<channel>
+		<!-- ###HEADER### begin -->
+		<title>###SITE_TITLE###</title>
+		<link>###SITE_LINK###</link>
+		<description>###SITE_DESCRIPTION###</description>
+		###SITE_LANG###
+		<image>
+			<title>###SITE_TITLE###</title>
+			<url>###IMG###</url>
+			<link>###SITE_LINK###</link>
+			<width>###IMG_W###</width>
+			<height>###IMG_H###</height>
+			<description>###SITE_DESCRIPTION###</description>
+		</image>
+		<generator>TYPO3 - get.content.right</generator>
+		<docs>http://blogs.law.harvard.edu/tech/rss</docs>
+		###NEWS_COPYRIGHT###
+		###NEWS_WEBMASTER###
+		###NEWS_MANAGINGEDITOR###
+		###NEWS_LASTBUILD###
+		<!-- ###HEADER### end -->
+
+		<!-- ###PROGRAMM_RSS2_CONTENT### begin -->
+
+		<!-- ###PROGRAMM_RSS2_ITEM### begin -->
+		<item>
+			<title>###MOVIE_TITLE###</title>
+			<link>###LINK_PROGRAMM###</link>
+			<description>###MOVIE_DESCRIPTION_SHORT###</description>
+			<content:encoded><![CDATA[###PRG_TIMETABLE###]]></content:encoded>
+			###PRG_THEATRE###
+			###PRG_SHOWTYPE###
+			<pubDate>###NEWS_DATE###</pubDate>
+			###NEWS_RSS2_ENCLOSURES###
+		</item>
+		<!-- ###PROGRAMM_RSS2_ITEM### end -->
+
+		<!-- ###PROGRAMM_RSS2_CONTENT### end -->
+
+	</channel>
+</rss><!-- ###PROGRAMM_RSS2### end -->

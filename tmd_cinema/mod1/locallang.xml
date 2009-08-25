@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>module</type>
+		<description>Language labels for module &quot;web_tmdcinemaM1&quot;</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="title">Cinema Program</label>
+			<label index="function1">Übersicht</label>
+			<label index="function2">Programm</label>
+			<label index="function3">neue Filme</label>
+		</languageKey>
+		<languageKey index="de" type="array">
+			<label index="title">Kinoprogramm</label>
+		</languageKey>
+	</data>
+</T3locallang>

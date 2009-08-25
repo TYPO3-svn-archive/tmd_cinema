@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>module</type>
+		<description>Language labels for plugin &quot;tmd_cinema_pi1&quot;</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="today">Today</label>
+		</languageKey>
+
+		<languageKey index="de" type="array">
+			
+			<label index="today">Heute</label>
+			<label index="howtoReserve">Hier klicken um für diese Vorstellung zu Reservieren!</label>
+			
+			<label index="WideScreen">Breitwand</label>
+			<label index="CinemaScope">CinemaScope</label>
+			<label index="Normal">Normal</label>
+			<label index="website">Zur Offiziellen Website</label>
+			<label index="noValidPRG">Dieses Programm ist bereits abgelaufen!</label>
+			<label index="timeNA">Die Spielzeiten sind noch nicht bekannt!</label>
+			
+			<label index="mailForm.name">Ihr Name:</label>
+			<label index="mailForm.email">Ihre E-Mail Adresse:</label>
+			<label index="mailForm.title">Filmtitel:</label>
+			<label index="mailForm.time">Vorstellung:</label>
+			<label index="mailForm.seats">Anzahl Plätze:</label>
+			<label index="mailForm.note">Anmerkung:</label>
+			<label index="mailForm.btn_clear">Formular zurücksetzten</label>
+			<label index="mailForm.btn_submit">Reservierung Abschicken!</label>
+			<label index="mailForm.rule.name">Der Name fehlt!</label>
+			<label index="mailForm.rule.email">Die E-Mail Adresse fehlt!</label>
+			<label index="mailForm.rule.email_wrong">Die E-Mail Adresse ist nicht gültig!</label>
+			<label index="mailForm.warning_1">Das Formular wurde nicht korrekt ausgefüllt!</label>
+			<label index="mailForm.warning_2">Bitte korrigieren Sie ihre Angaben!</label>
+			<label index="mailForm.requiredNote_missing">diese Angaben werden benötigt!</label>
+		</languageKey>
+
+	</data>
+</T3locallang>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>module</type>
+		<description>Language labels for plugin &quot;tmd_cinema_pi2&quot;</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="listFieldHeader_name">Customer Name</label>
+			<label index="listFieldHeader_email">Customer E-Mail</label>
+			<label index="listFieldHeader_seats">Cutomer Seats</label>
+			<label index="listFieldHeader_note">Chutomer Note</label>
+			<label index="listFieldHeader_movie">Movie Title</label>
+			<label index="listFieldHeader_timedate">Date - Time</label>
+			<label index="list_mode_1">Mode 1</label>
+			<label index="list_mode_2">Mode 2</label>
+			<label index="list_mode_3">Mode 3</label>
+			<label index="back">Back</label>
+			<label index="pi_list_browseresults_prev">&lt; Previous</label>
+			<label index="pi_list_browseresults_page">Page</label>
+			<label index="pi_list_browseresults_next">Next &gt;</label>
+			<label index="pi_list_browseresults_displays">Displaying results ###SPAN_BEGIN###%s to %s&lt;/span&gt; out of ###SPAN_BEGIN###%s&lt;/span&gt;</label>
+			<label index="pi_list_searchBox_search">Search</label>
+		</languageKey>
+
+		<languageKey index="de" type="array">
+			<label index="list_mode_1">Mode 1</label>
+			<label index="list_mode_2">Mode 2</label>
+			<label index="list_mode_3">Mode 3</label>
+			<label index="back">Back</label>
+			<label index="pi_list_browseresults_prev">&lt; Previous</label>
+			<label index="pi_list_browseresults_page">Page</label>
+			<label index="pi_list_browseresults_next">Next &gt;</label>
+			<label index="pi_list_browseresults_displays">Displaying results ###SPAN_BEGIN###%s to %s&lt;/span&gt; out of ###SPAN_BEGIN###%s&lt;/span&gt;</label>
+			<label index="pi_list_searchBox_search">Search</label>
+
+			<label index="listFieldHeader_name">Name</label>
+			<label index="listFieldHeader_email">E-Mail</label>
+			<label index="listFieldHeader_seats">Platzanzahl</label>
+			<label index="listFieldHeader_note">Bemerkung</label>
+			<label index="listFieldHeader_movie">Filmtitel</label>
+			<label index="listFieldHeader_timedate">Spielzeit</label>
+			
+			<label index="mailForm.cinema">Kino</label>
+			<label index="mailForm.row">Reihe</label>
+			<label index="mailForm.seats">Platz</label>
+			<label index="mailForm.resNr">Res. NR</label>
+			<label index="mailForm.note">Bemerkung</label>
+			<label index="mailForm.delete">LÖSCHEN</label>
+			<label index="mailForm.free">Freie Platzwahl</label>
+			<label index="mailForm.rule.resNr">Die RESERVIERUNGSNUMMER fehlt!</label>
+			<label index="mailForm.btn_clear">Formular zurücksetzten</label>
+			<label index="mailForm.btn_submit">Reservierung Abschicken!</label>
+			<label index="mailForm.rule.name">Der Name fehlt!</label>
+			<label index="mailForm.warning_1">Das Formular wurde nicht korrekt ausgefüllt!</label>
+			<label index="mailForm.warning_2">Bitte korrigieren Sie ihre Angaben!</label>
+			<label index="mailForm.requiredNote_missing">diese Angaben werden benötigt!</label>			<label index=""></label>
+			
+		</languageKey>
+	</data>
+</T3locallang>

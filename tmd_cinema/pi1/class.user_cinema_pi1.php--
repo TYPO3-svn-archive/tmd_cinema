@@ -1,0 +1,1231 @@
+<?php
+/***************************************************************
+*  Copyright notice
+*
+*  (c) 2006 Christian Tauscher <cms@media-distillery.de>
+*  All rights reserved
+*
+*  This script is part of the TYPO3 project. The TYPO3 project is
+*  free software; you can redistribute it and/or modify
+*  it under the terms of the GNU General Public License as published by
+*  the Free Software Foundation; either version 2 of the License, or
+*  (at your option) any later version.
+*
+*  The GNU General Public License can be found at
+*  http://www.gnu.org/copyleft/gpl.html.
+*
+*  This script is distributed in the hope that it will be useful,
+*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*  GNU General Public License for more details.
+*
+*  This copyright notice MUST APPEAR in all copies of the script!
+***************************************************************/
+
+require_once(PATH_tslib.'class.tslib_pibase.php');
+require_once(PATH_formidableapi);
+require_once(t3lib_extMgm::extPath('tmd_movie').'pi1/class.tx_tmdmovie.php');
+
+/**
+ * Plugin 'Cinema Program' for the 'user_cinema' extension.
+ *
+ * @author	Christian Tauscher <cms@media-distillery.de>
+ * @package	TYPO3
+ * @subpackage	user_cinema
+ */
+class user_cinema_pi1 extends tslib_pibase {
+	var $prefixId      = 'user_cinema_pi1';		// Same as class name
+	var $scriptRelPath = 'pi1/class.user_cinema_pi1.php';	// Path to this script relative to the extension dir.
+	var $extKey        = 'user_cinema';	// The extension key.
+	var $pi_checkCHash = true;
+
+		/**
+		 * Main method of your PlugIn
+		 *
+		 * @param	string		$content: The content of the PlugIn
+		 * @param	array		$conf: The PlugIn Configuration
+		 * @return	The content that should be displayed on the website
+		 */
+	function main($content,$conf)
+		{
+		$this->conf = $conf;		// Setting the TypoScript passed to this function in $this->conf
+		$this->pi_setPiVarDefaults();
+		$this->pi_loadLL();		// Loading the LOCAL_LANG values
+
+		$this->initFF();
+		$this->initTemplate();
+		
+		$this->film = t3lib_div::makeInstance("tx_tmdmovie");
+		
+			/* Todo: gegen FF ersetzten
+			 *
+			 * inkl Recursion die PIDs als Liste ermitteln.
+			 * Da gibt es eine Funktion...
+			 */
+		if (strstr($this->cObj->currentRecord,'tt_content'))
+			{
+			$this->conf['pidList'] = $this->cObj->data['pages'];
+			$this->conf['recursive'] = $this->cObj->data['recursive'];
+			}
+
+		return ($this->ff['def']['mode'] != 'RSS' ) ? $this->pi_wrapInBaseClass($this->view()) : $this->view();
+		}
+
+
+
+		/**
+		 * Shows a list of database entries
+		 *
+		 * @param	string		$content: content of the PlugIn
+		 * @param	array		$conf: PlugIn Configuration
+		 * @return	HTML list of table entries
+		 */
+	function view()
+		{
+#debug($this->ff['def']['mode']);
+		switch($this->ff['def']['mode'])
+			{
+			case 'shortView':
+			 	$content = $this->program($this->ff['def']['previewMin'], $this->ff['def']['previewMax'], "short");
+			break;
+			case 'special':
+			 	$content = $this->program($this->ff['def']['previewMin'], $this->ff['def']['previewMax'], "special");
+			break;
+			case 'longView':
+				$content = $this->program($this->ff['def']['previewMin'], $this->ff['def']['previewMax'], "long"); 
+			break;
+			case 'RSS':
+				$xmlHeader = $this->getXmlHeader();
+				$content = $this->cObj->substituteMarkerArrayCached($this->template, $xmlHeader, '', $wrappedSubpartArray);
+				$items = $this->program(0, 1, "RSS");
+				$content = $this->cObj->substituteMarkerArrayCached($content, $items, '', $wrappedSubpartArray); 
+				$content = $this->substituteMarkers("PROGRAMM_RSS2", $content);
+
+				
+
+			break;
+			case 'reserve':		
+				$content = $this->reserve();
+			break;
+			case 'singleView':
+				$this->internal['currentTable'] = 'user_cinema_program';
+				$this->internal['currentRow'] = $this->pi_getRecord('user_cinema_program',$this->piVars['showUid']);
+				$content = $this->singleView();
+			break;
+			}
+
+		return $content;
+		}
+
+
+	/**
+	 * builds the XML header (array of markers to substitute)
+	 * aus tt_news
+	 * @return	array		the filled XML header markers
+	 */
+	function getXmlHeader() {
+		$markerArray = array();
+
+		$markerArray['###SITE_TITLE###'] = $this->conf['displayXML.']['xmlTitle'];
+		$markerArray['###SITE_LINK###'] = $this->config['siteUrl'];
+		$markerArray['###SITE_DESCRIPTION###'] = $this->conf['displayXML.']['xmlDesc'];
+		if(!empty($markerArray['###SITE_DESCRIPTION###'])) {
+			if($this->conf['displayXML.']['xmlFormat'] == 'atom03') {
+				$markerArray['###SITE_DESCRIPTION###'] = '<tagline>'.$markerArray['###SITE_DESCRIPTION###'].'</tagline>';
+			} elseif($this->conf['displayXML.']['xmlFormat'] == 'atom1') {
+				$markerArray['###SITE_DESCRIPTION###'] = '<subtitle>'.$markerArray['###SITE_DESCRIPTION###'].'</subtitle>';
+			}
+		}
+
+		$markerArray['###SITE_LANG###'] = $this->conf['displayXML.']['xmlLang'];
+		if($this->conf['displayXML.']['xmlFormat'] == 'rss2') {
+			$markerArray['###SITE_LANG###'] = '<language>'.$markerArray['###SITE_LANG###'].'</language>';
+		} elseif($this->conf['displayXML.']['xmlFormat'] == 'atom03') {
+			$markerArray['###SITE_LANG###'] = ' xml:lang="'.$markerArray['###SITE_LANG###'].'"';
+		}
+		if(empty($this->conf['displayXML.']['xmlLang'])) {
+			$markerArray['###SITE_LANG###'] = '';
+		}
+
+		$markerArray['###IMG###'] = t3lib_div::getIndpEnv('TYPO3_REQUEST_HOST') . '/' . $this->conf['displayXML.']['xmlIcon'];
+		$imgFile = t3lib_div::getIndpEnv('TYPO3_DOCUMENT_ROOT') . '/' . $this->conf['displayXML.']['xmlIcon'];
+		$imgSize = is_file($imgFile)?getimagesize($imgFile):
+		'';
+
+		$markerArray['###IMG_W###'] = $imgSize[0];
+		$markerArray['###IMG_H###'] = $imgSize[1];
+
+		$markerArray['###NEWS_WEBMASTER###'] = $this->conf['displayXML.']['xmlWebMaster'];
+		$markerArray['###NEWS_MANAGINGEDITOR###'] = $this->conf['displayXML.']['xmlManagingEditor'];
+
+#		$selectConf = Array();
+#		$selectConf['pidInList'] = $this->pid_list;
+#		// select only normal news (type=0) for the RSS feed. You can override this with other types with the TS-var 'xmlNewsTypes'
+#		$selectConf['selectFields'] = 'max(datetime) as maxval';
+
+#		$res = $this->exec_getQuery('tt_news', $selectConf);
+
+
+#		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
+		// optional tags
+		if ($this->conf['displayXML.']['xmlLastBuildDate']) {
+			$markerArray['###NEWS_LASTBUILD###'] = '<lastBuildDate>' . date('D, d M Y H:i:s O', $row['maxval']) . '</lastBuildDate>';
+		} else {
+			$markerArray['###NEWS_LASTBUILD###'] = '';
+		}
+
+		if($this->conf['displayXML.']['xmlFormat'] == 'atom03' ||
+		   $this->conf['displayXML.']['xmlFormat'] == 'atom1') {
+			$markerArray['###NEWS_LASTBUILD###'] = $this->getW3cDate($row['maxval']);
+		}
+
+		if ($this->conf['displayXML.']['xmlWebMaster']) {
+			$markerArray['###NEWS_WEBMASTER###'] = '<webMaster>' . $this->conf['displayXML.']['xmlWebMaster'] . '</webMaster>';
+		} else {
+			$markerArray['###NEWS_WEBMASTER###'] = '';
+		}
+
+		if ($this->conf['displayXML.']['xmlManagingEditor']) {
+			$markerArray['###NEWS_MANAGINGEDITOR###'] = '<managingEditor>' . $this->conf['displayXML.']['xmlManagingEditor'] . '</managingEditor>';
+		} else {
+			$markerArray['###NEWS_MANAGINGEDITOR###'] = '';
+		}
+
+		if ($this->conf['displayXML.']['xmlCopyright']) {
+			if($this->conf['displayXML.']['xmlFormat'] == 'atom1') {
+				$markerArray['###NEWS_COPYRIGHT###'] = '<rights>' . $this->conf['displayXML.']['xmlCopyright'] . '</rights>';
+			} else {
+				$markerArray['###NEWS_COPYRIGHT###'] = '<copyright>' . $this->conf['displayXML.']['xmlCopyright'] . '</copyright>';
+			}
+		} else {
+			$markerArray['###NEWS_COPYRIGHT###'] = '';
+		}
+
+		$charset = ($GLOBALS['TSFE']->metaCharset?$GLOBALS['TSFE']->metaCharset:'iso-8859-1');
+		if ($this->conf['displayXML.']['xmlDeclaration']) {
+			$markerArray['###XML_DECLARATION###'] = trim($this->conf['displayXML.']['xmlDeclaration']);
+		} else {
+			$markerArray['###XML_DECLARATION###'] = '<?xml version="1.0" encoding="'.$charset.'"?>';
+		}
+
+		// promoting TYPO3 in atom feeds, supress the subversion
+		$version = explode('.',($GLOBALS['TYPO3_VERSION']?$GLOBALS['TYPO3_VERSION']:$GLOBALS['TYPO_VERSION']));
+		unset($version[2]);
+		$markerArray['###TYPO3_VERSION###'] = implode($version,'.');
+
+		return $markerArray;
+	}
+
+
+
+		/**
+		 * Plätze Reservieren
+		 */
+	function reserve()
+		{
+		# verschlüsseltes entschlüsseln
+		list($this->piVars['res'], $this->piVars['uid'], $this->piVars['cinema']) = explode("-", $this->decrypt($this->piVars[crypt]));
+		if($this->conf['DEBUG'])
+			{
+			$out .= t3lib_div::view_array($this->conf);
+			$out .= t3lib_div::view_array(array($this->piVars['res'], $this->piVars['uid'], $this->piVars['cinema']));
+			}
+
+		$this->internal['currentRow']['movie'] = $this->piVars['uid'];
+
+		// Formular wird direkt aufgerufen?
+		if (!$this->piVars['crypt'])
+			{
+		    $out .= "Bitte dieses Formular nicht direkt aufrufen!<br />";
+			$out .= "W&auml;hlen Sie einen Film &uuml;ber die Programm&uuml;bericht<br />";
+			$out .= "und klicken Sie auf die gew&uuml;nschte Spielzeit!<br/><br/>";
+			$out .= $this->pi_linkToPage('Zur Programmübersicht', $this->conf['prgPid']);
+			return $out;
+			}
+
+		// Spammern das Handwerk legen
+		// Res Limit berücksichtigen und das Kino auch.
+		if($this->conf['resLimit'] < time()-$this->piVars['res'] || !in_array($this->piVars['cinema'], explode(",", $this->conf['myCinema'])) )
+			{
+			$out .= "W&auml;hlen Sie einen Film &uuml;ber die Programm&uuml;bericht<br />";
+			$out .= "und klicken Sie auf die gew&uuml;nschte Spielzeit!<br/><br/>";
+			$out .= $this->pi_linkToPage('Zur Programm&uuml;bersicht', $this->conf['prgPid']);
+
+			return $out;
+			}
+
+
+
+ 		$this->oForm = t3lib_div::makeInstance("tx_ameosformidable");
+		$this->oForm->init($this, t3lib_extmgm::extPath($this->extKey) . "pi1/reserve_form.xml");
+		$out = $this->oForm->render();
+		$formInfo = $this->oForm->oDataHandler->_getFlatFormDataManaged();
+
+		$session = $GLOBALS["TSFE"]->fe_user->getKey('ses',$this->prefixId['formid']);
+		if($session)
+			$session = explode (",", $session);
+
+		if(	$this->oForm->oDataHandler->_isFullySubmitted() &&
+			$this->oForm->oDataHandler->_allIsValid()		&&
+			!in_array($this->piVars['formid'], (array)$session) )
+			{
+			//is valid
+			$session[] = $this->piVars['formid'];
+			$GLOBALS["TSFE"]->fe_user->setKey('ses', $this->prefixId['formid'], implode(",", $session));
+
+			$data = array(
+						"name" => htmlspecialchars($this->piVars['name']),
+						"pid" => $this->conf['resPid'],
+						"email" =>  htmlspecialchars($this->piVars['email']),
+						"seats" =>  htmlspecialchars($this->piVars['seats']),
+						"note" => htmlspecialchars($this->piVars['note']),
+						"cinema" => $this->piVars['cinema'],
+						"timedate" => $this->piVars['res'],
+						"movie" => htmlspecialchars($this->getFieldContent("movie_title")),
+						"crdate" => time(),
+						"tstamp" => time(),
+						);
+
+			if($GLOBALS[TYPO3_DB]->exec_INSERTquery('user_cinema_reserved',$data))
+				{
+				$lnr = mysql_insert_id();
+
+				$out  = '<p>'; 
+				$out .= 'Name:'.$this->piVars['name'].'<br />';
+				$out .= 'E-Mail:'.$this->piVars['email'].'<br />';
+				$out .= 'Filmtitel:<b>'.$this->getFieldContent('movie_title').'</b><br />';
+				$out .= 'Zeit:'.strftime("%A, %d.%m.%y - %H:%M Uhr", $this->piVars['movie_time']).'<br />';
+				$out .= 'Anzahl:'.$this->piVars['seats'].'<br />';
+				$out .= 'Notiz:'.$this->piVars['note'];
+				$out .= '</p>';
+				 
+				$out .= "<p>Die Reservierungs-Anfrage wurde erfolgreich verschickt.<br />";
+				$out .= "Sie erhalten in K&uuml;rze eine Best&auml;tigung mit weiteren Einzelheiten.<br /><br />";
+				$out .= "<small>Die Anfrage wurde unter der <b>Nummer ".$lnr."</b> eingetragen.<br />";
+				$out .= "<b>ACHTUNG: Dies ist keine Reservierungsnummer!</b></small><br />";
+				$out .= "Ihr Kino-Team Isny</p>";
+				}
+			}
+		elseif(in_array($this->piVars['formid'], (array)$session)) /* Reload */
+			{
+			debug($session, "Session");
+			$out = $this->pi_linkTP($this->pi_getLL('xyz', '_reload_'));
+			}
+
+		return $out;
+		}
+
+
+
+		/**
+		 * Zeit Große Übersicht
+		 *
+		 * @param string	Welche Art Programm
+		 * @param int Startwoche, 0 = aktuelle Woche, 1=nächste Woche, 2=übernächste u.s.w.
+		 * @param int Wieviele Wochen?
+		 */
+	function program($startWeek, $nextWeeks=1, $type="long")
+		{ 
+		$oneDay = 60*60*24;
+		$oneWeek = $oneDay * 7;
+
+		$wStart = mktime();
+		switch(strftime("%u", $wStart)) # %u = Tag der Woche 1= Montag
+			{
+			case 1: $wStart = $wStart - $oneDay*4; break; # Mo
+			case 2: $wStart = $wStart - $oneDay*5; break; # DI
+			case 3: $wStart = $wStart - $oneDay*6; break; # MI
+			case 4: $wStart = $wStart - $oneDay*0; break; # DO
+			case 5: $wStart = $wStart - $oneDay*1; break; # FR
+			case 6: $wStart = $wStart - $oneDay*2; break; # SA
+			case 7: $wStart = $wStart - $oneDay*3; break; # SO
+			}
+
+		$wStart += $startWeek*$oneWeek;	# n-te Woche vom jetzigen DO an
+		$wStart = mktime ( 0, 0, 0, strftime("%m", $wStart), strftime("%d", $wStart),strftime("%Y", $wStart)); # Auf 0:00 Uhr setzten!
+
+			# Programm vorzeitig wechseln
+		if(time() + $this->conf['switchPrgBevore']*60*60 > $wStart+$oneWeek)
+			{
+			$wStart += $oneWeek;
+			}
+
+		$wEnd   = $wStart + $oneWeek*$nextWeeks;
+
+		if($startWeek == 0)
+			{
+			if ($type != "RSS")
+				$items[] = "<h1>Programm ab ".strftime($this->conf['timeFormat'], $wStart)."</h1>";
+			$whereClause   .= 'AND date >= '.$wStart.' AND date < '.($wEnd);
+			}
+		else  
+			{
+			if ($type != "RSS")
+				$items[] = "<h2>Vorschau ab ".strftime($this->conf['timeFormat'], $wStart)."</h2>";
+			#." bis ".strftime($this->conf['timeFormat'], $wEnd-1)."</h2>";
+			$whereClause .= ' AND (date = 0 OR (date >= '.$wStart.' AND date < '.$wEnd.'))';
+			}
+		$whereClause .= " AND cinema IN (".$this->ff['def']['cinema'].")";
+		if($type=="special")
+			$whereClause .= " AND showtype IN (".$this->ff['def']['special'].")";
+
+		$sortBy = $this->ff['def']['sortBy'];
+
+			// Make listing query, pass query to SQL database:
+		$res = $this->pi_exec_query('user_cinema_program', 0, $whereClause,$mm_cat='',$groupBy, $sortBy);
+
+		if(!$res)
+			{
+			return "Keine Programm verfügbar für die Zeit vom ".strftime($this->conf['timeFormat'], $wStart)." bis zum ".strftime($this->conf['timeFormat'], $wEnd-$oneDay);	
+			}
+
+			// Make list table rows
+		$items=array();
+		$noDate=array();
+		$wStart = -1;
+		
+		while($this->internal['currentRow'] = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))
+			{
+			# Sammelüberschrift
+			if($wStart != $this->internal['currentRow']['date'] && $type != 'special'/* && $type != 'RSS'*/)
+				{
+				$wStart = $this->internal['currentRow']['date'];
+				
+				if($wStart > 0)
+					{
+					if ($type != "RSS")
+						$items[] = '<h2>'.((!$startWeek)?"Programm": "")." ab ".strftime($this->conf['timeFormat'], $wStart)."</h2>";
+					}
+				else
+					{
+					$noDate[] = '<h2>Demnächst</h2>';
+					}
+				}
+		
+			# Film ausgeben
+			switch($type)
+				{
+				case 'short':
+					if($wStart > 0)
+						$items[] = $this->substituteMarkers("PROGRAMM_SHORTVIEW");
+					else
+						$noDate[] = $this->substituteMarkers("PROGRAMM_SHORTVIEW");
+				break;
+				case 'special':
+					$items[] = $this->substituteMarkers("PROGRAMM_SPECIAL");
+				break;
+				case 'RSS':
+					$items[] = $this->substituteMarkers("PROGRAMM_RSS2_ITEM");
+				break;
+				default:
+					if($wStart > 0)
+						$items[] = '<a name="'.$this->prefixId."-".$this->internal['currentRow']['uid'].'"></a>'.
+							$this->substituteMarkers("PROGRAMM_FULLVIEW");
+					else
+						$noDate[] = '<a name="'.$this->prefixId."-".$this->internal['currentRow']['uid'].'"></a>'.
+							$this->substituteMarkers("PROGRAMM_FULLVIEW");
+				} # END switch
+			
+			}
+
+		if($type == 'RSS')
+			{
+			$out .= implode(chr(10),$items);
+			$out .= implode(chr(10),$noDate);
+			
+			$out = nl2br(htmlentities($out));
+			}
+		else
+			{
+			$out .= '<div class="'.$this->pi_getClassName($type.'Program').'">';
+			$out .= implode(chr(10),$items);
+			$out .= implode(chr(10),$noDate);
+			$out .= '</div>';
+			}
+
+#		$out .= t3lib_div::view_array($noDate);
+		
+		return $out;
+		}
+
+
+
+
+
+	function singleView()
+		{
+				// This sets the title of the page for use in indexed search results:
+#		if ($this->internal['currentRow']['title'])	$GLOBALS['TSFE']->indexedDocTitle=$this->internal['currentRow']['title'];
+#		$content  = '<a name="'.$this->prefixId."-".$this->internal['currentRow']['uid'].'"></a>';
+
+		// Spammern das Handwerk legen
+		// Res Limit berücksichtigen und das Kino auch.
+		if(	$this->internal['currentRow']['date'] > 0 && (
+				7*24*60*60-$this->conf['resLimit'] < time()-$this->internal['currentRow']['date']  ||  
+				!in_array($this->internal['currentRow']['cinema'], explode(",", $this->conf['myCinema']))   )
+			)
+			{
+			$content = $this->pi_getLL("noValidPRG", "noValidPRG"); 			
+			}
+		else
+			{
+			$content = $this->substituteMarkers("SINGLE_VIEW");
+			}	
+
+		return $content;
+		}
+
+
+
+	/**
+	 * Returns the content of a given field
+	 *
+	 * @param	string		$fN: name of table field
+	 * @return	Value of the field
+	 */
+	function getFieldContent($fN)
+		{
+			/* Alles über den Film rausfinden */
+		if($this->film->id != $this->internal['currentRow']['movie'])
+			{
+			$this->film->getMovieById($this->internal['currentRow']['movie']);
+			#$this->film->debug();
+			}
+
+
+		switch($fN)
+			{
+			case 'movie_fsk':
+					/* FSK-Cache erstellen */
+				$out = $this->film->rating;
+				if($out)
+					{
+					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_RATING']);
+					return $out;
+					}
+			break;
+			case 'movie_fskTooltip':
+				$out = $this->film->ratingTooltip;
+				if($out)
+					{
+					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_RATINGTOOLTIP']);
+					return $out;
+					}
+			break;
+
+			/* kommt aus anderer Tabelle */
+			case 'movie_distributor':
+				$out = $this->film->distibutor;
+
+				if($out)
+					{
+					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_DISTRIBUTOR']);
+					return $out;
+					}
+			break;
+			case 'movie_fbw':
+				$field = $this->film->fbw;
+				for($i = 0; $i < 2; $i++)
+					if ($field & pow(2,$i))
+						$res .= $this->conf['fbw.'][$i]." ";
+				
+				if($field)
+					{
+					$out = $this->cObj->wrap(trim($res), $this->conf[$this->ff['wrap.']['def']['mode'].'.']['MOVIE_FBW']);
+					return $out;
+					}
+			break;
+
+
+			/* kommt aus der Film-Tabelle */
+			case 'movie_title':
+				$out = $this->cObj->wrap($this->film->titel, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_TITLE']);
+				return 	$out;
+			break;
+			case 'movie_originaltitle':
+				$out = $this->film->originaltitle;
+				if($out)
+					{
+					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_TITLE_ORIGINAL']);
+					return 	$out;
+					}
+			break;
+			case 'movie_subtitle':
+				$out = $this->film->short;
+				if($out)
+					{
+					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_TITLE_SHORT']);
+					return $out;
+					}
+			break;
+			case 'movie_image':
+				if($this->film->poster)
+					{
+					$temp = explode(',', $this->film->poster); # mehrere Poster?
+					srand ((double)microtime()*1000000);
+					$this->conf['image.']['file'] = 'uploads/tx_tmdmovie/'.$temp[rand(0,count($temp)-1)];
+					}
+				else
+					{
+					$this->conf['image.']['file'] = $this->conf['dummyPoster'];
+					}
+
+				$this->conf['image.']['altText'] = $this->film->titel;
+				$out = $this->cObj->IMAGE($this->conf['image.']);
+
+				$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_IMAGE']);				
+				return $out;
+			break;
+
+			case 'movie_time':
+				$out = $this->film->length;
+				if($out)
+					{
+					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_TIME']);
+					return $out;
+					}
+			break;
+			case 'movie_www':
+				$out = $this->film->web;
+				if($out)
+					{
+					$out =  $this->pi_linkToPage($this->pi_getLL("website", "web"), $this->film->web, "_blank"); 
+					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_WWW']);
+					return $out;
+					}
+			break;
+			case 'movie_start':
+				$out = $this->film->releasedate;
+				if($out)
+					{
+					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_RELEASEDATE']);
+					return $out;
+					}
+			break;
+			case 'movie_format':
+				$out = $this->film->screenformat;
+				if($out)
+					{
+					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_FORMAT']);
+					return $out;
+					}
+			break;
+			case 'movie_sound':
+				$out = explode(" ", $this->film->sound);
+				$temp = explode(",", $this->conf['supportedSound']);
+
+				foreach ($temp as $key=>$value)
+					{
+				    if (!in_array($value,$out))
+				    	{
+				        unset($temp[$key]);
+				    	}
+					}				
+				
+				$out = implode(" ", $temp);
+
+				if($out)
+					{
+					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_SOUND']);
+					return $out;
+					}
+			break;
+			case 'movie_summary':
+				$out = $this->film->summary;
+				if($out)
+					{
+					$out = $this->pi_RTEcssText($out);
+					$out = $this->cObj->stdWrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_DESCRIPTION']);
+					return $out;
+					}
+			break;
+			case 'movie_summary_short':
+				$out = $this->film->summary;
+				if($out)
+					{
+					$out = $this->cObj->stdWrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_DESCRIPTION_SHORT.']);
+					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_DESCRIPTION_SHORT']);
+				
+	#				return $this->pi_RTEcssText($out);
+					return $out;
+					}
+			break;
+			case 'movie_director':
+				$out = $this->film->director;
+				if($out)
+					{
+					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_DIRECTOR']);
+					return $out;
+					}
+			break;
+			case 'movie_producer':
+				$out = $this->film->producer;
+				if($out)
+					{
+					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_PRODUCER']);
+					return $out;
+					}
+			break;
+			case 'movie_actor':
+				$out = $this->film->actor;
+				if($out)
+					{
+					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_ACTOR']);
+					return $out;
+					}
+			break;
+			case 'movie_genre':
+				$out = $this->film->genre;
+				if($out)
+					{
+					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_GENRE']);
+					return $out;
+					}
+			break;
+			case 'movie_media':
+			if($this->film->media)
+				foreach($this->film->media as $marker=>$file)
+					{
+					$this->conf['media.']['file'] = 'uploads/tx_tmdmovie/'.$file;
+					$this->film->media[$marker] = $this->cObj->IMAGE($this->conf['media.']);
+					}
+				return $this->film->media;
+			break;
+		
+
+
+			/* Ab hier die Programm-Tabelle */
+			case 'uid':
+				return $this->pi_list_linkSingle($this->internal['currentRow'][$fN],$this->internal['currentRow']['uid'],1);	// The "1" means that the display of single items is CACHED! Set to zero to disable caching.
+			break;
+			case 'anchor':
+				return $this->prefixId."-".$this->internal['currentRow']['uid'];
+			break;
+			case 'firstday':
+			case "date":
+				$out = strftime($this->conf['timeFormat'], $this->internal['currentRow']['date']);
+				$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode']]['PRG_DATE']);
+				return $out;
+			break;
+			case "program":
+				$out = $this->cObj->wrap($this->buildTimeTable(), $this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_TIMETABLE']);
+				return $out;
+			break;
+			case 'info':
+				$out = $this->internal['currentRow']['info'];
+				if($out)
+					{
+#debug($this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_INFO']);						
+
+					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_INFO']);
+					return $out;
+					}
+			break;
+			case 'showtype':
+				/* ShowType-Cache erstellen */
+				if(!$this->showType)
+					{
+					$select = 'uid,showtype,link';
+					$local_table = 'user_cinema_showtype';
+					$whereClause = "1=1 ".$GLOBALS['TSFE']->cObj->enableFields($local_table);
+					$res = $GLOBALS[TYPO3_DB]->exec_SELECTquery($select,$local_table,$whereClause,$groupBy,$orderBy,$limit);
+					while($erg = $GLOBALS[TYPO3_DB]->sql_fetch_assoc($res))
+						{
+						$this->showType[$erg['uid']]['showtype'] = $erg['showtype'];
+						$this->showType[$erg['uid']]['link'] = $erg['link'];
+						}
+					}
+
+					/* Vorstellungen können mit Seiten verlinkt werden */
+
+				if(!in_array($this->internal['currentRow']['showtype'], explode(",", $this->conf['hideType'])))
+					{
+					if($this->showType[$this->internal['currentRow']['showtype']]['link'] != "")
+						{
+						$out = $this->pi_linkToPage(
+							$this->showType[$this->internal['currentRow']['showtype']]['showtype'],
+							$this->showType[$this->internal['currentRow']['showtype']]['link']
+							);
+						}
+					else
+						{
+						$out = $this->showType[$this->internal['currentRow']['showtype']]['showtype'];
+						}
+					}
+
+				if($out)
+					{
+					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_SHOWTYPE']);
+					return $out;
+					}
+			break;
+			case 'week':
+				$out = $this->cObj->wrap($this->internal['currentRow']['week'], $this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_WEEK']);
+				return 	$out;
+			break;
+			case 'cinema':
+				if(!$this->adrCache[$this->internal['currentRow'][$fN]])
+					{
+					$this->adrCache[$this->internal['currentRow'][$fN]] = $this->pi_getRecord("tt_address", $this->internal['currentRow'][$fN]);
+					}
+
+				$out = $this->cObj->wrap($this->adrCache[$this->internal['currentRow'][$fN]]['name'], $this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_THEATRE']);
+
+				return $out;
+			break;
+			case 'cinemaID':
+				return $this->internal['currentRow']['cinema'];
+			break;
+
+			default:
+				return "neues Feld?-> $fN ".$this->internal['currentRow'][$fN];
+			break;
+			}
+		}
+
+
+
+		/**
+		 *	encrypts a given string to a HEX number
+		 *	@param string string to be encrypted
+		 * 	@return string encrypted String as HEX number
+		 */
+	function encrypt($string)
+		{
+		$hex="";
+	    $length=strlen($string);
+	    for ($i=0; $i<$length; $i++)
+		    {
+		    $hex[] = dechex(ord(substr($string, $i, 1)));
+		    }
+		$hex = implode("", $hex);
+
+	    return $hex;
+		}
+
+
+
+		/**
+		 *	decrypts a given string
+		 *	@param string string encrypted
+		 * 	@return string decrypted string
+		 */
+	function decrypt($string)
+		{
+		$dec="";
+	    $length=strlen($string);
+	    for ($i=0; $i<$length; $i+=2)
+		    {
+		    $dec[] = chr(hexdec(substr($string, $i, 2)));
+		    }
+		$dec = implode("", $dec);
+
+	    return $dec;
+		}
+
+
+
+		/**
+		 * Flex Form Parameter werden ausgelesen und initialisiert
+		 *
+		 * @todo TYPOscript parameter ber�cksichtigen und eventuell �berschreiben
+		 */
+	function initFF()
+		{
+			# FF Parsen
+		$this->pi_initPIflexForm();
+
+			# Werte auslesen
+		$this->ff['def']['mode']  		= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'mode', 			  	's_DEF');
+		$this->ff['def']['noRes'] 		= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'disableReserved', 	's_DEF');
+		$this->ff['def']['previewMin'] 	= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'previewMin',		 	's_DEF');
+		$this->ff['def']['previewMax'] 	= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'previewMax', 			's_DEF');
+		$this->ff['def']['cinema'] 		= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'cinema',	 			's_DEF');
+		$this->ff['def']['sortBy'] 		= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'sortBy',	 			's_DEF');
+		$this->ff['def']['special'] 	= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'special',	 			's_DEF');
+
+		if(!$this->conf['image.']['file.']['width'])
+			$this->conf['image.']['file.']['width']	= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'width',		's_image');
+		$this->ff['image']['colums']		= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'colums', 		's_image');
+		$this->ff['image']['clickEnlarge'] 	= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'clickEnlarge', 's_image');
+
+		$this->conf['linkImagePage'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'linkImagePage','s_DEF');
+		$this->conf['pageReserve']	= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'pageReserve',  's_DEF');
+
+			# besondere Vorrangregelungen
+		if($this->conf['mode'] == 'RSS')
+			{
+			$this->ff['def']['mode']  	= 'RSS';
+			$this->ff['def']['cinema']	= $this->conf['myCinema'];
+			}
+		}
+
+
+
+	function initTemplate()
+		{
+		$this->template = $this->cObj->fileResource($this->conf['template']);
+#debug($this->template, $this->conf['template']);
+		}
+
+
+
+	function substituteMarkers($subPart, $subpartArray="")
+		{
+		$template = $GLOBALS['TSFE']->cObj->getSubpart($this->template, "###".$subPart."###");
+#debug($subPart);
+			// oben weil ein array zurück kommt
+		$markerArray = $this->getFieldContent('movie_media');
+		
+		$markerArray['###MOVIE_TITLE###'] 			= $this->getFieldContent('movie_title');
+		$markerArray['###MOVIE_TITLE_ORIGINAL###']  = $this->getFieldContent('movie_originaltitle');
+		$markerArray['###MOVIE_TITLE_SHORT###']		= $this->getFieldContent('movie_subtitle');
+
+		$markerArray['###MOVIE_IMAGE###'] 			= $this->getFieldContent('movie_image');
+		$markerArray['###MOVIE_RATING###'] 			= $this->getFieldContent('movie_fsk');
+		$markerArray['###MOVIE_RATINGTOOLTIP###'] 	= $this->getFieldContent('movie_fskTooltip');
+		$markerArray['###MOVIE_TIME###'] 			= $this->getFieldContent('movie_time');
+		$markerArray['###MOVIE_RELEASEDATE###']		= $this->getFieldContent('movie_start');
+		$markerArray['###MOVIE_FORMAT###'] 			= $this->getFieldContent('movie_format');
+		$markerArray['###MOVIE_SOUND###'] 			= $this->getFieldContent('movie_sound');
+		$markerArray['###MOVIE_DISTRIBUTOR###'] 	= $this->getFieldContent('movie_distributor');
+		$markerArray['###MOVIE_WWW###'] 			= $this->getFieldContent('movie_www');
+		$markerArray['###MOVIE_DESCRIPTION###'] 	= $this->getFieldContent('movie_summary');
+		$markerArray['###MOVIE_DESCRIPTION_SHORT###'] =	$this->getFieldContent('movie_summary_short');
+		$markerArray['###MOVIE_EXTRAPICS###'] 		= $this->getFieldContent('movie_mediafile');
+		$markerArray['###MOVIE_SUBTITLE###'] 		= $this->getFieldContent('movie_subtitle');
+		$markerArray['###MOVIE_IMAGE_LINK###'] 		= $this->getFieldContent('movie_imageLink');
+		$markerArray['###MOVIE_FBW###'] 			= $this->getFieldContent('movie_fbw');
+
+		$markerArray['###MOVIE_DIRECTOR###'] 		= $this->getFieldContent('movie_director');
+		$markerArray['###MOVIE_PRODUCER###'] 		= $this->getFieldContent('movie_producer');
+		$markerArray['###MOVIE_ACTOR###'] 			= $this->getFieldContent('movie_actor');
+		$markerArray['###MOVIE_GENRE###'] 			= $this->getFieldContent('movie_genre');
+
+		$markerArray['###PRG_WEEK###'] 				= $this->getFieldContent('week');
+		$markerArray['###PRG_SHOWTYPE###'] 			= $this->getFieldContent('showtype');
+		$markerArray['###PRG_TIMETABLE###'] 		= $this->getFieldContent('program');
+		$markerArray['###PRG_INFO###'] 				= $this->getFieldContent('info');
+		$markerArray['###PRG_THEATRE###'] 			= $this->getFieldContent('cinema');
+		$markerArray['###PRG_FIRSTDAY###'] 			= $this->getFieldContent('firstday');
+		$markerArray['###PRG_STARTDAY###'] 			= $this->getFieldContent('date');
+		
+		$markerArray['###ANCHOR###']				= $this->getFieldContent('anchor');
+
+/*
+ * 
+ * Marker zum Program mit anker und marker zur einzelansicht!!!!!!!!!!!!
+ * 
+ * Das ist zum Programm
+ * 
+*/
+										# noch verlinken wenn es gewünscht ist
+		$linkProgramm = array(
+						"section" => $this->prefixId."-".$this->internal['currentRow']['uid'],
+						"parameter" => $this->conf['linkImagePage']
+						);
+
+		$linkProgramm = $this->cObj->typoLink("|", $linkProgramm);
+			
+		$wrappedSubpartArray['###LINK_PROGRAMM###'] = explode('|', $linkProgramm);
+
+		
+		$linkSingle = $this->pi_list_linkSingle(
+					"|",
+					$this->internal['currentRow']['uid'],
+					TRUE,
+					$mergeArr=array(),
+					$urlOnly=FALSE,
+					$this->conf['linkImagePage']);
+
+		$wrappedSubpartArray['###LINK_SINGLE###'] = explode('|', $linkSingle);
+
+		$template = $this->cObj->substituteMarkerArrayCached($template, $markerArray, $subpartArray, $wrappedSubpartArray);
+			
+
+		return $template;
+		}
+
+
+		/**
+		 * Hier wird die Spielzeitentabelle zusammengebastelt
+		 *
+		 * @return string Time Table
+		 */
+	function buildTimeTable()
+		{
+
+		if($this->internal['currentRow']['program'])
+			{
+				# Uhr auf 0 Uhr stellen!
+				# Erster Programmtag
+			$theDay = $this->internal['currentRow']['date'];
+			$theDay = mktime ( 0, 0, 0, strftime("%m", $theDay),strftime("%d", $theDay), strftime("%Y", $theDay));
+
+			if( (time() > $theDay ) && 	( time() < $theDay + 7*60*60*24 ) )
+				{
+				$todaysNr = strftime("%u", time()) + 3;
+				if($todaysNr > 6) $todaysNr = $todaysNr%7;
+				}
+			else
+				{
+				$todaysNr = -1;
+				}
+
+				# tHead
+			$head = '<thead><tr>';
+			for($i=0; $i<7; $i++)
+				{
+				$time[$i] = $theDay+60*60*24*$i;
+				$time[$i] = $this->checkSummerWinterBug($time[$i]); /* Sommerzeit-Bug */
+
+				if($i == $todaysNr)
+					{
+					$head .= '<th align="center" style="background-color:'.$this->conf['todaysColor'].';"><b>';
+
+					if(date("d", $time[$i]) == date("d", time()) && $this->conf['todayStyle'] == 'today')
+						$head .= $this->pi_getLL("today");
+					else
+						$head .= strftime($this->conf['tableTime'], $time[$i]);
+
+					$head .= '</b></th>';
+					}
+				else
+					{
+					$head .= '<th align="center"><b>'.strftime($this->conf['tableTime'], $time[$i]).'</b></th>';
+					}
+				}
+			unset($this->correctDate); /* Sommerzeit-Bug  - damite alle Filme berücksichtigt werden */
+
+			$head .= '</tr></thead>';
+
+				# tBody
+			$temp = $this->internal['currentRow']['program'];
+			$temp = explode("\n", $temp);
+
+			# Mit Zeit verlinken
+			$i=0; $n =0;
+			foreach($temp as $row => $val)
+				{
+				$temp[$i] = explode("|", $val);
+
+				foreach($temp[$i] as $key1 => $timeString)
+					{
+					$timeString = trim($timeString); # Zeilenende bereinigen
+
+					if(preg_match( '/[0-9]?[0-9]:[0-9][0-9]/m', $timeString)) /* Exchte Uhrzeit */
+						{
+						list($theHour, $theMinute) = explode(":",$timeString);
+
+						$theTime = mktime((int)$theHour, (int)$theMinute, 0, strftime("%m", $time[$n]), strftime("%d", $time[$n]), strftime("%Y", $time[$n]));
+
+						$linkconf = array(
+				    		 "title" => $this->pi_getLL("howtoReserve"), 
+				    		 "additionalParams" => "&".$this->prefixId."[crypt]=".$this->encrypt($theTime."-".$this->internal['currentRow']['movie']."-".$this->internal['currentRow']['cinema']),
+						     "parameter" => $this->conf['pageReserve'],
+						     );
+						if($this->conf['noRes'] == 'pageLinkOnly') unset($linkconf['additionalParams']);
+						if($this->conf['noRes'] == 'ticket') 
+							{
+							$linkconf = $this->ticketLink($theTime);
+#							debug($linkconf, $theTime);
+							}
+						$link = $this->cObj->typoLink($timeString, $linkconf);
+
+							# Reservierungsschluss?
+						$thisDay = time();
+						$thisDay = mktime ( 0, 0, 0, strftime("%m", $thisDay),strftime("%d", $thisDay), strftime("%Y", $thisDay));
+
+							# z.B. 5 Stunden vorher = t-60*60*5
+						if(	(time() > $theTime-60*60*$this->conf['resLimit']) ||
+							$this->ff['def']['noRes'] ||
+							$this->conf['noRes'] == '1' ||
+							$this->internal['currentRow']['nores'] )
+							{
+							#debug(strftime("%H:%M", $theTime));
+							$temp[$i][$key1] = $timeString;
+							}
+						else
+							{
+							$temp[$i][$key1] = $link;
+							}
+						}
+					elseif(preg_match( '/[0-9]?[0-9]\.[0-9][0-9]/m', $timeString)) # keine Reservierung
+						{
+						$temp[$i][$key1] = str_replace(".", ":", $temp[$i][$key1]);
+						}
+					else # leere Zelle
+						{
+						$temp[$i][$key1] = $this->conf['emptyTable'];
+						}
+
+					$n++;
+					}
+				$i++;
+				$n = 0;
+				}
+
+/**
+$speakTime = $temp;
+
+				#	Aufräumen unbenutze Felder leeren 
+			$i=0;
+			foreach($speakTime as $key => $val)
+				{
+				foreach($val as $key2 => $val2)
+					{
+					if($val2 == $this->conf['emptyTable'])
+						{
+						$speakTime[$key][$key2] = "";
+						$val2 = "";
+						}
+
+					if($val2 != "")
+						{
+						if(!$var[$key]['start'])
+							{
+							$var[$key]['start'] = $key2;
+							}
+						else
+							{
+							$var[$key]['end'] = $key2;
+							}
+
+						}
+					}
+				$i++;
+				}
+#debug($speakTime);
+*/
+
+			# Tabellenzeilen zusammenbauen
+			$i=0;
+			foreach($temp as $key => $val)
+				{
+				$tmp[$i] = "<tr>";
+				foreach($val as $key1 => $val1)
+					{
+					if($key1 == $todaysNr) # Heute!
+						$tmp[$i] .= '<td style="background-color: '.$this->conf['todaysColor'].';">'.$val1."</td>";
+					else
+						$tmp[$i] .= "<td>".$val1."</td>";
+					}
+				$tmp[$i] .= "</tr>";
+				$i++;
+				}
+
+			$temp = '<table class="program">'.$head."<tbody>".implode(chr(10),$tmp)."</tbody></table>";
+			}
+		else
+			{ # Spielplan nicht bekannt
+			$temp = "<br /><b>";
+			if($this->internal['currentRow']['date'])
+				{
+				$temp .= 'Ab '.$this->getFieldContent('date').'<br />';
+				}
+			$temp .= 'Die Spielzeiten sind noch nicht bekannt!<br />';
+			$temp .= '</b>';
+			}
+
+		return $temp;
+		}
+
+
+
+		/**
+		 * The Dates of the day are calculated wrong if the time is changed for Summer/winter time
+		 *
+		 * @param timestamp UNIX timestamp to be checked
+		 * @return timestamp UNIX timestanp corrected, if needed
+		 */
+	function checkSummerWinterBug($theDay)
+		{
+		if($this->correctDate)
+			return $theDay+$this->correctDate;
+
+		$oneDay = 24*60*60;
+		$oneHour = 60*60;
+
+		if(date("I", $theDay-$oneDay) != date("I", $theDay))
+			{
+			if(!date("I", $theDay))	# Sommer -> Winter
+				{
+				$this->correctDate = $oneHour*24;
+				}
+			}
+
+		return $theDay+$this->correctDate;
+		}
+
+
+		/**
+		 * Reservierung für .ticket System anzapfen
+		 */
+	function ticketLink($theTime)
+		{
+#debug(strftime("%H:%M %d.%m", $theTime), "ticket");
+		$oneWeek = 7*24*60*60; 
+		
+		$today0 = mktime ( 0, 0, 0, strftime("%m", time()),strftime("%d", time()), strftime("%Y", time()));
+		$dif = $theTime-$today0; 
+
+		$weekCount =  (int) ($dif / $oneWeek);
+			
+		$link  = $this->conf['noRes.']['server'];
+		$link .= "?Week=".$weekCount; 
+		$link .= "&UserCenterID=".$this->conf['noRes.']['UserCenterID'];
+		
+		$link .= "&SiteID=".$this->conf['noRes.']['SiteID.'][$this->getFieldContent('cinemaID')];
+		
+		$out['parameter'] = $this->cObj->substituteMarker($this->conf['noRes.']['window.']['parameter'], '###URL###', $link);
+
+		return $out;	
+		}
+		
+/*
+		 * Adresse als Session speichern
+		 * wird f�r den Link zum Newsletter ben�tigt!
+		 *
+	function saveAddressToSession()
+		{
+		$my_vars = $GLOBALS["TSFE"]->fe_user->getKey('ses','tx_myextension');
+
+		you then will add your own values the same way:
+
+		$my_vars['somevalue'] = "Hello World";
+
+		Again, Don't forget to save the data to the session in the end:
+
+		$GLOBALS["TSFE"]->fe_user->setKey('ses','tx_myextension',$my_vars);
+
+
+		$fields_values = array(
+			"salutation" => $this->piVars[salutation],
+			"title" => $this->piVars[title],
+			"firstname" => $this->piVars[firstname],
+			"lastname" => $this->piVars[lastname],
+			"street" => $this->piVars[street],
+			"streetnr" => $this->piVars[streetNr],
+			"zip" => $this->piVars[zip],
+			"city" => $this->piVars[city],
+			"country" => $this->piVars[country],
+			"email" => $this->piVars[email],
+			"fon" => $this->piVars[fon],
+			"fax" => $this->piVars[fax],
+			);
+
+		$GLOBALS["TSFE"]->fe_user->setKey('ses', $this->prefixId, $fields_values);
+		}
+
+ */
+
+
+	} /* END of CLASS */
+
+
+
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/user_cinema/pi1/class.user_cinema_pi1.php'])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/user_cinema/pi1/class.user_cinema_pi1.php']);
+}
+
+?>

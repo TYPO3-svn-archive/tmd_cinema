@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>module</type>
+		<description>Formular "Reservierung"</description>
+	</meta>
+	
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="btn_submit">Send!</label>
+		</languageKey>
+
+		<languageKey index="de" type="array">
+			<label index="btn_submit">Abschicken</label>
+		</languageKey>
+
+	</data>
+</T3locallang>

@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3DataStructure>
+<sheets>
+	<s_DEF>
+		<ROOT>
+			<TCEforms>
+			<sheetTitle>Konfiguration</sheetTitle>
+			</TCEforms>
+
+			<type>array</type>
+			<el>
+				<mode>
+					<TCEforms>
+					<label>Modus</label>
+					<config>
+						<type>select</type>
+						<items>
+							<numIndex index="0">
+								<numIndex index="0">Kurze Übersicht</numIndex>
+								<numIndex index="1">shortView</numIndex>
+							</numIndex>
+							
+							<numIndex index="1">
+								<numIndex index="0">Ausführliche Übersicht</numIndex>
+								<numIndex index="1">longView</numIndex>
+							</numIndex>
+							
+							<numIndex index="4">
+								<numIndex index="0">Einzelansicht</numIndex>
+								<numIndex index="1">singleView</numIndex>
+							</numIndex>
+							
+							<numIndex index="5">
+								<numIndex index="0">Sondervorstellung</numIndex>
+								<numIndex index="1">special</numIndex>
+							</numIndex>
+
+							<numIndex index="6">
+								<numIndex index="0">RSS 2.0 Newsfeed</numIndex>
+								<numIndex index="1">RSS</numIndex>
+							</numIndex>
+
+							<numIndex index="7">
+								<numIndex index="0">Reservierung</numIndex>
+								<numIndex index="1">reserve</numIndex>
+							</numIndex>
+
+						</items>
+					</config>
+				</TCEforms>
+				</mode>
+
+				<cinema>
+				<TCEforms>
+					<label>Kinos</label>
+					<config>
+						<type>select</type>
+						<foreign_table>tt_address</foreign_table>
+						<foreign_table_where> AND tt_address.pid = ###STORAGE_PID### </foreign_table_where>
+						<size>5</size>
+						<minitems>1</minitems>
+						<maxitems>10</maxitems>
+					</config>
+				</TCEforms>
+				</cinema>
+
+				<sortBy>
+				<TCEforms>
+					<label>Programm Select</label>
+					<config>
+						<type>input</type>
+						<size>40</size>
+						<eval></eval>
+						<default>cinema,sorting,date DESC</default>
+						<eval>trim</eval>
+						<eval>required</eval>
+						<required>1</required>
+					</config>
+				</TCEforms>
+				</sortBy>
+
+				<special>
+				<TCEforms>
+					<label>Sondervorstellungen anzeigen</label>
+					<config>
+						<type>select</type>
+						<foreign_table>tx_tmdcinema_showtype</foreign_table>
+						<foreign_table_where> AND tx_tmdcinema_showtype.pid = ###STORAGE_PID### </foreign_table_where>
+						<size>5</size>
+						<minitems>0</minitems>
+						<maxitems>10</maxitems>
+					</config>
+				</TCEforms>
+				</special>
+				
+				<previewMin>
+				<TCEforms>
+					<label>Wochen voraus min.</label>
+					<config>
+						<type>input</type>
+						<size>	5</size>
+						<eval>int</eval>
+						<default>1</default>
+						<range><lower>0</lower></range>
+					</config>
+				</TCEforms>
+				</previewMin>
+
+				<previewMax>
+				<TCEforms>
+					<label>Wochen voraus max.</label>
+					<config>
+						<type>input</type>
+						<size>	5</size>
+						<eval>int</eval>
+						<default>5</default>
+						<range><lower>1</lower></range>
+					</config>
+				</TCEforms>
+				</previewMax>
+
+				<previewNotice>
+				<TCEforms>
+					<label>Text wenn kein Programm vorhanden (%s = Datum).</label>
+					<config>
+						<type>input</type>
+						<default>Das Programm ab %s ist noch nicht bekannt.</default>
+					</config>
+				</TCEforms>
+				</previewNotice>
+
+				<disableReserved>
+				<TCEforms>
+					<label>Keine Reservierung!</label>
+					<config>
+						<type>check</type>
+					</config>
+				</TCEforms>
+				</disableReserved>
+
+				<linkImagePage>
+				<TCEforms>
+					<exclude>1</exclude>
+					<label>Bilder mit dieser Seite verlinken</label>
+					<config>
+						<type>group</type>
+						<internal_type>db</internal_type>
+						<allowed>pages</allowed>
+						<size>1</size>
+						<maxitems>1</maxitems>
+						<minitems>0</minitems>
+						<show_thumbs>0</show_thumbs>
+					</config>
+				</TCEforms>
+				</linkImagePage>
+
+				<pageReserve>
+				<TCEforms>
+					<exclude>1</exclude>
+					<label>Reservierung:</label>
+					<config>
+						<type>group</type>
+						<internal_type>db</internal_type>
+						<allowed>pages</allowed>
+						<size>1</size>
+						<maxitems>1</maxitems>
+						<minitems>0</minitems>
+						<show_thumbs>0</show_thumbs>
+					</config>
+				</TCEforms>
+				</pageReserve>
+
+				
+			</el>
+		</ROOT>
+	</s_DEF>
+	
+	<s_image>
+		<ROOT>
+			<TCEforms>
+			<sheetTitle>Bilder</sheetTitle>
+			</TCEforms>
+
+			<type>array</type>
+			<el>
+				<width>
+				<TCEforms>
+					<label>max width</label>
+					<config>
+						<type>input</type>
+						<size>5</size>
+						<eval>int</eval>
+						<default>80</default>
+					</config>
+				</TCEforms>
+				</width>
+			
+				<clickEnlarge>
+				<TCEforms>
+					<label>Klick Enlarge?</label>
+					<config>
+						<type>check</type>
+					</config>
+				</TCEforms>
+				</clickEnlarge>
+			</el>
+		</ROOT>
+	</s_image>
+	
+	
+</sheets>
+</T3DataStructure>
+

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<formidable version="0.8.0">
+
+	<meta>
+		<name>Fruits of Formidable - 1A - Simple form</name>
+		<form formid="cinema-pi2"/>
+		<debug>false</debug>
+		<displaylabels>true</displaylabels>
+	</meta>
+
+
+	<elements>
+ 
+		<renderlet:TEXT name="cinema" label="Kino">
+		</renderlet:TEXT>
+		
+		<renderlet:TEXT name="row" label="Reihe" />
+		<renderlet:TEXT name="seats" label="Plätze" />
+		
+		<renderlet:TEXT name="resNr" label="Res NR">
+			<validators>
+				<validator:STANDARD>
+					<required message="Res. Nr angeben." />
+				</validator:STANDARD>	
+			</validators>
+		</renderlet:TEXT>
+		
+		<renderlet:TEXTAREA name="note" label="Bemerkung" />
+		<renderlet:CHECKSINGLE name="free" label="freie Platzwahl" />
+		<renderlet:CHECKSINGLE name="delete" label="LÖSCHEN" />
+
+
+		<renderlet:SUBMIT name="btnsend">
+			<label>LLL:EXT:tmd_cinema/pi2/form/form_locallang.xml:btn_submit</label> 
+		</renderlet:SUBMIT>
+		
+	</elements>
+
+</formidable>

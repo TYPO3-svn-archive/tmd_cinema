@@ -1,0 +1,113 @@
+<!-- ###EMAIL-FULL### begin -->
+Sehr geehrter Kino-Gast!
+
+Für die Vorstellung von
+
+    ***   ###MOVIE_TITLE###   ***
+
+am ###DATE###
+
+haben wir folgende Plätze reserviert:
+
+       Kino  ###AUDIENCE###
+       Reihe ###ROW###
+       Platz ###SEAT###
+
+Die Karten können zu den Öffnungszeiten
+der Kinokasse unter der Nummer
+
+    _ ###CODE### _ (NICHT VERGESSEN!!!)
+
+abgerufen werden.
+
+Viel Spass im Kino wünscht
+                       Ihr Kino-Team, Isny
+
+
+###SPECIAL_NOTE###
+
+- Ausweise für Ermäßigungen bitte sowohl an der
+  Kasse als auch beim Einlass bereit halten!
+
+- Um Verzögerungen an der Abendkasse zu vermeiden, möchten
+  wir sie bitten, die Karten baldmöglichst abzuhohlen.
+
+*** Die Karten müssen bis spätestens 30min vor Beginn der ***
+***      Vorstellung an der Kasse abgehohlt werden!       ***
+
+
+----
+
+Fehler in der Reservierung? Bitte Benachrichtigen sie uns!
+Bitte schicken Sie uns in diesem Fall die gesamte Bestätigung zurück!
+Nutzen Sie am besten die "Antworten"-Funktion ihres Mailers.
+
+   mailto:reservierung@kino-isny.de
+
+-- 
+KINO IST DAS GROESSTE! ...DENN WIR ZEIGEN'S ZUERST!
+
+Neues Ringtheater                    Programmansage
+Lindauer Straße 2                      07562/8642
+88316 Isny i. A.                    Fax: 07562/8642
+http://www.kino-isny.de mailto:kontakt@kino-isny.de
+<!-- ###EMAIL-FULL### end -->
+
+
+
+
+
+
+<!-- ###EMAIL-SHORT### begin -->
+Seehr geehrter Kino-Gast!
+
+Für die Vorstellung von
+
+    ***   ###MOVIE_TITLE###   ***
+
+am ###DATE###
+
+haben wir Plätze reserviert im Kino ###AUDIENCE###
+
+Achtung: Für diese Vorstellung gilt freie Platzwahl!
+Es wird nur zwischen Loge und Parkett unterschieden.
+
+Die Karten können zu den Öffnungszeiten
+der Kinokasse unter der Nummer
+
+    _ ###CODE### _ (NICHT VERGESSEN!!!)
+
+abgerufen werden.
+
+Viel Spass im Kino wünscht
+                       Ihr Kino-Team, Isny
+
+
+###SPECIAL_NOTE###
+
+- Ausweise für Ermäßigungen bitte sowohl an der
+  Kasse als auch beim Einlass bereit halten!
+
+- Um Verzögerungen an der Abendkasse zu vermeiden, möchten
+  wir sie bitten, die Karten baldmöglichst abzuhohlen.
+
+*** Die Karten müssen bis spätestens 30min vor Beginn der ***
+***      Vorstellung an der Kasse abgehohlt werden!       ***
+
+
+----
+
+Fehler in der Reservierung? Bitte Benachrichtigen sie uns!
+Bitte schicken Sie uns in diesem Fall die gesamte Bestätigung zurück!
+Nutzen Sie am besten die "Antworten"-Funktion ihres Mailers.
+
+   mailto:reservierung@kino-isny.de
+
+-- 
+KINO IST DAS GROESSTE! ...DENN WIR ZEIGEN'S ZUERST!
+
+Neues Ringtheater                    Programmansage
+Lindauer Straße 2                      07562/8642
+88316 Isny i. A.                    Fax: 07562/8642
+http://www.kino-isny.de mailto:kontakt@kino-isny.de
+<!-- ###EMAIL-SHORT### end -->

@@ -1,0 +1,116 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html lang="de" xml:lang="de" xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+		<title>EXT: tmd_cinema</title>
+		<link href="../style.css" rel="stylesheet" type="text/css" media="all" />
+	</head>
+
+	<body>
+
+		<!-- ###PROGRAMM_SPECIAL### begin -->
+		<div class="tx_tmdcinema_pi1-special" style="float: left; width: 120px; height: 150px;" >
+			###PRG_SHOWTYPE###
+			<h3>###MOVIE_TITLE###</h3>
+			###LINK_PROGRAMM### ###MOVIE_IMAGE### ###LINK_PROGRAMM###
+		</div>
+		<!-- ###PROGRAMM_SPECIAL### end -->
+		
+		
+<hr class="clearLR" />		
+
+
+
+
+		<!-- ###PROGRAMM_SHORTVIEW### begin -->
+		<div class="tx_tmdcinema_pi1-shortView">
+			<h3>###MOVIE_TITLE_SHORT_FIRST###</h3>
+			###LINK_PROGRAMM### ###MOVIE_IMAGE### ###LINK_PROGRAMM###
+		</div>
+		<!-- ###PROGRAMM_SHORTVIEW### end -->
+
+
+		
+		
+<hr class="clearLR" />		
+
+
+
+
+		
+		<!-- ###PROGRAMM_FULLVIEW### begin -->
+		<hr style="width: 80%; margin: 10px auto 10px auto;" />
+		<div class="infoLong">
+			<a href="###ANCHOR###"></a>
+			###MOVIE_TITLE###
+			<div style="margin: 5px 0 5px 0;"><b>###MOVIE_RATING### - ###MOVIE_TIME### -  ###PRG_WEEK### ###PRG_SHOWTYPE###</b></div>
+			<div>
+				<div style="float: left;">###LINK_SINGLE### ###MOVIE_IMAGE### ###LINK_SINGLE###<br />###MOVIE_WWW###</div>
+				<div style="float: left; margin-left: 10px; width: 410px;">
+					###MOVIE_DESCRIPTION_SHORT### <span style="margin: 0 0 10px 5px;">###LINK_SINGLE###[weiterlesen]###LINK_SINGLE###</span>
+					###PRG_TIMETABLE###
+					###PRG_INFO###
+				</div>
+				<div class="clearLR"></div>
+			</div>
+		</div>
+		<!-- ###PROGRAMM_FULLVIEW### end -->
+
+
+
+<hr class="clearLR" />		
+
+
+		
+	<!-- ###SINGLE_VIEW### begin -->
+	<div class="singleView">
+		###MOVIE_SUBTITLE###
+		###MOVIE_TITLE###
+
+		<div>
+			<div style="float: left;">###MOVIE_IMAGE###</div>
+		
+			<div class="techInfo" style="margin-left: 235px;">
+				###MOVIE_RATING###
+				###MOVIE_TIME###
+				###MOVIE_GENRE###
+				###MOVIE_FORMAT###
+				###MOVIE_SOUND###
+				###MOVIE_DISTRIBUTOR###
+				###PRG_SHOWTYPE### 
+				###PRG_WEEK###
+				###MOVIE_WWW###
+
+				<div class="time">
+					###PRG_TIMETABLE###
+				</div>		
+
+				###PRG_INFO###
+			</div>
+		</div>
+			
+		<div class="bodytext clearLR">###MOVIE_DESCRIPTION###</div>
+
+		<div id="mediaInfo">
+			###MEDIA_1### ###MEDIA_2### ###MEDIA_3### ###MEDIA_4### ###MEDIA_5###<br />
+			###MOVIE_DIRECTOR###
+			###MOVIE_PRODUCER###
+			###MOVIE_ACTOR###
+		</div>
+
+		<div class="tmd-cinema-pi1" align="center">
+			<form name="zurueck" style="align: center" action="(EmptyReference!)" >
+				<input onclick="window.history.back()" type="button" value="Zurück"/>
+			</form>
+		</div>
+	
+	</div>
+	<!-- ###SINGLE_VIEW### end -->
+	
+<hr />		
+		
+	</body>
+
+</html>

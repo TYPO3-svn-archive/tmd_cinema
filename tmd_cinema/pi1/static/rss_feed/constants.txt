@@ -1,0 +1,27 @@
+###
+# These are the default TS-constants for RSS feeds from tmd_cinema 
+##
+
+plugin.tmd_cinema_pi1 {
+	displayXML {
+			# cat=plugin.tmd_cinema/file/80; type=file[html,htm,tmpl,txt]; label= RSS-News rss v2 Template File: XML template for RSS 2.0 feed
+		rss2_tmplFile = EXT:tmd_cinema/pi1/res/rss_2.tmpl
+			# cat=plugin.tmd_cinema//85; type=options[rss091,rss2,rdf,atom1,atom03]; label= News-Feed XML-Format: Defines the format of the news feed. Possible values are: 'rss091', 'rss2' 'rdf', 'atom1' and 'atom03'
+		xmlFormat = rss2
+			# cat=plugin.tmd_cinema//86; type=text; label= News-Feed XML-Title: The title of your news feed. (required for rss091, rss2, rdf and atom03)
+		xmlTitle = example.com: Latest News
+			# cat=plugin.tmd_cinema//87; type=text; label= News-Feed XML-Link: The link to your hompage. (required for rss091, rss2, rdf and atom03)
+		xmlLink = http://www.example.com/
+			# cat=plugin.tmd_cinema//88; type=text; label= News-Feed XML-Description: The description of your news feed. (required for rss091, rss2 and rdf. optional for atom03)
+		xmlDesc = Latest news from example.com
+			# cat=plugin.tmd_cinema//89; type=text; label= News-Feed XML-Language: Your site's language. A list of allowable values for <language> in RSS is available at http://backend.tmdland.com/stories/storyReader$16 (equired for rss091, optional for rss2, not available for rdf, recommended for atom03)
+		xmlLang = en
+			# cat=plugin.tmd_cinema//80; type=text; label= News-Feed XML-Icon: Provide an icon for your news feed with preferred size of 16x16 px, can be gif, jpeg or png. (required for rss091, optional for rss2 and rdf, not available for atom03)
+		xmlIcon = EXT:tmd_cinema_pi1/ext_icon.gif
+			# cat=plugin.tmd_cinema//91; type=int+; label= News-Feed XML-Limit: max news items in RSS feeds.
+		xmlLimit = 10
+			# cat=plugin.tmd_cinema//92; type=boolean; label= News-Feed XML-Caching: Allow caching for the RSS feed
+		xmlCaching = 1
+		}
+	}
+

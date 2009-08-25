@@ -1,0 +1,66 @@
+###
+# This is the default TS-setup RSS feed from tmd_cinema_pi1
+# this template has to be included after the tmd_cinema_pi1 main TS-setup because it depends on some settings from there
+#
+# (see Section Reference in the manual for more options & parameters)
+#
+# tmd_cinema_pi1 v 2.x
+###
+
+
+
+
+# - - - - - - - - - - - - - -  render XML news   - - - - - - - - - - - - -  #
+ 
+# point your RSS reader to: http://your-server.org/index.php?type=100
+
+plugin.tmd_cinema_pi1 {
+	displayXML {
+		rss2_tmplFile = {$plugin.tmd_cinema_pi1.displayXML.rss2_tmplFile}
+		
+		# possibile values: rss091 / rss2 / rdf / atom03
+		xmlFormat = {$plugin.tmd_cinema_pi1.displayXML.xmlFormat}
+		
+		xmlTitle = {$plugin.tmd_cinema_pi1.displayXML.xmlTitle}
+		xmlLink = {$plugin.tmd_cinema_pi1.displayXML.xmlLink}
+		xmlDesc = {$plugin.tmd_cinema_pi1.displayXML.xmlDesc}
+		xmlLang = {$plugin.tmd_cinema_pi1.displayXML.xmlLang}
+		xmlIcon = {$plugin.tmd_cinema_pi1.displayXML.xmlIcon}
+		xmlLimit = {$plugin.tmd_cinema_pi1.displayXML.xmlLimit}
+		xmlCaching = {$plugin.tmd_cinema_pi1.displayXML.xmlCaching}
+		
+		title_stdWrap.htmlSpecialChars = 1
+		title_stdWrap.htmlSpecialChars.preserveEntities = 1
+		subheader_stdWrap.stripHtml = 1
+		subheader_stdWrap.htmlSpecialChars = 1
+		subheader_stdWrap.htmlSpecialChars.preserveEntities = 1
+		subheader_stdWrap.crop = 100 | ... | 1 
+		subheader_stdWrap.ifEmpty.field = bodytext
+		xmlLastBuildDate = 1
+		}
+	}
+
+
+page >
+
+## This enables the xml news feed
+xmlnews = PAGE
+xmlnews {
+	typeNum = 0
+	
+	10 = TEXT
+	10 < plugin.tmd_cinema_pi1
+	10 {
+		mode = RSS
+		pidList = 378
+		recursive = 2
+		}
+
+	config {
+		disableAllHeaderCode = 1
+		additionalHeaders = Content-type:application/xml
+		xhtml_cleaning = 0
+		admPanel = 0
+		no_cache = 1
+		}
+	}

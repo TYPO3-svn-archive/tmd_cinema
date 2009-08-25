@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<formidable version="0.8.0">
+
+	<meta>
+		<name>Booking Form</name>
+		<form formid="tx-tmdcinema-pi1-booking"/>
+		<debug>true</debug>
+		<displaylabels>true</displaylabels>
+	</meta>
+
+	<control>
+		<datahandler:DB>
+			<tablename>tx_tmdcinema_booking</tablename>
+			<keyname>uid</keyname>
+			<process>
+				<beforeinsertion>
+				<userobj>
+					<php>
+					<![CDATA[
+						$data = array_pop(func_get_args()); 
+						
+						$out["pid"] 	= $this->_oParent->conf['resPid'];
+						$out["name"] 	= $data['name'];
+						$out["email"] 	= $data['email'];
+						$out["seats"] 	= $data['seats'];
+						$out["note"] 	= $data['seatCat'].chr(13).'-----'.chr(13).$data['note'];
+						$out["movie"] 	= $this->_oParent->getFieldContent("movie_title");
+						$out["timedate"] = $this->_oParent->piVars['res'];
+						$out["cinema"] 	= $this->_oParent->piVars['cinema'];
+
+						return $out;
+					]]>
+					</php>
+				</userobj>
+				</beforeinsertion>
+			</process>
+		</datahandler:DB>
+		<renderer:STANDARD />
+		
+		<actionlets>
+
+			
+		<actionlet:REDIRECT>
+               <pageid>
+                  <userobj>
+                       <php><![CDATA[
+                           // you can use an userobj to redirect to a more advanced url.
+                           $out = $this->cObj->typolink_URL(
+                               array(
+                                   "parameter" => $this->_oParent->conf['bookingRedirect'],
+                                   "additionalParams" => "",
+                                   "returnLast" => "url",
+                                   "useCacheHash" => "1",
+                               )
+                           );
+                           
+                           return $out;
+                       ]]></php>
+				</userobj>
+			</pageid>
+		</actionlet:REDIRECT>
+
+		</actionlets>
+			
+	</control>
+
+
+
+	<elements>
+
+		<renderlet:TEXT name="title-ro" label="Filmtitel">
+			<readonly>true</readonly>
+			<data>
+				<defaultvalue>
+					<userobj>
+						<php>
+							<![CDATA[ return $this->_oParent->getFieldContent("movie_title"); ]]>
+						</php>
+					</userobj>
+				</defaultvalue>
+			</data>
+		</renderlet:TEXT>
+
+		<renderlet:HIDDEN name="title">
+			<data>
+				<value>
+					<userobj>
+		            <php><![CDATA[ return $this->_oParent->getFieldContent("movie_title"); ]]></php>
+			        </userobj>
+				</value>
+  			</data>
+		</renderlet:HIDDEN>
+
+
+		<renderlet:TEXT name="time-ro" label="Vorstellung">
+			<readonly>true</readonly>
+			<data>
+				<defaultvalue>
+					<userobj>
+						<php>
+							<![CDATA[ return strftime("%A, %d.%m.%y - %H:%M Uhr", $this->_oParent->piVars['res']); ]]>
+						</php>
+					</userobj>
+				</defaultvalue>
+			</data>
+		</renderlet:TEXT>
+
+		<renderlet:HIDDEN name="datetime">
+			<data>
+				<value>
+					<userobj>
+		            <php><![CDATA[ return $this->_oParent->piVars['res']; ]]></php>
+			        </userobj>
+				</value>
+  			</data>
+		</renderlet:HIDDEN>
+
+
+
+
+
+ 
+		<renderlet:TEXT name="name" label="Ihr Name" >
+		<validators>
+			<validator:STANDARD>
+				<required message="Ihr Name ist erforderlich!"/>
+			</validator:STANDARD>
+		</validators>
+		</renderlet:TEXT>
+		
+		
+		<renderlet:TEXT name="email" label="Ihre EMail Adresse" >
+		<validators>
+			<validator:STANDARD>
+				<required message="Ihre E-Mail Adresse ist erforderlich!"/>
+				<email message="Die E-Mail Adresse ist nicht gültig!" />
+			</validator:STANDARD>
+		</validators>
+		</renderlet:TEXT>
+
+
+		<renderlet:LISTBOX name="seats" label="Plätze" >
+			<data defaultvalue="2" >
+				
+				<userobj>
+					<php>
+					<![CDATA[
+						for($k = 1; $k < 21; $k++) {
+							$item[] = array(
+								"caption" => $k,
+								"value" => $k,
+							);
+						}
+						return $item;
+					]]>
+					</php>
+				</userobj>
+
+			</data>
+		</renderlet:LISTBOX>
+
+
+
+		<renderlet:LISTBOX name="seatCat" label="Sitzbereich" >
+			<data>
+				<items>
+					<item caption="Parkett" 			value="Parkett" />
+					<item caption="Loge (Doppelsitze)" 	value="Loge" />
+				</items>
+			</data>
+		</renderlet:LISTBOX>
+
+		
+		<renderlet:TEXTAREA name="note" label="Bemerkung" />
+				
+		<renderlet:TEXT name="formid" label="formid" >
+		<data>
+			<defaultvalue>
+				<userobj>
+					<php><![CDATA[   return mktime();   ]]></php>
+				</userobj>
+			</defaultvalue>
+		</data>
+
+		</renderlet:TEXT>
+		
+
+		<renderlet:SUBMIT name="btnsend">
+			<label>LLL:EXT:tmd_cinema/pi1/form/form_locallang.xml:btn_submit</label> 
+		</renderlet:SUBMIT>
+		
+	</elements>
+
+</formidable>
