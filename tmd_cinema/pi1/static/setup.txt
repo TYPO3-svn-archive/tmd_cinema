@@ -1,6 +1,8 @@
 
 
 plugin.tx_tmdcinema_pi1 {
+	isStaticTemplateLoaded = 1
+	
 	DEBUG = 0
 
 		# PID of the Main Time Table View

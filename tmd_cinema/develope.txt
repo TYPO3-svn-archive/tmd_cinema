@@ -1,0 +1,29 @@
+EXT:devlog  	2.8.0
+
+t3lib_div::devLog()
+
+Using the logging method
+To log something simply call t3lib_div::devLog(). This method takes the following parameters:
+
+$msg 
+	The message that you want to write to the log
+$extKey	
+	The key of the extension writing to the log
+$severity
+	Indication of the severity of the message. The following values are expected:
+	-1 for ok status
+	0 for a purely informational message
+	1 for a notice
+	2 for a warning
+	3 for a (fatal) error
+	This parameter is optional and defaults to 0.
+$dataVar
+	This is an array that can contain any data you wish and that you find useful for information or debugging purposes. 
+	It is serialised before being stored in the database. In the backend module it is unserialised and displayed as with t3lib_div::debug().
+	This parameter is optional and defaults to false.
+	If something else than an array is passed to this parameter, it will be stripped and replaced by an error message (see screenshot below).
+
+	
+t3lib_div::devLog($msg, $this->extKey, $severity(-1 0 1 2 3), array() $dataVar);
+
+	

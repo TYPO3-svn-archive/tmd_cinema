@@ -17,7 +17,7 @@ $EM_CONF[$_EXTKEY] = array(
 	'author' => 'Christian Tauscher',
 	'author_email' => 'cms@media-distillery.de',
 	'shy' => '',
-	'dependencies' => 'tmd_movie,ameos_formidable',
+	'dependencies' => 'tmd_movie,ameos_formidable,oelib',
 	'conflicts' => '',
 	'priority' => '',
 	'module' => 'tx_tmdcinema_program_program,mod1',
@@ -34,6 +34,7 @@ $EM_CONF[$_EXTKEY] = array(
 		'depends' => array(
 			'tmd_movie' => '',
 			'ameos_formidable' => '2.0.0',
+			'oelib' => '0.6.2-'
 		),
 		'conflicts' => array(
 		),

@@ -22,9 +22,12 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-require_once(PATH_tslib.'class.tslib_pibase.php');
-require_once(PATH_formidableapi);
 require_once(t3lib_extMgm::extPath('tmd_movie').'pi1/class.tx_tmdmovie.php');
+require_once(PATH_tslib.'class.tslib_pibase.php');
+/* oelib
+require_once(t3lib_extMgm::extPath('oelib').'class.tx_oelib_templatehelper.php');
+require_once(PATH_formidableapi);
+*/
 
 /**
  * Plugin 'Cinema Program' for the 'tmd_cinema' extension.
@@ -34,6 +37,9 @@ require_once(t3lib_extMgm::extPath('tmd_movie').'pi1/class.tx_tmdmovie.php');
  * @subpackage	tmd_cinema
  */
 class tx_tmdcinema_pi1 extends tslib_pibase {
+/* oelib
+ * class tx_tmdcinema_pi1 extends tx_oelib_templatehelper {
+ */
 	var $prefixId      = 'tx_tmdcinema_pi1';		// Same as class name
 	var $scriptRelPath = 'pi1/class.tmd_cinema_pi1.php';	// Path to this script relative to the extension dir.
 	var $uploadPath 	= 'uploads/tx_tmdmovie/';
@@ -51,12 +57,20 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 		 */
 	function main($content,$conf)
 		{
+
 		$this->conf = $conf;		// Setting the TypoScript passed to this function in $this->conf
 		$this->pi_setPiVarDefaults();
 		$this->pi_loadLL();		// Loading the LOCAL_LANG values
-#debug($this->conf);
+
+/* oelib			
+		$this->init($conf);
+		$confCheck = $this->checkConfiguration();
+		if($confCheck) return $this->pi_wrapInBaseClass("->".$confCheck."<-");
+#debug($this->getConfiguration(), "hier");
+*/
 		$this->initFF();
 		$this->initTemplate();
+
 
 		$this->film = t3lib_div::makeInstance("tx_tmdmovie");
 
