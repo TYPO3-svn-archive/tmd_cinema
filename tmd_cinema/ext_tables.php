@@ -78,7 +78,7 @@ t3lib_div::loadTCA('tt_content');
 $TCA['tt_content']['types']['list']['subtypes_excludelist'][$_EXTKEY.'_pi1']='layout,select_key';
 
 # Programmseiten markieren
-$TCA['pages']['columns']['module']['config']['items'][] = Array('LLL:EXT:'.$_EXTKEY.'/locallang_tca.xml:pages.module.I.5', 'movie_prg');
+$TCA['pages']['columns']['module']['config']['items'][] = Array('LLL:EXT:'.$_EXTKEY.'/locallang_tca.xml:pages.module.I.5', 'cinema_prg');
 
 # Wir blenden die Standard Felder layout,select_key,pages,recursive  von Plugins aus
 $TCA['tt_content']['types']['list']['subtypes_excludelist'][$_EXTKEY.'_pi1']='layout,select_key';
@@ -104,5 +104,7 @@ t3lib_extMgm::addStaticFile($_EXTKEY,'pi2/static/','Book Reservation');
 	/* BE Modul */
 if (TYPO3_MODE == 'BE')    {
     t3lib_extMgm::addModule('web','tmdcinemaM1','',t3lib_extMgm::extPath($_EXTKEY).'mod1/');
+    		// add folder icon
+	$ICON_TYPES['cinema_prg'] = array('icon' => t3lib_extMgm::extRelPath($_EXTKEY).'ext_icon_prg_folder.gif');
 }
 ?>

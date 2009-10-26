@@ -24,6 +24,8 @@
 
 require_once(t3lib_extMgm::extPath('tmd_movie').'pi1/class.tx_tmdmovie.php');
 require_once(PATH_tslib.'class.tslib_pibase.php');
+require_once(PATH_formidableapi);
+
 /* oelib
 require_once(t3lib_extMgm::extPath('oelib').'class.tx_oelib_templatehelper.php');
 require_once(PATH_formidableapi);
@@ -1348,5 +1350,4 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tmd_cinema/pi1/class.tmd_cinema_pi1.php'])	{
 	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tmd_cinema/pi1/class.tmd_cinema_pi1.php']);
 }
-
 ?>
