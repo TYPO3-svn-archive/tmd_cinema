@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006 Christian Tauscher <cms@media-distillery.de>
+*  (c) 2006-2009 Christian Tauscher <cms@media-distillery.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -22,7 +22,6 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-
 	// DEFAULT initialization of a module [BEGIN]
 unset($MCONF);
 require_once('conf.php');
@@ -32,6 +31,7 @@ $LANG->includeLLFile('EXT:tmd_cinema/tx_tmdcinema_program_program/locallang.xml'
 require_once(PATH_t3lib.'class.t3lib_scbase.php');
 	// ....(But no access check here...)
 	// DEFAULT initialization of a module [END]
+
 
 
 #$BACK_PATH='';
@@ -47,8 +47,9 @@ $LANG->includeLLFile('EXT:lang/locallang_wizards.xml');
  * @package	TYPO3
  * @subpackage	tmd_cinema
  */
+class tx_tmdcinema_tx_tmdcinema_program_programwiz extends t3lib_SCbase {
 
-class tmd_cinema_tmd_cinema_program_programwiz extends t3lib_SCbase {
+#class tmd_cinema_tmd_cinema_program_programwiz extends t3lib_SCbase {
 			// Internal, dynamic:
 	var $doc;					// Document template object
 	var $content;				// Content accumulation for the module.
@@ -610,7 +611,7 @@ if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tmd_cin
 
 
 
-
+/*
 // Make instance:
 $SOBE = t3lib_div::makeInstance('tmd_cinema_tmd_cinema_program_programwiz');
 $SOBE->init();
@@ -618,5 +619,16 @@ $SOBE->init();
 
 $SOBE->main();
 $SOBE->printContent();
+*/
+
+// Make instance:
+$SOBE = t3lib_div::makeInstance('tx_tmdcinema_tx_tmdcinema_program_programwiz');
+$SOBE->init();
+
+
+$SOBE->main();
+$SOBE->printContent();
+
+
 
 ?>

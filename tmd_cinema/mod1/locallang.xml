@@ -8,7 +8,7 @@
 		<languageKey index="default" type="array">
 			<label index="title">Cinema Program</label>
 			
-			<label index="function1">Übersicht</label>
+			<label index="function1">Uebersicht</label>
 			<label index="function2">Programm</label>
 			<label index="function3">Neueste Filme</label>
 			<label index="function4">Alle Filme</label>
@@ -16,6 +16,13 @@
 			<label index="function6">Kommende Bundesstart</label>
 			<label index="function7">Programm Verwalten</label>
 			
+			<label index="newRecord">New Record</label>
+			<label index="editRecord">Edit Record</label>
+			<label index="hide">Hide Record</label>
+			<label index="unHide">Unhide Record</label>
+			<label index="delete">Delete Record</label>
+			<label index="deleteWarning">Delete warning</label>
+			<label index="moveDown">Move Down</label>
 		</languageKey>
 		<languageKey index="de" type="array">
 			<label index="title">Kinoprogramm</label>
