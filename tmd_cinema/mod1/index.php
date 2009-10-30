@@ -73,8 +73,6 @@ class  tmd_cinema_module1 extends t3lib_SCbase {
 		global $BE_USER,$LANG,$BACK_PATH,$TCA_DESCR,$TCA,$CLIENT,$TYPO3_CONF_VARS;
 
 		
-#		$cObj = t3lib_div::makeInstance('tslib_cObj');
-		
 		// Access check!
 		// The page will show only if there is a valid page and if this page may be viewed by the user
 		$this->pageinfo = t3lib_BEfunc::readPageAccess($this->id,$this->perms_clause);
@@ -93,41 +91,6 @@ class  tmd_cinema_module1 extends t3lib_SCbase {
 							script_ended = 0;
 							function jumpToUrl(URL)	{
 								document.location = URL;
-							}
-					
-							/* from kj_recycler - Thanks a lot! */
-						function confirm_delete(uid,pid) {
-							var relocate_to;
-							Check = confirm("Delete this record?");
-						
-							if(Check == false);
-							if(Check == true)  {
-							relocate_to = "index.php?id="+pid+"&action=delete&uid="+uid;
-							alert("hier: "+relocate_to);
-							window.location.replace(relocate_to);
-							}
-						}
-						
-						
-						function checkData()
-							{
-							var company = document.from.company.value; 
-							var checked = true;
-						/*
-							if (company.length == 0)
-								{
-								alert ("Dieses Feld ist ein Pflichtfeld!");
-								checked = false;
-								}
-						*/
-							if (checked == true)
-								{
-								document.form.method = "post";
-								document.form.action = "";
-								document.form.submit();
-								}
-							
-							return checked;
 							}
 						</script>
 					';
@@ -148,10 +111,8 @@ class  tmd_cinema_module1 extends t3lib_SCbase {
 			$this->content.=$this->doc->section('',$this->doc->funcMenu($headerSection,t3lib_BEfunc::getFuncMenu($this->id,'SET[function]',$this->MOD_SETTINGS['function'],$this->MOD_MENU['function'])));
 			$this->content.=$this->doc->divider(5);
 
-
 			// Render content:
 			$this->moduleContent();
-
 
 			// ShortCut
 			if ($BE_USER->mayMakeShortcut())	{
@@ -218,49 +179,7 @@ class  tmd_cinema_module1 extends t3lib_SCbase {
 	 */
 	function moduleContent()	{
 
-		debug(t3lib_div::GPvar("action"), "gpvar");
-
-			switch(t3lib_div::GPvar("action"))
-				{
-				case 'edit':
-					$header = "Datensatz ".$_GET['uid']." bearbeiten";
-					$content = $this->editProgram($_GET['uid']);
-				break;
-
-				case 'add':
-					$header = "Datensatz hinzu";
-					$content .= '<a href="index.php?id='.$this->id.'&function=add">Neue Adresse anlegen</a>';					
-					$this->updateRecord('add');
-				break;
-				case 'delete':
-					$header = "Datensatz ".$_GET['uid']." GELÖSCHT";
-					debug($_GET['uid']);
-				break;
-				
-				case 'update':
-					$header = "Datensatz ".$_GET['uid']." wurde gespeichert";
-					$this->updateRecord('update');
-				default:
-					/*
-					if($this->MOD_SETTINGS['function'] == 'add')
-						{
-						$header = "Neue Adresse";
-						$content = $this->editAddress('add');
-						}
-					elseif ($this->MOD_SETTINGS['function'] == 'search' || $this->MOD_SETTINGS['function'] == '---')
-						{
-						$content = $this->search();
-						}
-					else
-						#$content .= $this->listAdresses($this->MOD_SETTINGS['function']);
-						*/
-				break;
-				}
-			
-		#	$this->content.=$this->doc->section($header, $content ,0,1);
-		
-		
-		
+	
 		switch((string)$this->MOD_SETTINGS['function'])	{
 			case 1:
 				$content= $this->listProgram();
@@ -300,170 +219,156 @@ class  tmd_cinema_module1 extends t3lib_SCbase {
 
 		$fields = '*';
 		$table = 'tx_tmdcinema_program';
-/*		Seiten mit Filmen hier:  
-			t3lib_BEfunc::getModTSconfig($this->pageinfo['uid'],
-					'mod.'.$GLOBALS['MCONF']['name'].'.movieRoot'), 'mod.'.$GLOBALS['MCONF']['name'].'.movieRoot')
-*/
 		$where = 'pid = '.$this->pageinfo['uid'].t3lib_BEfunc::deleteClause($table);
-
-		$res  = $GLOBALS['TYPO3_DB']->exec_SELECTquery($fields, $table, $where, '', 'date DESC, cinema, sorting');
-		
+		$res  = $GLOBALS['TYPO3_DB']->exec_SELECTquery($fields, $table, $where, '', 'date DESC, sorting');
 		$count = $GLOBALS['TYPO3_DB']->sql_num_rows($res);
-		if($count>0) {
-			$c =0;
-			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-					/* Sortierung nur innerhalb der gleichen Woche */
-				$curTable[$c] = $row;
-				$date1 = $curTable[$c]['date'];
-				
-				$curTable[$c]['info2'] = "debug: <br/>".$c;
-				
-				if($date1 == $date2) {
-					if($c > 0) {
-						$curTable[$c-1]['next'] = $curTable[$c]['uid'];
-					}
-					
-					if($c < $count) {
-						$prev = $curTable[$c-1]['uid'];
-					}
+		if($count<1) {
+			return "Keine Datensätze auf dieser Seite!"; 
+		}
+		
+/*
+		1. nach datum
+		2. nach kino sortieren
+		3. sorting
+*/
+			# vorsortierung nach Kino		
+		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+			$cinema[$row[cinema]][] = $row; 
+		}
+		$GLOBALS['TYPO3_DB']->sql_free_result($res);
 
-					if($prev) {
-						$curTable[$c]['prev'] = $prev;
-					}
-					
+			# liste nach Kinos sortiert.
+		$cinemaOrder = t3lib_BEfunc::getModTSconfig($this->pageinfo['uid'], 'mod.web_tmdcinemaM1.cinemaOrder');
+		$cinemaOrder = $cinemaOrder['value'];
+
+		if($cinemaOrder) { # definitive liste wenn vorhanden
+			$cinemaOrder = explode(',', $cinemaOrder);
+
+			foreach($cinemaOrder as $key => $val) {
+				$prg[] = $cinema[$val];
+			}
+		} else {
+			return "Modul falsch konfiguriert! #mod.web_tmdcinemaM1.cinemaOrder = id,id2,id3 ";
+		}
+		
+debug($prg);
+		
+		$c =0;
+		foreach ($prg as $key => $row) {
+				/* Sortierung nur innerhalb der gleichen Woche */
+			$curTable[$c] = $row;
+			$date1 = $curTable[$c]['date'];
+			
+			if($date1 == $date2) {
+				if($c > 0) {
+					$curTable[$c-1]['next'] = $curTable[$c]['uid'];
 				}
 				
+				if($c < $count) {
+					$prev = $curTable[$c-1]['uid'];
+				}
+
+				if($prev) {
+					$curTable[$c]['prev'] = $prev;
+				}
 				
-				
-				$date2 = $date1;
-				
-				$c++;
 			}
-		$GLOBALS['TYPO3_DB']->sql_free_result($res);
-#debug($curTable);
+
+			$date2 = $date1;
+			$c++;
+		}
 
 
-	foreach($curTable as $key => $this->row) {
-			# get some missing info from the film
-		$rec = t3lib_BEfunc::getRecord('tx_tmdmovie_movie',$this->row['movie'],$fields='uid,title,poster',$where=''); 
-		$this->row['title'] = $rec['title'];
-		$this->row['poster'] = $rec['poster'];
-		$this->row['mov_uid'] = $rec['uid'];
 		
 		
-			// Datumszeile wenn es sich geändert hat.
-		$date1 = $this->getFieldContentPrg('date');
-		if($date1 != $date2) {
-			$out .= '<tr><td  bgcolor="#D9D5C9" colspan="5" style="text-align: right; font-size: 20px;"><b>'.strftime("%a, ", $date1).$date1.'</b></td></tr>';
-		} 
-		$date2 = $date1;
-
-		$out .= '<tr>';
-		$out .= '<td style="vertical-align: top;" colspan="3" bgcolor="';
-		$out .= ($this->row['hidden'])?'red':'green';
-		$out .= '"><b style="color: white">'.$this->getFieldContentMovie('title').'</b></td>';
-
-		$out .= '<td style="text-align: right;">';
-			/* functionen */
+		
+		foreach($curTable as $key => $this->row) {
+				# get some missing info from the film
+			$rec = t3lib_BEfunc::getRecord('tx_tmdmovie_movie',$this->row['movie'],$fields='uid,title,poster',$where=''); 
+			$this->row['title'] = $rec['title'];
+			$this->row['poster'] = $rec['poster'];
+			$this->row['mov_uid'] = $rec['uid'];
+			
+				// Datumszeile wenn es sich geändert hat.
+			$date1 = $this->getFieldContentPrg('date');
+			if($date1 != $date2) {
+				$t .= '<tr><td  bgcolor="#D9D5C9" colspan="5" style="text-align: right; font-size: 20px;"><b>'.strftime("%a, ", $date1).$date1.'</b></td></tr>';
+			} 
+			$date2 = $date1;
 	
-			/*
-			 * Der vorgänger vom voränger? wie "top" ???
-			 if($this->row['prev']) {
-				$params='&cmd[tx_tmdcinema_program]['.$this->row['uid'].'][move]=-'.$curTable[$key+1]['prev'];# $this->row['prev'];
-				$str = '<a href="#" onclick="'.htmlspecialchars('return jumpToUrl(\''.$SOBE->doc->issueCommand($params).'\');').'">'.
-						'<img src="pilup.gif" width="11" height="10" /></a><br />';
-			#	debug($str);
-				$out .= $this->row['prev'].$str;
-			}
-			*/
+			$t .= '<tr>';
+			$t .= '<td style="vertical-align: top;" colspan="3" bgcolor="';
+			$t .= ($this->row['hidden'])?'red':'green';
+			$t .= '"><b style="color: white">'.$this->getFieldContentMovie('title').'</b></td>';
+	
+			$t .= '<td style="text-align: right;">';
+
+				/* functionen */
 			//Move Down
 			if($this->row['next']) {
 				$params='&cmd[tx_tmdcinema_program]['.$this->row['uid'].'][move]=-'.$this->row['next'];
-				$out .= '<a href="#" onclick="'.htmlspecialchars('return jumpToUrl(\''.$SOBE->doc->issueCommand($params).'\');').'">'.
+				$t .= '<a href="#" onclick="'.htmlspecialchars('return jumpToUrl(\''.$SOBE->doc->issueCommand($params).'\');').'">'.
 						'<img'.t3lib_iconWorks::skinImg($this->doc->backPath,'gfx/button_down.gif','width="11" height="10"').' title="'.$LANG->getLL('moveDown').'" alt="" />';
 			}
-			
+					
 			// New after
 			$params='&edit[tx_tmdcinema_program]['.$this->pageinfo['uid'].']=new';
-			$out .= '<a href="#" onclick="'.htmlspecialchars(t3lib_BEfunc::editOnClick($params,$this->doc->backPath)).'">'.
+			$t .= '<a href="#" onclick="'.htmlspecialchars(t3lib_BEfunc::editOnClick($params,$this->doc->backPath)).'">'.
 					'<img'.t3lib_iconWorks::skinImg($this->doc->backPath,'gfx/new_page.gif','width="11" height="12"').' title="'.$LANG->getLL('newRecord').'" alt="" />'.
 					'</a>';
-			
+					
 			// Edit
 			$params = "&edit[tx_tmdcinema_program][".$this->row[uid]."]=edit";
-			$out .= '<a href="#" onclick="'.htmlspecialchars(t3lib_BEfunc::editOnClick($params,$this->doc->backPath)).'">'.
+			$t .= '<a href="#" onclick="'.htmlspecialchars(t3lib_BEfunc::editOnClick($params,$this->doc->backPath)).'">'.
 					'<img'.t3lib_iconWorks::skinImg($this->doc->backPath,'gfx/edit2.gif','width="7" height="12"').' title="'.$LANG->getLL('editRecord').'" alt="" />'.
 					'</a>';
-	
+			
 			// hide /unhide
 			if ($this->row['hidden'])	{
 				$params='&data[tx_tmdcinema_program]['.$this->row['uid'].'][hidden]=0';
-				$out .= '<a href="#" onclick="'.htmlspecialchars('return jumpToUrl(\''.$SOBE->doc->issueCommand($params).'\');').'">'.
+				$t .= '<a href="#" onclick="'.htmlspecialchars('return jumpToUrl(\''.$SOBE->doc->issueCommand($params).'\');').'">'.
 						'<img'.t3lib_iconWorks::skinImg($this->doc->backPath,'gfx/button_unhide.gif','width="11" height="10"').' title="'.$LANG->getLL('unHide').'" alt="" />'.
 						'</a>';
 			} else {
 				$params='&data[tx_tmdcinema_program]['.$this->row['uid'].'][hidden]=1';
-				$out .= '<a href="#" onclick="'.htmlspecialchars('return jumpToUrl(\''.$SOBE->doc->issueCommand($params).'\');').'">'.
+				$t .= '<a href="#" onclick="'.htmlspecialchars('return jumpToUrl(\''.$SOBE->doc->issueCommand($params).'\');').'">'.
 						'<img'.t3lib_iconWorks::skinImg($this->doc->backPath,'gfx/button_hide.gif','width="11" height="10"').' title="'.$LANG->getLL('hide').'" alt="" />'.
 						'</a>';
 			}
-			
+					
 			// "Delete" link:
 			$params='&cmd[tx_tmdcinema_program]['.$this->row['uid'].'][delete]=1';
-			$out .= '<a href="#" onclick="'.htmlspecialchars('if (confirm('.$LANG->JScharCode($LANG->getLL('deleteWarning').t3lib_BEfunc::referenceCount('tx_tmdcinema_program',$this->row['uid'],' (There are %s reference(s) to this record!)')).')) {jumpToUrl(\''.$SOBE->doc->issueCommand($params).'\');} return false;').'">'.
+			$t .= '<a href="#" onclick="'.htmlspecialchars('if (confirm('.$LANG->JScharCode($LANG->getLL('deleteWarning').t3lib_BEfunc::referenceCount('tx_tmdcinema_program',$this->row['uid'],' (There are %s reference(s) to this record!)')).')) {jumpToUrl(\''.$SOBE->doc->issueCommand($params).'\');} return false;').'">'.
 					'<img'.t3lib_iconWorks::skinImg($this->doc->backPath,'gfx/garbage.gif','width="11" height="12"').' title="'.$LANG->getLL('delete').'" alt="" />'.
 					'</a>';
-
+					
+			$t .= '</td>';
+	
+			$t .= '</tr>';
 			
-			#$out .= '<a href="#" onclick="'.htmlspecialchars('return jumpSelf(\''.$this->clipObj->selUrlDB('tx_tmdcinema_program',$this->row['uid'],1,($isSel=='copy'),array('returnUrl'=>'')).'\');').'">'.
-			#		'<img'.t3lib_iconWorks::skinImg($this->doc->backPath,'gfx/clip_copy'.($isSel=='copy'?'_h':'').'.gif','width="12" height="12"').' title="'.$LANG->sL('LLL:EXT:lang/locallang_core.php:cm.copy',1).'" alt="" />'.
-			#		'</a>';
+			$t .= '<tr>';
+			$t .= '<td style="vertical-align: top;">'.$this->getFieldContentMovie('posterOne').'</td>';
+			$t .= '<td style="vertical-align: top;">';
+			$t .= 	'<b>'.$this->getFieldContentPrg('cinema').'</b><br />';
+			$t .= 	$this->getFieldContentPrg('showtype').'<br />';
+			$t .= 	'Woche: '.$this->getFieldContentPrg('week');
+			$t .= 	($this->getFieldContentPrg('nores')) ? '<br />NoRes' : '';
+			$t .= '</td>';
+	
+			$t .= '<td style="vertical-align: top;">';
+			$t .= $this->getFieldContentPrg('date_raw').'<br />';
+			$t .= $this->getFieldContentPrg('info');
+			$t .= ($this->getFieldContentPrg('info2')) ? '<hr />'.$this->getFieldContentPrg('info2') : '';
+			$t .= '</td>';
 			
-		$out .= '</td>';
-
-		$out .= '</tr>';
-		
-		$out .= '<tr>';
-		$out .= '<td style="vertical-align: top;">'.$this->getFieldContentMovie('posterOne').'</td>';
-		$out .= '<td style="vertical-align: top;">';
-		$out .= 	'<b>'.$this->getFieldContentPrg('cinema').'</b><br />';
-		$out .= 	$this->getFieldContentPrg('showtype').'<br />';
-		$out .= 	'Woche: '.$this->getFieldContentPrg('week');
-		$out .= 	($this->getFieldContentPrg('nores')) ? '<br />NoRes' : '';
-		$out .= '</td>';
-
-		$out .= '<td style="vertical-align: top;">';
-		$out .= $this->getFieldContentPrg('date_raw').'<br />';
-		$out .= $this->getFieldContentPrg('info');
-		$out .= ($this->getFieldContentPrg('info2')) ? '<hr />'.$this->getFieldContentPrg('info2') : '';
-		$out .= '</td>';
-		
-		$out .= '<td style="vertical-align: top;">'.$this->getFieldContentPrg('program').'</td>';
-		
-		$out .= '</tr>';
-		
-	}
-
+			$t .= '<td style="vertical-align: top;">'.$this->getFieldContentPrg('program').'</td>';
 			
-			
-			
-
-			
-			
-			
-			
-			
-			
-		} else {
-			$out = '<tr><td bgcolor="#D9D5C9" colspan="4">Keine Programm auf dieser Seite</td></tr>';
+			$t .= '</tr>';
 		}
 
+		$out .= '<table border=1 cellpadding=1 cellspacing=1 width="100%"
+				style="empty-cells:show;">'.$t.'</table>';
 		
-		
-		
-		$out = '<table border=1 cellpadding=1 cellspacing=1 width="100%"
-		 		style="empty-cells:show;">'.$out.'</table>';
-
 		// Neuen Datensatz
 		$params='&edit[tx_tmdcinema_program]['.$this->pageinfo['uid'].']=new';
 		$out = '<a href="#" onclick="'.htmlspecialchars(t3lib_BEfunc::editOnClick($params,$this->doc->backPath)).'">'.
@@ -471,23 +376,6 @@ class  tmd_cinema_module1 extends t3lib_SCbase {
 				'</a>'.$out;
 		
 		return $out;
-		
-		
-		
-		
-		
-				
-				
-
-
-		
-		
-		
-		
-		
-		
-
-			
 	}
 
 
