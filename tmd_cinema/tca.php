@@ -4,7 +4,7 @@ if (!defined ('TYPO3_MODE')) 	die ('Access denied.');
 $TCA["tx_tmdcinema_program"] = array (
 	"ctrl" => $TCA["tx_tmdcinema_program"]["ctrl"],
 	"interface" => array (
-		"showRecordFieldList" => "hidden,starttime,endtime,date,info,info2,nores,movie,program"
+		"showRecordFieldList" => "hidden,starttime,endtime,date,info,info2,nores,movie,program,3d"
 	),
 	"feInterface" => $TCA["tx_tmdcinema_program"]["feInterface"],
 	"columns" => array (
@@ -122,25 +122,41 @@ $TCA["tx_tmdcinema_program"] = array (
 				),
             )
         ),
-		"nores" => Array (		
+		"3d" => Array (        
+            "exclude" => 1,        
+            "label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tx_tmdcinema_program.3d",        
+            "config" => Array (
+                "type" => "check",
+            )
+        ),
+    	"nores" => Array (		
 			"exclude" => 1,		
 			"label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_program.nores",		
 			"config" => Array (
 				"type" => "check",
 			)
 		),
+
 		"movie" => Array (		
 			"exclude" => 1,		
 			"label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_program.movie",		
 			"config" => Array (
-				"type" => "group",	
-				"internal_type" => "db",	
-				"allowed" => "tx_tmdmovie_movie",	
-				"size" => 1,	
-				"minitems" => 0,
-				"maxitems" => 1,
-			)
+			    'type' => 'group',    
+				"internal_type" => "db",
+			    'foreign_table' => "tx_tmdmovie_movie",
+			    'allowed' => "tx_tmdmovie_movie",    
+			    'size' => 1,    
+			    'minitems' => 0,
+			    'maxitems' => 1,
+			    'wizards' => array(
+			        'suggest' => array(    
+			            'type' => 'suggest',
+			        ),
+			    ),
+			),
 		),
+
+		
 		"cinema" => Array (        
             "exclude" => 1,        
             "label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_program.cinema",        
@@ -167,10 +183,10 @@ $TCA["tx_tmdcinema_program"] = array (
 				"wizards" => Array(
 					"_PADDING" => 2,
 					"example" => Array(
-						"title" => "Example Wizard:",
+						"title" => "Program Wizard:",
 						"type" => "script",
 						"notNewRecords" => 1,
-						"icon"   => t3lib_extMgm::extRelPath("tmd_cinema")."tx_tmdcinema_program_program/wizard_icon.gif",
+						"icon"   => t3lib_extMgm::extRelPath("tmd_cinema")."tx_tmdcinema_program_program/wizard_icon.png",
 						"script" => t3lib_extMgm::extRelPath("tmd_cinema")."tx_tmdcinema_program_program/index.php",
 					),
 				),
@@ -178,7 +194,7 @@ $TCA["tx_tmdcinema_program"] = array (
 		),
 	),
 	"types" => array (
-		"0" => array("showitem" => "--div--;Programm,hidden;;1;;1-1-1, temp_title, movie, date, week, cinema, showtype, info,nores, program,
+		"0" => array("showitem" => "--div--;Programm,hidden;;1;;1-1-1, temp_title, movie, date, week, cinema, showtype, info,3d,nores, program,
 		--div--;Besondere Veranstaltungshinweise,info2;;;richtext[cut|copy|paste|formatblock|textcolor|bold|italic|underline|left|center|right|orderedlist|unorderedlist|outdent|indent|link|table|image|line|chMode]:rte_transform[mode=ts_css|imgpath=uploads/tx_tmdcinema/rte/],
 		")
 	),

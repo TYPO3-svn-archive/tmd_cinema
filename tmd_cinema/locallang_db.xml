@@ -15,6 +15,7 @@
 			<label index="tmd_cinema_program.showtype">Show Type</label>
 			<label index="tmd_cinema_program.movie">Movie</label>
 			<label index="tmd_cinema_program.program">Program</label>
+            <label index="tx_tmdcinema_program.3d">3D</label>
 			<label index="tmd_cinema_program.week">Week</label>
 			<label index="tmd_cinema_booking">Reservations</label>
 			<label index="tmd_cinema_booking.name">Customer Name</label>
@@ -41,6 +42,7 @@
 			<label index="tmd_cinema_program.showtype">Programmart</label>
 			<label index="tmd_cinema_program.movie">Film</label>
 			<label index="tmd_cinema_program.program">Programm</label>
+            <label index="tx_tmdcinema_program.3d">3D</label>
 			<label index="tmd_cinema_program.week">Woche</label>
 			<label index="tmd_cinema_booking">Reservierungen</label>
 			<label index="tmd_cinema_booking.name">Kundenname</label>

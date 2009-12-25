@@ -15,6 +15,7 @@
 			<label index="function5">Filme dieser Site</label>
 			<label index="function6">Kommende Bundesstart</label>
 			<label index="function7">Programm Verwalten</label>
+			<label index="program">Programm</label>
 			
 			<label index="newRecord">New Record</label>
 			<label index="editRecord">Edit Record</label>
@@ -24,6 +25,7 @@
 			<label index="deleteWarning">Delete warning</label>
 			<label index="moveDown">Move Down</label>
 		</languageKey>
+		
 		<languageKey index="de" type="array">
 			<label index="title">Kinoprogramm</label>
 		</languageKey>

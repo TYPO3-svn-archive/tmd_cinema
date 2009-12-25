@@ -1,8 +1,8 @@
 <?php
 /*
     // DO NOT REMOVE OR CHANGE THESE 3 LINES:
-define('TYPO3_MOD_PATH', 'ext/tmd_cinema/mod1/');
-$BACK_PATH='../../../';
+define('TYPO3_MOD_PATH', '../typo3conf/ext/tmd_cinema/mod1/');
+$BACK_PATH='../../../../typo3/';
 $MCONF['name']='web_txtmdcinemaM1';
 
     

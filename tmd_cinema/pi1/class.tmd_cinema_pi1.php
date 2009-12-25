@@ -1082,7 +1082,7 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 
 		$wrappedSubpartArray['###LINK_SINGLE###'] = explode('|', $linkSingle);
 
-		$template = $this->cObj->substituteMarkerArrayCached($template, $markerArray, $subpartArray, $wrappedSubpartArray);
+		$template = $this->cObj->substituteMarkerArrayCached($template, (array)$markerArray, (array)$subpartArray, (array)$wrappedSubpartArray);
 
 
 		return $template;

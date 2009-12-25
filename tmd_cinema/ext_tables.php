@@ -25,10 +25,10 @@ $TCA["tx_tmdcinema_program"] = array (
             'endtime' => 'endtime',
         ),
         'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY).'tca.php',
-        'iconfile' => t3lib_extMgm::extRelPath($_EXTKEY).'icon_tmd_cinema_program.gif',
+        'iconfile' => t3lib_extMgm::extRelPath($_EXTKEY).'icon_tmd_cinema_program.png',
     ),
     "feInterface" => array (
-        "fe_admin_fieldList" => "hidden, starttime, endtime, date, info,info2,nores, movie, cinema, program",
+        "fe_admin_fieldList" => "hidden, starttime, endtime, date, info,info2,nores, movie, cinema, program, 3d",
     )
 );
 
