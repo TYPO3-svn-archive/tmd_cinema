@@ -314,7 +314,7 @@ $cinemaOrder['value'] = "62,63,61,60,59";
 
 		$count = $GLOBALS['TYPO3_DB']->sql_num_rows($res);
 		if($count<=0) {
-			return $cinemaMenu.'<br />'.$LANG->getLL('noData')Für diesen Zeitraum ist kein Programm auf dieser Seite.';
+			return $cinemaMenu.'<br />'.$LANG->getLL('noData');
 		}
 			
 		$c =0;
