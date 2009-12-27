@@ -47,4 +47,10 @@ t3lib_extMgm::addTypoScript($_EXTKEY,'setup','
 	tt_content.shortcut.20.0.conf.tmd_cinema_booking = < plugin.'.t3lib_extMgm::getCN($_EXTKEY).'_pi2
 	tt_content.shortcut.20.0.conf.tmd_cinema_booking.CMD = singleView
 ',43);
+
+
+/**
+  *  Enable hook after saving page or content element
+  */
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] = 'EXT:tmd_cinema/class.tx_tmd_cinema_copyedit.php:&tx_tmd_cinema_copyedit';
 ?>

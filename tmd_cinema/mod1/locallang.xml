@@ -7,15 +7,17 @@
 	<data type="array">
 		<languageKey index="default" type="array">
 			<label index="title">Cinema Program</label>
+
+			<label index="function1">Program -1 0 +1</label>
+			<label index="function2">Program future</label>
+			<label index="function3">Program No Date</label>
+			<label index="function4">past</label>
 			
-			<label index="function1">Uebersicht</label>
-			<label index="function2">Programm</label>
-			<label index="function3">Neueste Filme</label>
-			<label index="function4">Alle Filme</label>
-			<label index="function5">Filme dieser Site</label>
-			<label index="function6">Kommende Bundesstart</label>
-			<label index="function7">Programm Verwalten</label>
-			<label index="program">Programm</label>
+			<label index="function5">Upcoming releases</label>
+			<label index="function6">lately created Movies</label>
+			<label index="function7">Filme dieser Site</label>
+												
+
 			
 			<label index="newRecord">New Record</label>
 			<label index="editRecord">Edit Record</label>
@@ -24,10 +26,35 @@
 			<label index="delete">Delete Record</label>
 			<label index="deleteWarning">Delete warning</label>
 			<label index="moveDown">Move Down</label>
+			<label index="prolongate">Prolongate</label>
+
+			<label index="choosePRG">Choose a Page with Records!</label>
+			<label index="noData">For this time there is no program.</label>			
 		</languageKey>
 		
 		<languageKey index="de" type="array">
 			<label index="title">Kinoprogramm</label>
+
+			<label index="function1">Programm -1 0 +1</label>  
+			<label index="function2">Program Zukunft</label>
+			<label index="function3">Program Ohne Termin</label>
+			<label index="function4">Vergangenes Programm</label>
+			
+			<label index="function5">Kommende Bundesstart</label>
+			<label index="function6">Neu angelegte Filme</label>
+			<label index="function7">Filme dieser Site</label>
+			
+			<label index="newRecord">Neues Programm</label>
+			<label index="editRecord">Bearbeiten</label>
+			<label index="hide">Verstecken</label>
+			<label index="unHide">Sichtbar machen</label>
+			<label index="delete">Programm Löschen</label>
+			<label index="deleteWarning">Löschwarnung</label>
+			<label index="moveDown">nach unten Verschieben</label>
+			<label index="prolongate">Verlängern</label>
+
+			<label index="choosePRG">Wählen Sie ein Seite mit Programmdaten aus!</label>
+			<label index="noData">Für diesen Zeitraum ist kein Programm auf dieser Seite.</label>			
 		</languageKey>
 	</data>
 </T3locallang>

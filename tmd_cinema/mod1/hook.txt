@@ -1,0 +1,11 @@
+
+Hi Christian.
+
+Take a look at the "processDatamap_afterDatabaseOperations" hook in 
+t3lib/class.t3lib_tcemain.php.
+
+An example of it in use can be found here:
+http://typo3.org/extensions/repository/view/pmkautokeywords/current/
+
+--
+Peter Klein
