@@ -82,7 +82,7 @@ class  tmd_cinema_module1 extends t3lib_SCbase {
 #t3lib_div::devLog('Nachricht', 'tmd_cinema', 0, (array)$this->cinemaOrder);
 
 				// Draw the header.
-			$this->doc = t3lib_div::makeInstance('mediumDoc');
+			$this->doc = t3lib_div::makeInstance('bigDoc');
 			$this->doc->backPath = $BACK_PATH;
 			$this->doc->form='<form action="" method="POST">';
 
@@ -521,7 +521,7 @@ class  tmd_cinema_module1 extends t3lib_SCbase {
 					$params='&data[tx_tmdmovie_movie]['.$this->row['uid'].'][hidden]=1';
 					$out .= '<a href="#" onclick="'.htmlspecialchars('return jumpToUrl(\''.$SOBE->doc->issueCommand($params).'\');').'">'.
 							'<img'.t3lib_iconWorks::skinImg($this->doc->backPath,'gfx/button_hide.gif','width="11" height="10"').' title="'.$LANG->getLL('hide').'" alt="" />'.
-							'</a>';
+								'</a>';
 				}
 				$out .= "</td>";
 				
@@ -536,12 +536,12 @@ class  tmd_cinema_module1 extends t3lib_SCbase {
 				$out .= '<td>';
 				$out .= 	($this->getFieldContentMovie('releasedate'))	? $this->getFieldContentMovie('releasedate').'<hr />' : '';
 				$out .= 	($this->getFieldContentMovie('runningtime'))	? $this->getFieldContentMovie('runningtime').' '.$LANG->getLL('time').'<br />' : '';
-				$out .= 	($this->getFieldContentMovie('rating')) 		? $this->getFieldContentMovie('rating').'<br />' : '';
+				$out .= 	($this->getFieldContentMovie('rating')) 			? $this->getFieldContentMovie('rating').'<br />' : '';
 				$out .= 	($this->getFieldContentMovie('distributor')) 	? $this->getFieldContentMovie('distributor').'<br />' : '';
+				$out .= 	($this->getFieldContentMovie('genre'))			? '<hr />'.$this->getFieldContentMovie('genre') : '';
 				$out .= '</td>';
-				$out .= '<td>'.t3lib_div::fixed_lgd_cs(strip_tags($this->getFieldContentMovie('summary')), 120).'</td>';
-				$out .= '<td>'.$this->getFieldContentMovie('poster').'<hr />'.$this->getFieldContentMovie('mediafile').'</td>';
-				$out .= '<td>'.$this->getFieldContentMovie('genre').'</td>';
+				$out .= '<td width="320">'.t3lib_div::fixed_lgd_cs(strip_tags($this->getFieldContentMovie('summary')), 400).'</td>';
+				$out .= '<td width="270">'.$this->getFieldContentMovie('poster').'<hr />'.$this->getFieldContentMovie('mediafile').'</td>';
 				$out .= '</tr>';
 				
 				
@@ -555,6 +555,7 @@ class  tmd_cinema_module1 extends t3lib_SCbase {
 			
 		$out = '<table border=1 cellpadding=1 cellspacing=1 width="100%">'.$out.'</table>';
 
+		
 		return $out;
 		}
 
@@ -699,7 +700,7 @@ class  tmd_cinema_module1 extends t3lib_SCbase {
 				return $out;
 			break;
 			case 'mediafile':
-				if(!$this->row[$fN]) return "Kein Bild verfügbar!";
+				if(!$this->row[$fN]) return "Keine Media-Bilder verfügbar!";
 				$img = explode(',', $this->row[$fN]);
 				
 				foreach($img as $key => $val) {
@@ -709,7 +710,7 @@ class  tmd_cinema_module1 extends t3lib_SCbase {
 					$size='50x50';
 				 
 					if(file_exists($theFile)) {
-						$out .= '<span style="float: left">'.t3lib_BEfunc::getThumbNail($thumbScript,$theFile,$tparams,$size).'&nbsp;</span>';
+						$out .= ''.t3lib_BEfunc::getThumbNail($thumbScript,$theFile,$tparams,$size).'&nbsp;';
 					}
 				}
 				return $out;				
@@ -718,15 +719,19 @@ class  tmd_cinema_module1 extends t3lib_SCbase {
 				return $this->row['summary'];
 			break;
 			case 'genre':
-hier gehts weiter
-				$list = $this->row[$fN];
-				
-				if(!$this->distributorCache[$this->row[$fN]]) {
-					$rec = t3lib_BEfunc::getRecord('tt_address',$this->row[$fN],$fields='uid,name',$where='');
-					$this->distributorCache[$rec['uid']] = $rec['name'];
+				$list = explode(",", $this->row[$fN]);
+	
+				foreach($list as $genreID) {
+					if(!$this->genreCache[$genreID]) {
+						$rec = t3lib_BEfunc::getRecord('tx_tmdmovie_genre',$genreID,'uid,genre',$where='');
+						$this->genreCache[$rec['uid']] = $rec['genre'];
+					}
+					$genre[] = $this->genreCache[$genreID];
 				}
+
 				
-				return $this->distributorCache[$this->row[$fN]];	
+				return implode(", ", $genre);
+			break;	
 			
 			default:
 				return $this->row[$fN];
@@ -764,10 +769,6 @@ hier gehts weiter
 
 		return $wStart;		
 	}
-	
-	
-	
-		
 	
 
 	
