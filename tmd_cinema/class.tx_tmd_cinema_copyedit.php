@@ -34,31 +34,18 @@
 	 *
 	 */
 class tx_tmd_cinema_copyedit {
-
+		
+		
 		var $extKey = 'tmd_cinema';
 
 
-		function processDatamap_afterDatabaseOperations($status, $table, $id, &$fieldArray, &$reference) {
-            if ($status == 'new') {
-                $id = $reference->substNEWwithIDs[$id];
-                
-                $fields_values['week'] = $fieldArray['week']+1;
-                $fields_values['date'] = $fieldArray['date']+1*7*24*60*60;
-                
-                $GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_tmdcinema_program','uid = '.$id,$fields_values);
-                 
-            }
-			
-		}
-
-
-/*		
-#		function processDatamap_postProcessFieldArray($status, $table, $id, $fieldArray, $reference) {
 		function processDatamap_preProcessFieldArray(&$incomingFieldArray, $table, $id, &$reference) {
-					t3lib_div::devLog('Nachricht', $this->extKey, 0, array($incomingFieldArray));
-					$incomingFieldArray['week']++;
+			if(isset($incomingFieldArray['t3_origuid']) && $table=="tx_tmdcinema_program") {
+				$incomingFieldArray['week']++;
+				$incomingFieldArray['date'] = $incomingFieldArray['date'] + 7*24*60*60;
+			}
 		}
-*/
+
 		
 		
 

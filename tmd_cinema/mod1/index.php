@@ -31,7 +31,7 @@ require_once($BACK_PATH.'template.php');
 
 $LANG->includeLLFile('EXT:tmd_cinema/mod1/locallang.xml');
 require_once(PATH_t3lib.'class.t3lib_scbase.php');
-require_once(PATH_t3lib.'class.t3lib_tcemain.php');
+
 
 $BE_USER->modAccess($MCONF,1);	// This checks permissions and exits if the users has no permission for entry.
 	// DEFAULT initialization of a module [END]
@@ -58,9 +58,6 @@ class  tmd_cinema_module1 extends t3lib_SCbase {
 	 */
 	function init()	{
 		global $BE_USER,$LANG,$BACK_PATH,$TCA_DESCR,$TCA,$CLIENT,$TYPO3_CONF_VARS;
-
-		$this->MCONF = $GLOBALS["MCONF"];
-#		$this->menuConfig();
 		
 		parent::init();
 	}
@@ -69,14 +66,10 @@ class  tmd_cinema_module1 extends t3lib_SCbase {
 	/**
 	 * Main function of the module. Write the content to $this->content
 	 * If you chose "web" as main module, you will need to consider the $this->id parameter which will contain the uid-number of the page clicked in the page tree
-	 *
-	 * @return	[type]		...
 	 */
 	function main()	{
 		global $BE_USER,$LANG,$BACK_PATH,$TCA_DESCR,$TCA,$CLIENT,$TYPO3_CONF_VARS;
 
-		
-#		$cObj = t3lib_div::makeInstance('tslib_cObj');
 		
 		// Access check!
 		// The page will show only if there is a valid page and if this page may be viewed by the user
@@ -84,6 +77,9 @@ class  tmd_cinema_module1 extends t3lib_SCbase {
 		$access = is_array($this->pageinfo) ? 1 : 0;
 
 		if (($this->id && $access) || ($BE_USER->user['admin'] && !$this->id))	{
+			$this->cinemaOrder = t3lib_BEfunc::getModTSconfig($this->id, 'mod.'.$GLOBALS['MCONF']['name'].'.cinemaOrder');
+			$this->cinemaOrder = $this->cinemaOrder['value'];
+#t3lib_div::devLog('Nachricht', 'tmd_cinema', 0, (array)$this->cinemaOrder);
 
 				// Draw the header.
 			$this->doc = t3lib_div::makeInstance('mediumDoc');
@@ -116,6 +112,8 @@ class  tmd_cinema_module1 extends t3lib_SCbase {
 			$this->content.=$this->doc->spacer(5);
 			$this->content.=$this->doc->section('',$this->doc->funcMenu($headerSection,t3lib_BEfunc::getFuncMenu($this->id,'SET[function]',$this->MOD_SETTINGS['function'],$this->MOD_MENU['function'])));
 			$this->content.=$this->doc->divider(5);
+
+			
 
 
 			// Render content:
@@ -188,40 +186,32 @@ class  tmd_cinema_module1 extends t3lib_SCbase {
 				'7' => $LANG->getLL('function7'), # Filme dieser Site
 				),
 			'cinema' => Array (
-				'0'  => 'Alle Kinos',
-				'62' => 'Kino 1',
-				'63' => 'Kino 2',
-				'61' => 'Kino 3',
-				'60' => 'Kino 4',
-				'59' => 'Kino 5',
+				'0' => $LANG->getLL('all'), # PROGRAMM
 				),
-
-# 62,63,61,60,59
+				
 			);
-			#$this->pObj->MOD_MENU
-		$cinemaOrder = t3lib_BEfunc::getModTSconfig($this->pObj->pageinfo['uid'], 'mod.'.$GLOBALS['MCONF']['name'].'.cinemaOrder');
-$cinemaOrder['value'] = "62,63,61,60,59";
-#		if($cinemaOrder['value'] == '') {
-#			return "mod.web_tmdcinemaM1.cinemaOrder setzen!";
-#		}
 			
-		$fields = '*';
-		$table = 'tt_address';
-		$where = 'uid IN('.$cinemaOrder['value'].')';
-		$res  = $GLOBALS['TYPO3_DB']->exec_SELECTquery($fields, $table, $where);
-		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-				$cinema[$row['uid']] = $row['name'];
-		}
+		$cinemaOrder = t3lib_BEfunc::getModTSconfig($this->id, 'mod.'.$GLOBALS['MCONF']['name'].'.cinemaOrder');
 
-		$cineArr = explode(',', $cinemaOrder['value']);
+
 		
-		foreach($cineArr as $val) {
-			$this->MOD_MENU['cinema'][$val] = $cinema[$val];
+		if($cinemaOrder['value'] != '') {
+			$fields = '*';
+			$table = 'tt_address';
+			$where = 'uid IN('.$cinemaOrder['value'].')';
+			$res  = $GLOBALS['TYPO3_DB']->exec_SELECTquery($fields, $table, $where);
+			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+					$cinema[$row['uid']] = $row['name'];
+			}
+	
+			$cineArr = explode(',', $cinemaOrder['value']);
+			
+			foreach($cineArr as $val) {
+				$this->MOD_MENU['cinema'][$val] = $cinema[$val];
+			}
+		} else { # Fehler tsconfig
+			$this->MOD_MENU['cinema']['error'] = $LANG->getLL('error_cinemaOrder');
 		}		
-			
-
-			
-
 
 		parent::menuConfig();
 		}
@@ -237,15 +227,15 @@ $cinemaOrder['value'] = "62,63,61,60,59";
 		
 		switch((string)$this->MOD_SETTINGS['function'])	{
 			case '1': # -1 0 1
-				$start = mktime()-7*24*60*60;
-				$stop  = mktime()+7*24*60*60;
+				$start = $this->weekStartDay(mktime())-7*24*60*60-1;
+				$stop  = $this->weekStartDay(mktime())+8*24*60*60+100;
 				$where = "date > ".$start." AND date <= ".$stop;
 				$content= $this->listProgram($where);
 				$this->content.=$this->doc->section('Programm -1 0 1:',$content,0,1);
 			break;
 			case '2': # Programm Zukunft
-				$start = mktime()-0*24*60*60;
-				$stop  = mktime()+7*24*60*60;
+				$start = $this->weekStartDay(mktime())-0*24*60*60;
+				$stop  = $this->weekStartDay(mktime())+7*24*60*60;
 				$where = "date >= ".$start;
 				$content= $this->listProgram($where);
 				$this->content.=$this->doc->section('Programm Zukunft:',$content,0,1);
@@ -256,7 +246,7 @@ $cinemaOrder['value'] = "62,63,61,60,59";
 				$this->content.=$this->doc->section('Programm ohne Termin:',$content,0,1);
 			break;
 			case '4': # Programm Zukunft
-				$stop  = mktime();
+				$stop  = $this->weekStartDay(mktime());
 				$where = "date < ".$stop;
 				$content= $this->listProgram($where);
 				$this->content.=$this->doc->section('Programm Vergangen:',$content,0,1);
@@ -276,8 +266,13 @@ $cinemaOrder['value'] = "62,63,61,60,59";
 			break;
 			case 7: # dieser Seite
 				$where = 'pid = '.$this->id;
-				$content= $this->listSelectedMovies('releasedate DESC', $where);
+				$content= $this->listSelectedMovies('title ASC', $where);
 				$this->content.=$this->doc->section('Filme dieser Seite:',$content,0,1);
+			break;
+			
+			case 'error': # dieser Seite
+				$content=  "";
+				$this->content.=$this->doc->section('ERROR:',$content,0,1);
 			break;
 		}
 		
@@ -302,6 +297,8 @@ $cinemaOrder['value'] = "62,63,61,60,59";
 		$table = 'tx_tmdcinema_program';
 		if($this->MOD_SETTINGS['cinema'] != 0) {
 			$where .= " AND tx_tmdcinema_program.cinema = ".$this->MOD_SETTINGS['cinema'];
+		} else {
+			$where .= " AND tx_tmdcinema_program.cinema IN (".$this->cinemaOrder.") ";
 		}
 		$where .= ' AND pid = '.$this->pageinfo['uid'].t3lib_BEfunc::deleteClause($table);
 		$res  = $GLOBALS['TYPO3_DB']->exec_SELECTquery($fields, $table, $where, '', 'date DESC, sorting');
@@ -378,10 +375,10 @@ $cinemaOrder['value'] = "62,63,61,60,59";
 
 				// Copy/Edit
 				$params = '&cmd[tx_tmdcinema_program]['.$this->row['uid'].'][copy]=-'.$this->row['uid'];
+				
 				$out .= '<a href="#" onclick="'.htmlspecialchars('return jumpToUrl(\''.$SOBE->doc->issueCommand($params).'\');').'">'.
-						'<img'.t3lib_iconWorks::skinImg($this->doc->backPath,'gfx/clip_copy.gif','width="16" height="16"').' title="'.$LANG->getLL('prolongate').'" alt="" />';
+						'<img'.t3lib_iconWorks::skinImg($this->doc->backPath,'gfx/clip_copy.gif','width="16" height="16"').' title="'.$LANG->getLL('prolongate').'" alt="" style="margin-right: 25px;" />';
 
-				$out .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 				
 				
 				
@@ -537,14 +534,14 @@ $cinemaOrder['value'] = "62,63,61,60,59";
 				
 				$out .= '<tr style="vertical-align: top;"> ';
 				$out .= '<td>';
-				$out .= 	'Dauer:  '.$this->getFieldContentMovie('runningtime').'<br />';
-				$out .= 	'FSK:    '.$this->getFieldContentMovie('rating').'<br />';
-				$out .= 	'Verleih:'.$this->getFieldContentMovie('distributor').'<br />';
-				$out .= 	'Start:  '.$this->getFieldContentMovie('releasedate').'<br />';
+				$out .= 	($this->getFieldContentMovie('releasedate'))	? $this->getFieldContentMovie('releasedate').'<hr />' : '';
+				$out .= 	($this->getFieldContentMovie('runningtime'))	? $this->getFieldContentMovie('runningtime').' '.$LANG->getLL('time').'<br />' : '';
+				$out .= 	($this->getFieldContentMovie('rating')) 		? $this->getFieldContentMovie('rating').'<br />' : '';
+				$out .= 	($this->getFieldContentMovie('distributor')) 	? $this->getFieldContentMovie('distributor').'<br />' : '';
 				$out .= '</td>';
-				$out .= '<td>'.t3lib_div::fixed_lgd_cs(strip_tags($this->getFieldContentMovie('summary')), 80).'</td>';
-				$out .= '<td>'.$this->getFieldContentMovie('poster').'</td>';
-				$out .= '<td>'.$this->getFieldContentMovie('mediafile').'</td>';
+				$out .= '<td>'.t3lib_div::fixed_lgd_cs(strip_tags($this->getFieldContentMovie('summary')), 120).'</td>';
+				$out .= '<td>'.$this->getFieldContentMovie('poster').'<hr />'.$this->getFieldContentMovie('mediafile').'</td>';
+				$out .= '<td>'.$this->getFieldContentMovie('genre').'</td>';
 				$out .= '</tr>';
 				
 				
@@ -614,7 +611,7 @@ $cinemaOrder['value'] = "62,63,61,60,59";
 				return '<table style="border-collapse: collapse; width:100%;">'.$timeRow.'</table>';
 			break;
 			
-			case 'date_raw':
+			case 'date_raw': # for debugging only
 				return $this->row['date'];
 			break;	
 			default:
@@ -624,21 +621,46 @@ $cinemaOrder['value'] = "62,63,61,60,59";
 
 
 	
+		/**
+		 * Get Fields for current movie
+		 * 
+		 * @param $fN
+		 * @return unknown_type
+		 */
 	
 	function getFieldContentMovie($fN) {
+		global $GLOBALS;
+		
 		switch($fN) {
 			/* tx_movie */
 			case 'title':
 					return $this->row[$fN];
 			break;
-			case 'fsk':
-				return 'fsk'.$this->row[$fN];
+			case 'rating':
+				/* ShowType-Cache erstellen */
+				if(!$this->fskCache)
+					{
+					$select = 'uid,rating';
+					$local_table = 'tx_tmdmovie_rating';
+#					$whereClause = "1=1 ".$GLOBALS['TYPO3_DB']->enableFields($local_table);
+					$res = $GLOBALS[TYPO3_DB]->exec_SELECTquery($select,$local_table,$whereClause,$groupBy,$orderBy,$limit);
+					while($erg = $GLOBALS[TYPO3_DB]->sql_fetch_assoc($res)) {
+						$this->rating[$erg['uid']] = $erg['rating'];
+						}
+					}
+				
+				return $this->rating[$this->row[$fN]];
 			break;
 			case 'releasedate':
 				return strftime('%d.%m.%y', $this->row[$fN]);
 			break;
 			case 'distributor':
-				return 'Verleih'.$this->row[$fN];
+				if(!$this->distributorCache[$this->row[$fN]]) {
+					$rec = t3lib_BEfunc::getRecord('tt_address',$this->row[$fN],$fields='uid,name',$where='');
+					$this->distributorCache[$rec['uid']] = $rec['name'];
+				}
+				
+				return $this->distributorCache[$this->row[$fN]];	
 			break;
 			case 'sound':
 				return 'Sound'.$this->row[$fN];
@@ -687,7 +709,7 @@ $cinemaOrder['value'] = "62,63,61,60,59";
 					$size='50x50';
 				 
 					if(file_exists($theFile)) {
-						$out .= t3lib_BEfunc::getThumbNail($thumbScript,$theFile,$tparams,$size);
+						$out .= '<span style="float: left">'.t3lib_BEfunc::getThumbNail($thumbScript,$theFile,$tparams,$size).'&nbsp;</span>';
 					}
 				}
 				return $out;				
@@ -695,6 +717,16 @@ $cinemaOrder['value'] = "62,63,61,60,59";
 			case 'summary':
 				return $this->row['summary'];
 			break;
+			case 'genre':
+hier gehts weiter
+				$list = $this->row[$fN];
+				
+				if(!$this->distributorCache[$this->row[$fN]]) {
+					$rec = t3lib_BEfunc::getRecord('tt_address',$this->row[$fN],$fields='uid,name',$where='');
+					$this->distributorCache[$rec['uid']] = $rec['name'];
+				}
+				
+				return $this->distributorCache[$this->row[$fN]];	
 			
 			default:
 				return $this->row[$fN];
@@ -702,6 +734,36 @@ $cinemaOrder['value'] = "62,63,61,60,59";
 	}
 
 	
+
+	
+	/**
+	 * Find closest Weekstart
+	 * 
+	 * @param 	timestamp	timestamp to seek closeststartday
+	 * @return	timestamp	timestamp, Midnight of thge first day of the week
+	 * 
+	 */
+	function weekStartDay($ts) {
+		$oneDay = 24*60*60;
+		
+		# reset timestamp to midnight
+		list($day, $month, $year) = explode("-", strftime("%d-%m-%Y", $ts));
+
+		$time = mktime(0,0,0, $month, $day, $year); 
+		
+		switch(strftime("%u", $time)) # %u = Tag der Woche 1= Montag
+			{
+			case 1: $wStart = $time - $oneDay*4; break; # Mo
+			case 2: $wStart = $time - $oneDay*5; break; # DI
+			case 3: $wStart = $time - $oneDay*6; break; # MI
+			case 4: $wStart = $time - $oneDay*0; break; # DO
+			case 5: $wStart = $time - $oneDay*1; break; # FR
+			case 6: $wStart = $time - $oneDay*2; break; # SA
+			case 7: $wStart = $time - $oneDay*3; break; # SO
+			}
+
+		return $wStart;		
+	}
 	
 	
 	

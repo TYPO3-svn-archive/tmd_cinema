@@ -29,13 +29,18 @@
 			<label index="prolongate">Prolongate</label>
 
 			<label index="choosePRG">Choose a Page with Records!</label>
-			<label index="noData">For this time there is no program.</label>			
+			<label index="noData">For this time/cinema there is no program.</label>	
+			<label index="error_cinemaOrder">ERROR: Not defined TSconfig: mod.web_tmdcinemaM1.cinemaOrder = id1,id2,id3...</label>
+			<label index="all">All Cinemas</label>
+			
+			<label index="time">min</label>
+						
 		</languageKey>
 		
 		<languageKey index="de" type="array">
 			<label index="title">Kinoprogramm</label>
 
-			<label index="function1">Programm -1 0 +1</label>  
+			<label index="function1">Programm: letzte Woche, diese Woche, kommende Woche</label>  
 			<label index="function2">Program Zukunft</label>
 			<label index="function3">Program Ohne Termin</label>
 			<label index="function4">Vergangenes Programm</label>
@@ -54,7 +59,12 @@
 			<label index="prolongate">Verlängern</label>
 
 			<label index="choosePRG">Wählen Sie ein Seite mit Programmdaten aus!</label>
-			<label index="noData">Für diesen Zeitraum ist kein Programm auf dieser Seite.</label>			
+			<label index="noData">Für diesen Zeitraum/ dieses Kino ist kein Programm auf dieser Seite.</label>			
+			<label index="error_cinemaOrder">FEHLER: Nicht definiertes TSconfig: mod.web_tmdcinemaM1.cinemaOrder = id1,id2,id3...</label>
+			<label index="all">Alle Kinos</label>
+
+			<label index="time">min</label>
+			
 		</languageKey>
 	</data>
 </T3locallang>

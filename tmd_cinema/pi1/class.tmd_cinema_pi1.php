@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006 Christian Tauscher <cms@media-distillery.de>
+*  (c) 2006-2010 Christian Tauscher <cms@media-distillery.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
