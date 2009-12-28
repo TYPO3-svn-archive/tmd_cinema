@@ -367,7 +367,14 @@ class  tmd_cinema_module1 extends t3lib_SCbase {
 			$out .= '<tr>';
 			$out .= '<td style="vertical-align: top;" colspan="3" bgcolor="';
 			$out .= ($this->row['hidden'])?'red':'green';
-			$out .= '"><b style="color: white">'.$this->getFieldContentMovie('title').'</b></td>';
+			$out .= '"><b style="color: white">';
+
+			// Edit Film
+			$params = "&edit[tx_tmdmovie_movie][".$this->getFieldContentMovie('movie')."]=edit";
+			$out .= '<a href="#" onclick="'.htmlspecialchars(t3lib_BEfunc::editOnClick($params,$this->doc->backPath)).'">'.
+						'<img'.t3lib_iconWorks::skinImg($this->doc->backPath,'gfx/edit2.gif','width="7" height="12"').' title="'.$LANG->getLL('editRecord').'" alt="" />'.
+						'</a>';
+			$out .= $this->getFieldContentMovie('title').'</b></td>';
 	
 			$out .= '<td style="text-align: right;">';
 				
@@ -375,7 +382,6 @@ class  tmd_cinema_module1 extends t3lib_SCbase {
 
 				// Copy/Edit
 				$params = '&cmd[tx_tmdcinema_program]['.$this->row['uid'].'][copy]=-'.$this->row['uid'];
-				
 				$out .= '<a href="#" onclick="'.htmlspecialchars('return jumpToUrl(\''.$SOBE->doc->issueCommand($params).'\');').'">'.
 						'<img'.t3lib_iconWorks::skinImg($this->doc->backPath,'gfx/clip_copy.gif','width="16" height="16"').' title="'.$LANG->getLL('prolongate').'" alt="" style="margin-right: 25px;" />';
 
@@ -631,7 +637,7 @@ class  tmd_cinema_module1 extends t3lib_SCbase {
 	
 	function getFieldContentMovie($fN) {
 		global $GLOBALS;
-		
+
 		switch($fN) {
 			/* tx_movie */
 			case 'title':
