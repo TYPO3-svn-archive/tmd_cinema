@@ -4,7 +4,7 @@
 	<meta>
 		<name>Booking Form</name>
 		<form formid="tx-tmdcinema-pi1-booking"/>
-		<debug>true</debug>
+			<debug>false</debug>
 		<displaylabels>true</displaylabels>
 	</meta>
 

@@ -52,7 +52,7 @@ $TCA["tx_tmdcinema_program"] = array (
 			"config" => Array (
 				"type" => "input",	
 				"size" => "30",	
-				"eval" => "required",
+#				"eval" => "required",
 			)
 		),
 		/*-------------------*/

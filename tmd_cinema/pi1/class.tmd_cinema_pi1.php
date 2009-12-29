@@ -750,6 +750,18 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 				$out = $this->film->director;
 				$out = strip_tags($out);
 
+				$fullName = explode(",", $out);
+				foreach($fullName as $val){
+					$parts= array();
+					$parts = explode(" ", $val);
+					foreach($parts as $namePart) {
+						$correctedName[] = ucfirst(strtolower($namePart));	
+					}
+					$names[] = implode(" ", $correctedName);
+					$correctedName = '';
+				}
+				$out = implode(", ", $names);
+				
 				if($out)
 					{
 					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_DIRECTOR']);
@@ -760,6 +772,18 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 				$out = $this->film->producer;
 				$out = strip_tags($out);
 
+				$fullName = explode(",", $out);
+				foreach($fullName as $val){
+					$parts= array();
+					$parts = explode(" ", $val);
+					foreach($parts as $namePart) {
+						$correctedName[] = ucfirst(strtolower($namePart));	
+					}
+					$names[] = implode(" ", $correctedName);
+					$correctedName = '';
+				}
+				$out = implode(", ", $names);
+				
 				if($out)
 					{
 					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_PRODUCER']);
@@ -769,7 +793,20 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 			case 'movie_actor':
 				$out = $this->film->actor;
 				$out = strip_tags($out);
-
+				
+				$fullName = explode(",", $out);
+				
+				foreach($fullName as $val){
+					$parts= array();
+					$parts = explode(" ", $val);
+					foreach($parts as $namePart) {
+						$correctedName[] = ucfirst(strtolower($namePart));	
+					}
+					$names[] = implode(" ", $correctedName);
+					$correctedName = '';
+				}
+				$out = implode(", ", $names);
+				
 				if($out)
 					{
 					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_ACTOR']);

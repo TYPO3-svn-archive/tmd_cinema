@@ -52,5 +52,5 @@ t3lib_extMgm::addTypoScript($_EXTKEY,'setup','
 /**
   *  Enable hook after saving page or content element
   */
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] = 'EXT:tmd_cinema/class.tx_tmd_cinema_copyedit.php:&tx_tmd_cinema_copyedit';
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] = 'EXT:tmd_cinema/class.tx_tmd_cinema_prolongate.php:&tx_tmd_cinema_prolongate';
 ?>
