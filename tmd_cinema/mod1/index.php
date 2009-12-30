@@ -354,8 +354,9 @@ class  tx_tmdcinema_module1 extends t3lib_SCbase {
 						'</a>';
 			$out .= $this->getFieldContentMovie('title').'</b></td>';
 	
-			$out .= '<td style="text-align: right;">';
-				
+			$out .= '<td style="vertical-align: top; text-align: right;" colspan="3" bgcolor="';
+			$out .= ($this->row['hidden'])?'red':'green';
+			$out .= '">';
 #$out .= $this->getFieldContentPrg('uid');
 
 				// Copy/Edit
