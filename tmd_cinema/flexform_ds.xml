@@ -42,7 +42,7 @@
 
 							<numIndex index="7">
 								<numIndex index="0">Reservierung</numIndex>
-								<numIndex index="1">reserve</numIndex>
+								<numIndex index="1">booking</numIndex>
 							</numIndex>
 
 						</items>
@@ -64,7 +64,7 @@
 				</TCEforms>
 				</cinema>
 
-				<sortBy>
+				<!-- sortBy>
 				<TCEforms>
 					<label>Programm Select</label>
 					<config>
@@ -77,10 +77,13 @@
 						<required>1</required>
 					</config>
 				</TCEforms>
-				</sortBy>
+				</sortBy -->
 
+
+<!-- Condition -->
 				<special>
 				<TCEforms>
+					<displayCond>FIELD:mode:IN:special</displayCond>
 					<label>Sondervorstellungen anzeigen</label>
 					<config>
 						<type>select</type>
@@ -92,7 +95,9 @@
 					</config>
 				</TCEforms>
 				</special>
-				
+
+
+
 				<previewMin>
 				<TCEforms>
 					<label>Wochen voraus min.</label>
@@ -138,22 +143,6 @@
 				</TCEforms>
 				</disableReserved>
 
-				<linkImagePage>
-				<TCEforms>
-					<exclude>1</exclude>
-					<label>Bilder mit dieser Seite verlinken</label>
-					<config>
-						<type>group</type>
-						<internal_type>db</internal_type>
-						<allowed>pages</allowed>
-						<size>1</size>
-						<maxitems>1</maxitems>
-						<minitems>0</minitems>
-						<show_thumbs>0</show_thumbs>
-					</config>
-				</TCEforms>
-				</linkImagePage>
-
 				<pageReserve>
 				<TCEforms>
 					<exclude>1</exclude>
@@ -174,7 +163,11 @@
 			</el>
 		</ROOT>
 	</s_DEF>
-	
+
+
+
+
+
 	<s_image>
 		<ROOT>
 			<TCEforms>
@@ -183,6 +176,23 @@
 
 			<type>array</type>
 			<el>
+			
+				<linkImagePage>
+				<TCEforms>
+					<exclude>1</exclude>
+					<label>Bilder mit dieser Seite verlinken</label>
+					<config>
+						<type>group</type>
+						<internal_type>db</internal_type>
+						<allowed>pages</allowed>
+						<size>1</size>
+						<maxitems>1</maxitems>
+						<minitems>0</minitems>
+						<show_thumbs>0</show_thumbs>
+					</config>
+				</TCEforms>
+				</linkImagePage>
+
 				<width>
 				<TCEforms>
 					<label>max width</label>

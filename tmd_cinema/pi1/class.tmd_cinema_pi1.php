@@ -119,7 +119,7 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 				$content = $this->cObj->substituteMarkerArrayCached($content, $items, '', $wrappedSubpartArray);
 				$content = $this->substituteMarkers("PROGRAMM_RSS2", $content);
 			break;
-			case 'reserve':
+			case 'booking':
 				$content = $this->booking();
 			break;
 			case 'singleView':
@@ -347,9 +347,8 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 		if($type=="special")
 			$whereClause .= " AND showtype IN (".$this->ff['def']['special'].")";
 
-		$sortBy = $this->ff['def']['sortBy'];
-
-		#$groupBy = "cinema";
+#		$sortBy = $this->ff['def']['sortBy'];
+$sortBy = "cinema,sorting,date DESC";
 
 			// Make listing query, pass query to SQL database:
 		$res = $this->pi_exec_query('tx_tmdcinema_program', 0, $whereClause,$mm_cat='',$groupBy, $sortBy);
@@ -948,7 +947,7 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 		/**
 		 * Flex Form Parameter werden ausgelesen und initialisiert
 		 *
-		 * @todo TYPOscript parameter ber�cksichtigen und eventuell �berschreiben
+		 * @todo TYPOscript parameter berücksichtigen und eventuell Überschreiben
 		 */
 	function initFF() {
 			# FF Parsen
@@ -962,16 +961,17 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 		$this->ff['def']['previewNotice'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'previewNotice', 			's_DEF');
 
 		$this->ff['def']['cinema'] 		= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'cinema',	 			's_DEF');
-		$this->ff['def']['sortBy'] 		= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'sortBy',	 			's_DEF');
+#		$this->ff['def']['sortBy'] 		= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'sortBy',	 			's_DEF');
 		$this->ff['def']['special'] 	= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'special',	 			's_DEF');
+		$this->conf['pageReserve']	= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'pageReserve',  's_DEF');
 
 		if(!$this->conf['image.']['file.']['width'])
 			$this->conf['image.']['file.']['width']	= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'width',		's_image');
 		$this->ff['image']['colums']		= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'colums', 		's_image');
 		$this->ff['image']['clickEnlarge'] 	= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'clickEnlarge', 's_image');
+		$this->conf['linkImagePage'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'linkImagePage','s_image');
 
-		$this->conf['linkImagePage'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'linkImagePage','s_DEF');
-		$this->conf['pageReserve']	= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'pageReserve',  's_DEF');
+		
 
 			# besondere Vorrangregelungen
 		if($this->conf['mode'] == 'RSS') {
