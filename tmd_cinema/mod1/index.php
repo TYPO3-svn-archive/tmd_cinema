@@ -45,7 +45,7 @@ $BE_USER->modAccess($MCONF,1);	// This checks permissions and exits if the users
  * @package	TYPO3
  * @subpackage	tmd_cinema
  */
-class  tmd_cinema_module1 extends t3lib_SCbase {
+class  tx_tmdcinema_module1 extends t3lib_SCbase {	
 	var $pageinfo;
 	var $MCONF=array();
 	var $MOD_MENU=array();
@@ -180,10 +180,6 @@ class  tmd_cinema_module1 extends t3lib_SCbase {
 				'2' => $LANG->getLL('function2'), # PROGRAMM
 				'3' => $LANG->getLL('function3'), # PROGRAMM
 				'4' => $LANG->getLL('function4'), # PROGRAMM
-		
-				'5' => $LANG->getLL('function5'), # Bundesstart
-				'6' => $LANG->getLL('function6'), # Neueste Filme
-				'7' => $LANG->getLL('function7'), # Filme dieser Site
 				),
 			'cinema' => Array (
 				'0' => $LANG->getLL('all'), # PROGRAMM
@@ -250,24 +246,6 @@ class  tmd_cinema_module1 extends t3lib_SCbase {
 				$where = "date < ".$stop;
 				$content= $this->listProgram($where);
 				$this->content.=$this->doc->section('Programm Vergangen:',$content,0,1);
-			break;
-			
-			
-			
-			case 5: # Start Zukunft
-				$where = 'releasedate > '.mktime();
-				$content= $this->listSelectedMovies('releasedate ASC', $where);
-				$this->content.=$this->doc->section('kommende Bundesstart',$content,0,1);
-			break;
-			case 6: # neueste Filme
-				#$where = 'releasedate > '.mktime();
-				$content= $this->listSelectedMovies('crdate DESC');
-				$this->content.=$this->doc->section('neu angelegte Filme',$content,0,1);
-			break;
-			case 7: # dieser Seite
-				$where = 'pid = '.$this->id;
-				$content= $this->listSelectedMovies('title ASC', $where);
-				$this->content.=$this->doc->section('Filme dieser Seite:',$content,0,1);
 			break;
 			
 			case 'error': # dieser Seite
@@ -490,80 +468,6 @@ class  tmd_cinema_module1 extends t3lib_SCbase {
 	
 	
 
-			
-			
-		/**
-		 * Listet die neuesten Filme auf als übersicht
-		 *
-		 * @todo
-		 */
-	function listSelectedMovies($sorting='crdate DESC', $where = "1 = 1 ", $count=20) {
-		global $BE_USER,$LANG,$BACK_PATH,$TCA_DESCR,$TCA,$CLIENT,$TYPO3_CONF_VARS,$TYPO3_DB, $SOBE;
-		
-		$fields = '*';
-		$table = 'tx_tmdmovie_movie';
-
-		#$where .= t3lib_BEfunc::BEenableFields($table).t3lib_BEfunc::deleteClause($table);
-
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($fields, $table, $where, '', $sorting, $count);
-
-		if($GLOBALS['TYPO3_DB']->sql_num_rows($res)>0) 
-			{
-			while ($this->row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) 
-				{
-				$out .= '<tr><td style="background-color: #d9d5c9">';
-;
-
-				$out .= '<a href="#" onclick="'.htmlspecialchars(t3lib_BEfunc::editOnClick("&edit[tx_tmdmovie_movie][".$this->row[uid]."]=edit",$this->doc->backPath)).'">'.
-						'<img'.t3lib_iconWorks::skinImg($this->doc->backPath,'gfx/edit2.gif','width="7" height="12"').' title="'.$LANG->getLL('editRecord').'" alt="" />'.
-						'</a>';
-				// hide /unhide
-				if ($this->row['hidden'])	{
-					$params='&data[tx_tmdmovie_movie]['.$this->row['uid'].'][hidden]=0';
-					$out .= '<a href="#" onclick="'.htmlspecialchars('return jumpToUrl(\''.$SOBE->doc->issueCommand($params).'\');').'">'.
-							'<img'.t3lib_iconWorks::skinImg($this->doc->backPath,'gfx/button_unhide.gif','width="11" height="10"').' title="'.$LANG->getLL('unHide').'" alt="" />'.
-							'</a>';
-				} else {
-					$params='&data[tx_tmdmovie_movie]['.$this->row['uid'].'][hidden]=1';
-					$out .= '<a href="#" onclick="'.htmlspecialchars('return jumpToUrl(\''.$SOBE->doc->issueCommand($params).'\');').'">'.
-							'<img'.t3lib_iconWorks::skinImg($this->doc->backPath,'gfx/button_hide.gif','width="11" height="10"').' title="'.$LANG->getLL('hide').'" alt="" />'.
-								'</a>';
-				}
-				$out .= "</td>";
-				
-				$out .= '<td style="vertical-align: top;" colspan="3" bgcolor="';
-				$out .= ($this->row['hidden'])?'red':'green';
-				$out .= '">';
-				
-				$out .= '<b style="margin-left: 10px; color: white; font-size: 14px;">'.$this->getFieldContentMovie('title').'</b>';
-				$out .= '</td></tr>';
-				
-				$out .= '<tr style="vertical-align: top;"> ';
-				$out .= '<td>';
-				$out .= 	($this->getFieldContentMovie('releasedate'))	? $this->getFieldContentMovie('releasedate').'<hr />' : '';
-				$out .= 	($this->getFieldContentMovie('runningtime'))	? $this->getFieldContentMovie('runningtime').' '.$LANG->getLL('time').'<br />' : '';
-				$out .= 	($this->getFieldContentMovie('rating')) 			? $this->getFieldContentMovie('rating').'<br />' : '';
-				$out .= 	($this->getFieldContentMovie('distributor')) 	? $this->getFieldContentMovie('distributor').'<br />' : '';
-				$out .= 	($this->getFieldContentMovie('genre'))			? '<hr />'.$this->getFieldContentMovie('genre') : '';
-				$out .= '</td>';
-				$out .= '<td width="320">'.t3lib_div::fixed_lgd_cs(strip_tags($this->getFieldContentMovie('summary')), 400).'</td>';
-				$out .= '<td width="270">'.$this->getFieldContentMovie('poster').'<hr />'.$this->getFieldContentMovie('mediafile').'</td>';
-				$out .= '</tr>';
-				
-				
-				
-				}
-			}
-		else 
-			{
-			$out = '<tr><td bgcolor="#D9D5C9" colspan="4">Keine Filmdaten auf dieser Seite</td></tr>';
-			}
-			
-		$out = '<table border=1 cellpadding=1 cellspacing=1 width="100%">'.$out.'</table>';
-
-		
-		return $out;
-		}
 
 
 
@@ -795,7 +699,7 @@ if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/tmd_cin
 
 
 // Make instance:
-$SOBE = t3lib_div::makeInstance('tmd_cinema_module1');
+$SOBE = t3lib_div::makeInstance('tx_tmdcinema_module1');
 $SOBE->init();
 
 // Include files?

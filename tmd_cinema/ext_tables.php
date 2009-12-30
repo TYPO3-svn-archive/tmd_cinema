@@ -105,7 +105,9 @@ t3lib_extMgm::addStaticFile($_EXTKEY,'pi2/static/','Book Reservation');
 
 	/* BE Modul */
 if (TYPO3_MODE == 'BE')    {
-    t3lib_extMgm::addModule('web','tmdcinemaM1','',t3lib_extMgm::extPath($_EXTKEY).'mod1/');
+    t3lib_extMgm::addModule('web','txtmdcinemaM1','',t3lib_extMgm::extPath($_EXTKEY).'mod1/');
+	t3lib_extMgm::addModule('web','txtmdcinemaM2','',t3lib_extMgm::extPath($_EXTKEY).'mod2/');
+    
     		// add folder icon
 	$ICON_TYPES['cinema_prg'] = array('icon' => t3lib_extMgm::extRelPath($_EXTKEY).'ext_icon_prg_folder.gif');
 }

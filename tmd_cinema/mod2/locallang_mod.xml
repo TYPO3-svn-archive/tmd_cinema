@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>module</type>
+		<description>Language labels for module &quot;web_txtmdcinemaM2&quot; - header, description</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="mlang_tabs_tab">Film Informations</label>
+			<label index="mlang_labels_tabdescr">Inform yourself about the avialable  Movies in the database</label>
+			<label index="mlang_labels_tablabel">Information about the Movie Database</label>
+		</languageKey>
+		<languageKey index="de" type="array">
+			<label index="mlang_tabs_tab">Film Übersicht</label>
+			<label index="mlang_labels_tabdescr">Gibt eine kompakte Übersicht über die Filme in der Datenbanl</label>
+			<label index="mlang_labels_tablabel">Informationen über die Filmdatenbank.</label>
+		</languageKey>
+	</data>
+</T3locallang>

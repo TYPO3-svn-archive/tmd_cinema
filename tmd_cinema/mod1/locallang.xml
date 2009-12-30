@@ -2,7 +2,7 @@
 <T3locallang>
 	<meta type="array">
 		<type>module</type>
-		<description>Language labels for module &quot;web_tmdcinemaM1&quot;</description>
+		<description>Language labels for module &quot;txweb_tmdcinemaM1&quot;</description>
 	</meta>
 	<data type="array">
 		<languageKey index="default" type="array">
@@ -13,11 +13,6 @@
 			<label index="function3">Program No Date</label>
 			<label index="function4">past</label>
 			
-			<label index="function5">Upcoming releases</label>
-			<label index="function6">lately created Movies</label>
-			<label index="function7">Filme dieser Site</label>
-												
-
 			
 			<label index="newRecord">New Record</label>
 			<label index="editRecord">Edit Record</label>
@@ -30,7 +25,7 @@
 
 			<label index="choosePRG">Choose a Page with Records!</label>
 			<label index="noData">For this time/cinema there is no program.</label>	
-			<label index="error_cinemaOrder">ERROR: Not defined TSconfig: mod.web_tmdcinemaM1.cinemaOrder = id1,id2,id3...</label>
+			<label index="error_cinemaOrder">ERROR: Not defined TSconfig: mod.txweb_tmdcinemaM1.cinemaOrder = tt_address:id1, tt_address:id3, tt_address:id2...</label>
 			<label index="all">All Cinemas</label>
 			
 			<label index="time">min</label>
@@ -40,9 +35,9 @@
 		<languageKey index="de" type="array">
 			<label index="title">Kinoprogramm</label>
 
-			<label index="function1">Programm: letzte Woche, diese Woche, kommende Woche</label>  
-			<label index="function2">Program Zukunft</label>
-			<label index="function3">Program Ohne Termin</label>
+			<label index="function1">Programm: letzte Woche &lt;- diese Woche -&gt; kommende Woche</label>  
+			<label index="function2">Programm: diese Woche -&gt; Zukunft</label>
+			<label index="function3">Programm: Ohne Termin</label>
 			<label index="function4">Vergangenes Programm</label>
 			
 			<label index="function5">Kommende Bundesstart</label>
@@ -53,14 +48,14 @@
 			<label index="editRecord">Bearbeiten</label>
 			<label index="hide">Verstecken</label>
 			<label index="unHide">Sichtbar machen</label>
-			<label index="delete">Programm Löschen</label>
-			<label index="deleteWarning">Löschwarnung</label>
+			<label index="delete">Programm löschen</label>
+			<label index="deleteWarning">Achtung: Diesen Datensatz wirklich löschen?</label>
 			<label index="moveDown">nach unten Verschieben</label>
 			<label index="prolongate">Verlängern</label>
 
 			<label index="choosePRG">Wählen Sie ein Seite mit Programmdaten aus!</label>
 			<label index="noData">Für diesen Zeitraum/ dieses Kino ist kein Programm auf dieser Seite.</label>			
-			<label index="error_cinemaOrder">FEHLER: Nicht definiertes TSconfig: mod.web_tmdcinemaM1.cinemaOrder = id1,id2,id3...</label>
+			<label index="error_cinemaOrder">FEHLER: Nicht definiertes TSconfig: mod.txweb_tmdcinemaM1.cinemaOrder = tt_address:id1, tt_address:id3, tt_address:id2...</label>
 			<label index="all">Alle Kinos</label>
 
 			<label index="time">min</label>
