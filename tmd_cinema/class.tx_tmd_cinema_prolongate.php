@@ -21,17 +21,11 @@
 *
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
-/**
- * [CLASS/FUNCTION INDEX of SCRIPT]
- *
- * Hint: use extdeveval to insert/update function index above.
- */
 
 
 
 	/**
-	 * Class for generating infomai loof the current record.
-	 *
+	 * Implement special copy behavior for the tx_tmdcinema_program
 	 */
 class tx_tmd_cinema_prolongate {
 		var $extKey = 'tmd_cinema';
@@ -39,20 +33,42 @@ class tx_tmd_cinema_prolongate {
 		function processDatamap_preProcessFieldArray(&$incomingFieldArray, $table, $id, &$reference) {
 
 			if($table != "tx_tmdcinema_program") return;
-			
+
+
 				// if no title is given, then do so.
 				// use the Movie's Title 	
-			if($incomingFieldArray['temp_title']=='') {
-				if(!strlen($incomingFieldArray['movie'])) {
+			if(empty($incomingFieldArray['temp_title'])) {
+				
+				if(empty($incomingFieldArray['movie'])) {
 					$incomingFieldArray['temp_title'] = 'No Title';
 				} else {
-					$rec = t3lib_BEfunc::getRecord('tx_tmdmovie_movie', $incomingFieldArray['movie'], 'title', $where='');
+					$lPart = strrchr($incomingFieldArray['movie'], '_');
+					list(,$id) = explode("_", $lPart); 
+					
+					$rec = t3lib_BEfunc::getRecord('tx_tmdmovie_movie', $id, 'title', $where='');
 					$incomingFieldArray['temp_title'] = $rec['title'];
 				}
+				
 			}
+			
+				// Movie finally is selected but still no title given 
+			if($incomingFieldArray['temp_title'] == 'No Title' && !empty($incomingFieldArray['movie'])) {
+				$lPart = strrchr($incomingFieldArray['movie'], '_');
+				list(,$id) = explode("_", $lPart); 
+				
+				$rec = t3lib_BEfunc::getRecord('tx_tmdmovie_movie', $id, 'title', $where='');
+				$incomingFieldArray['temp_title'] = $rec['title'];
+			}
+			
 
+			
+			
 
+			
+			
+			
 				// prologate the program
+				// only if it's a copy.
 			if(isset($incomingFieldArray['t3_origuid'])) {
 				$incomingFieldArray['week']++;
 				$incomingFieldArray['date'] = $incomingFieldArray['date'] + 7*24*60*60;

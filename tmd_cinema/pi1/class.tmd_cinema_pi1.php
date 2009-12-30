@@ -281,59 +281,6 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 		$this->oForm->init($this, t3lib_extmgm::extPath($this->extKey) . "pi1/form/booking_form.xml");
 		$out .= $this->oForm->render();
 		
-		
-/*		
-		$formInfo = $this->oForm->oDataHandler->_getFlatFormDataManaged();
-
-		
-		
-		$session = $GLOBALS["TSFE"]->fe_user->getKey('ses',$this->prefixId['formid']);
-		if($session)
-			$session = explode (",", $session);
-
-		if(	$this->oForm->oDataHandler->_isFullySubmitted() &&
-			$this->oForm->oDataHandler->_allIsValid()		&&
-			!in_array($this->piVars['formid'], (array)$session) ) {	//is valid
-				$session[] = $this->piVars['formid'];
-				$GLOBALS["TSFE"]->fe_user->setKey('ses', $this->prefixId['formid'], implode(",", $session));
-	
-				$data = array(
-							"name" => htmlspecialchars($this->piVars['name']),
-							"pid" => $this->conf['resPid'],
-							"email" =>  htmlspecialchars($this->piVars['email']),
-							"seats" =>  htmlspecialchars($this->piVars['seats']),
-							"note" => htmlspecialchars($this->piVars['note']),
-							"cinema" => $this->piVars['cinema'],
-							"timedate" => $this->piVars['res'],
-							"movie" => htmlspecialchars($this->getFieldContent("movie_title")),
-							"crdate" => time(),
-							"tstamp" => time(),
-							);
-
-				if($GLOBALS[TYPO3_DB]->exec_INSERTquery('tx_tmdcinema_booking',$data)) {
-					$lnr = mysql_insert_id();
-	
-					$out  = '<p>';
-					$out .= 'Name:'.$this->piVars['name'].'<br />';
-					$out .= 'E-Mail:'.$this->piVars['email'].'<br />';
-					$out .= 'Filmtitel:<b>'.$this->getFieldContent('movie_title').'</b><br />';
-					$out .= 'Zeit:'.strftime("%A, %d.%m.%y - %H:%M Uhr", $this->piVars['movie_time']).'<br />';
-					$out .= 'Anzahl:'.$this->piVars['seats'].'<br />';
-					$out .= 'Notiz:'.$this->piVars['note'];
-					$out .= '</p>';
-	
-					$out .= "<p>Die Reservierungs-Anfrage wurde erfolgreich verschickt.<br />";
-					$out .= "Sie erhalten in K&uuml;rze eine Best&auml;tigung mit weiteren Einzelheiten.<br /><br />";
-					$out .= "<small>Die Anfrage wurde unter der <b>Nummer ".$lnr."</b> eingetragen.<br />";
-					$out .= "<b>ACHTUNG: Dies ist <u>keine (!!)</u> Reservierungsnummer!</b></small><br />";
-					$out .= "Ihr Kino-Team Isny</p>";
-				}
-		}
-		elseif(in_array($this->piVars['formid'], (array)$session)) { // Reload 
-			debug($session, "Session");
-			$out .= $this->pi_linkTP($this->pi_getLL('xyz', '_reload_'));
-		}
-*/
 		return $out;
 		}
 

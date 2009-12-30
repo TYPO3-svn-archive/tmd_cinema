@@ -257,31 +257,21 @@ class tx_tmdcinema_pi2 extends tslib_pibase
 												);
 				*/
 				return '<a href="mailto:'.$this->internal['currentRow']['email'].'">'.$this->internal['currentRow']['name'].'</a>';
-				
 			break;
 			case 'timedate':
 				return strftime("%A, %d.%m.%y - %H:%M Uhr", $this->internal['currentRow']['timedate']);
 			break;
+			case 'note':
+				$note=explode("|", $this->internal['currentRow']['note']);
+				return implode("<br />", $note);
+			break;
+			
 			default:
 				return $this->internal['currentRow'][$fN];
 			break;
 			}
 		}
 		
-/*
-function getTypoLink($label,$params,$urlParameters=array(),$target='')
-
-Returns a linked string made from typoLink parameters.
-
-This function takes $label as a string, wraps it in a link-tag based on the $params string, which should contain data like that you would normally pass to the popular <LINK>-tag in the TSFE.
-Optionally you can supply $urlParameters which is an array with key/value pairs that are rawurlencoded and appended to the resulting url.
-$label 	string 	Text string being wrapped by the link.
-$params 	string 	Link parameter; eg. "123" for page id, "kasperYYYY@typo3.com" for email address, "http://...." for URL, "fileadmin/blabla.txt" for file.
-$urlParameters=array() 	array 	An array with key/value pairs representing URL parameters to set. Values NOT URL-encoded yet.
-$target='' 	string 	Specific target set, if any. (Default is using the current)
-Returns: 	string 	The wrapped $label-text string
-  	@see getTypoLink_URL()
-*/
 
 
 		
