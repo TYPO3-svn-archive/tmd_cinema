@@ -15,7 +15,8 @@ plugin.tx_tmdcinema_pi1 {
 	cryptTime = 1
 	
 	
-	dummyPoster = EXT:tmd_cinema/pi1/res/dummy.jpg
+	dummyPoster = EXT:tmd_cinema/pi1/res/dummy.png
+	
 	template = EXT:tmd_cinema/pi1/res/cinema_template.html
 
 		# Wie sollen leere Spielzeiten markiert werden?
@@ -125,6 +126,8 @@ plugin.tx_tmdcinema_pi1.wrap {
 		MOVIE_DESCRIPTION = |
 		MOVIE_DESCRIPTION_SHORT  = |
 
+		VERSION_3D = <span style="color: red;">3D</span>
+
 		PRG_TIMETABLE = |
 		PRG_TIMETABLE_STYLE =
 		PRG_INFO = |
@@ -132,10 +135,11 @@ plugin.tx_tmdcinema_pi1.wrap {
 		PRG_WEEK = |
 		PRG_THEATRE	 = |
 		PRG_DATE = |
+		
 		}
 
 	longView {
-		MOVIE_RATING = |
+		MOVIE_RATING = |&nbsp;- 
 		MOVIE_RATINGTOOLTIP = |
 		MOVIE_DISTRIBUTOR = |
 		MOVIE_FBW = |
@@ -143,7 +147,7 @@ plugin.tx_tmdcinema_pi1.wrap {
 		MOVIE_TITLE_ORIGINAL = |
 		MOVIE_TITLE_SHORT = |
 		MOVIE_IMAGE = |
-		MOVIE_TIME = |
+		MOVIE_TIME = ca.&nbsp;| min. -
 		MOVIE_WWW = |
 		MOVIE_RELEASEDATE = |
 		MOVIE_FORMAT = |
@@ -157,6 +161,8 @@ plugin.tx_tmdcinema_pi1.wrap {
 		MOVIE_ACTOR = |
 		MOVIE_GENRE = |
 		MOVIE_MEDIA = |
+
+		PRG_3D = <span style="color: red;">3D</span>
 
 		PRG_TIMETABLE = |
 		PRG_TIMETABLE_STYLE =
@@ -193,6 +199,8 @@ special {
 		MOVIE_GENRE = |
 		MOVIE_MEDIA = |
 
+		PRG_3D = <span style="color: red;">3D</span>
+		
 		PRG_TIMETABLE = |
 		PRG_TIMETABLE_STYLE =
 		PRG_TIMETABLE_TD = |
@@ -226,6 +234,8 @@ special {
 		MOVIE_GENRE = <b>Genre:</b>&nbsp;| <br />
 		MOVIE_MEDIA = |
 
+		PRG_3D = <span style="color: red;">3D</span>
+		
 		PRG_TIMETABLE = |
 		PRG_TIMETABLE_STYLE =
 		PRG_TIMETABLE_TD = |

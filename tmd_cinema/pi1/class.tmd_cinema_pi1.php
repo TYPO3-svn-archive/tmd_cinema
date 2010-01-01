@@ -502,8 +502,7 @@ $sortBy = "cinema,sorting,date DESC";
 			}
 
 
-		switch($fN)
-			{
+		switch($fN)	{
 			case 'movie_fsk':
 					/* FSK-Cache erstellen */
 				$out = $this->film->rating;
@@ -581,37 +580,34 @@ $sortBy = "cinema,sorting,date DESC";
 			break;
 			case 'movie_image':
 				# Für welchen Bereich?
-				if($this->ff['def']['mode'] == 'shortView')
-					$this->conf['image.'] = $this->conf['listViewShort.'];
-				if($this->ff['def']['mode'] == 'longView')
-					$this->conf['image.'] = $this->conf['listViewLong.'];
-				if($this->ff['def']['mode'] == 'singleView')
-					$this->conf['image.'] = $this->conf['imageSingle.'];
-				if($this->ff['def']['mode'] == 'special')
-					$this->conf['image.'] = $this->conf['imageSpecial.'];
-
-				if($this->film->poster)
-					{
+				switch($this->ff['def']['mode']) {
+					case 'shortView': 	$this->conf['image.'] = $this->conf['listViewShort.']; 	break;
+					case 'longView':	$this->conf['image.'] = $this->conf['listViewLong.'];	break;
+					case 'singleView':	$this->conf['image.'] = $this->conf['imageSingle.'];	break;
+					case 'special':		$this->conf['image.'] = $this->conf['imageSpecial.']; 	break;
+				}
+				
+				if($this->film->poster) {
 					$temp = explode(',', $this->film->poster); # mehrere Poster?
-					if($this->conf['image.']['file'] == 'GIFBUILDER')
+					if($this->conf['image.']['file'] == 'GIFBUILDER') {
 						$this->conf['image.']['file.']['10.']['file'] = $this->uploadPath.$temp[rand(0,count($temp)-1)];
-					else
+					} else {
 						$this->conf['image.']['file'] = $this->uploadPath.$temp[rand(0,count($temp)-1)];
 					}
-				else // Media File als Alternative
-					{
-					if($this->conf['image.']['file'] == 'GIFBUILDER')
-						{
+				} else { // Media File als Alternative
+					if($this->conf['image.']['file'] == 'GIFBUILDER') {
 						$this->conf['image.']['file.']['10.']['file'] = $this->uploadPath.$this->getFieldContent('movie_media-random');
 
-						if($this->conf['image.']['file.']['10.']['file'] == '')
-							$this->conf['image.']['file.']['10.']['file'] = $this->conf['dummyPoster'];
-						}
-					else
-						{
+					if($this->conf['image.']['file.']['10.']['file'] == '')
+						$this->conf['image.']['file.']['10.']['file'] = $this->conf['dummyPoster'];
+					} else {
 						$this->conf['image.']['file'] = $this->uploadPath.$this->getFieldContent('movie_media-random');
-						}
 					}
+				}
+
+				if($this->conf['image.']['file.']['10.']['file'] == 'uploads/tx_tmdmovie/') {
+					$this->conf['image.']['file.']['10.']['file'] = $this->conf['dummyPoster'];
+				}
 
 				$this->conf['image.']['altText'] = $this->film->titel;
 				$out = $this->cObj->IMAGE($this->conf['image.']);
@@ -804,6 +800,13 @@ $sortBy = "cinema,sorting,date DESC";
 			break;
 
 
+			
+			case 'version3D':
+				if($this->film->version3D || $this->internal['currentRow']['version3D'] ) {
+					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode']]['VERSION_3D']);
+				}
+			break;
+			
 
 			/* Ab hier die Programm-Tabelle */
 			case 'uid':
@@ -842,51 +845,42 @@ $sortBy = "cinema,sorting,date DESC";
 			break;
 			case 'showtype':
 				/* ShowType-Cache erstellen */
-				if(!$this->showType)
-					{
+				if(!$this->showType) {
 					$select = 'uid,showtype,link';
 					$local_table = 'tx_tmdcinema_showtype';
 					$whereClause = "1=1 ".$GLOBALS['TSFE']->cObj->enableFields($local_table);
 					$res = $GLOBALS[TYPO3_DB]->exec_SELECTquery($select,$local_table,$whereClause,$groupBy,$orderBy,$limit);
-					while($erg = $GLOBALS[TYPO3_DB]->sql_fetch_assoc($res))
-						{
+					while($erg = $GLOBALS[TYPO3_DB]->sql_fetch_assoc($res)) {
 						$this->showType[$erg['uid']]['showtype'] = $erg['showtype'];
 						$this->showType[$erg['uid']]['link'] = $erg['link'];
-						}
 					}
+				}
 
 					/* Vorstellungen können mit Seiten verlinkt werden */
-
-				if(!in_array($this->internal['currentRow']['showtype'], explode(",", $this->conf['hideType'])))
-					{
-					if($this->showType[$this->internal['currentRow']['showtype']]['link'] != "")
-						{
+				if(!in_array($this->internal['currentRow']['showtype'], explode(",", $this->conf['hideType']))) {
+					if($this->showType[$this->internal['currentRow']['showtype']]['link'] != "") {
 						$out = $this->pi_linkToPage(
 							$this->showType[$this->internal['currentRow']['showtype']]['showtype'],
 							$this->showType[$this->internal['currentRow']['showtype']]['link']
 							);
-						}
-					else
-						{
+					} else {
 						$out = $this->showType[$this->internal['currentRow']['showtype']]['showtype'];
-						}
 					}
+				}
 
-				if($out)
-					{
+				if($out) {
 					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_SHOWTYPE']);
 					return $out;
-					}
+				}
 			break;
 			case 'week':
 				$out = $this->cObj->wrap($this->internal['currentRow']['week'], $this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_WEEK']);
 				return 	$out;
 			break;
 			case 'cinema':
-				if(!$this->adrCache[$this->internal['currentRow'][$fN]])
-					{
+				if(!$this->adrCache[$this->internal['currentRow'][$fN]]) {
 					$this->adrCache[$this->internal['currentRow'][$fN]] = $this->pi_getRecord("tt_address", $this->internal['currentRow'][$fN]);
-					}
+				}
 
 				$out = $this->cObj->wrap($this->adrCache[$this->internal['currentRow'][$fN]]['name'], $this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_THEATRE']);
 
@@ -1026,7 +1020,9 @@ $sortBy = "cinema,sorting,date DESC";
 		$markerArray['###MOVIE_PRODUCER###'] 		= $this->getFieldContent('movie_producer');
 		$markerArray['###MOVIE_ACTOR###'] 			= $this->getFieldContent('movie_actor');
 		$markerArray['###MOVIE_GENRE###'] 			= $this->getFieldContent('movie_genre');
-
+		
+		$markerArray['###VERSION_3D###'] 			= $this->getFieldContent('version');
+		
 		$markerArray['###PRG_WEEK###'] 				= $this->getFieldContent('week');
 		$markerArray['###PRG_SHOWTYPE###'] 			= $this->getFieldContent('showtype');
 		$markerArray['###PRG_TIMETABLE###'] 		= $this->getFieldContent('program');
