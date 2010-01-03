@@ -24,7 +24,6 @@ CREATE TABLE tx_tmdcinema_program (
 	starttime int(11) DEFAULT '0' NOT NULL,
 	endtime int(11) DEFAULT '0' NOT NULL,
 
-	temp_title tinytext NOT NULL,
 	week int(11) DEFAULT '0' NOT NULL,
 	date int(11) DEFAULT '0' NOT NULL,
 	info text NOT NULL,

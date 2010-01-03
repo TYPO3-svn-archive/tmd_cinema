@@ -45,7 +45,7 @@ $TCA["tx_tmdcinema_program"] = array (
 			)
 		),
 		
-		/*-------------------*/
+		/*-------------------
 		"temp_title" => Array (	# solange ich über TCA->ctrl nicht eine fremde tabelle ansprechen kann	
 			"exclude" => 0,		
 			"label" => "Titel", 		
@@ -55,7 +55,7 @@ $TCA["tx_tmdcinema_program"] = array (
 #				"eval" => "required",
 			)
 		),
-		/*-------------------*/
+		-------------------*/
 		
 		"date" => Array (		
 			"exclude" => 1,		
@@ -145,8 +145,9 @@ $TCA["tx_tmdcinema_program"] = array (
 				"internal_type" => "db",
 			    'foreign_table' => "tx_tmdmovie_movie",
 			    'allowed' => "tx_tmdmovie_movie",    
+				"eval" => "required",
 			    'size' => 1,    
-			    'minitems' => 0,
+			    'minitems' => 1,
 			    'maxitems' => 1,
 			    'wizards' => array(
 			        'suggest' => array(    
@@ -176,10 +177,7 @@ $TCA["tx_tmdcinema_program"] = array (
 				"type" => "text",
 				"cols" => "30",	
 				"rows" => "4",
-				"default" => "||15:00|15:00|||
-||17:30|17:30|||
-20:00|20:00|20:00|20:00|20:00|20:00|20:00
-|22:30|22:30||||",	
+				"default" => "",	
 				"wizards" => Array(
 					"_PADDING" => 2,
 					"example" => Array(
@@ -207,6 +205,9 @@ $TCA["tx_tmdcinema_program"] = array (
 		"1" => array("showitem" => "starttime, endtime")
 	)
 );
+
+
+
 
 
 

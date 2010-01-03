@@ -126,7 +126,7 @@ plugin.tx_tmdcinema_pi1.wrap {
 		MOVIE_DESCRIPTION = |
 		MOVIE_DESCRIPTION_SHORT  = |
 
-		VERSION_3D = <span style="color: red;">3D</span>
+		VERSION3D = <span style="color: red;">3D</span>
 
 		PRG_TIMETABLE = |
 		PRG_TIMETABLE_STYLE =
@@ -138,7 +138,7 @@ plugin.tx_tmdcinema_pi1.wrap {
 		
 		}
 
-	longView {
+longView {
 		MOVIE_RATING = |&nbsp;- 
 		MOVIE_RATINGTOOLTIP = |
 		MOVIE_DISTRIBUTOR = |
@@ -162,7 +162,7 @@ plugin.tx_tmdcinema_pi1.wrap {
 		MOVIE_GENRE = |
 		MOVIE_MEDIA = |
 
-		PRG_3D = <span style="color: red;">3D</span>
+		VERSION3D = <span style="color: red;">3D</span>
 
 		PRG_TIMETABLE = |
 		PRG_TIMETABLE_STYLE =
@@ -199,7 +199,7 @@ special {
 		MOVIE_GENRE = |
 		MOVIE_MEDIA = |
 
-		PRG_3D = <span style="color: red;">3D</span>
+		VERSION3D = <span style="color: red;">3D</span>
 		
 		PRG_TIMETABLE = |
 		PRG_TIMETABLE_STYLE =
@@ -234,7 +234,7 @@ special {
 		MOVIE_GENRE = <b>Genre:</b>&nbsp;| <br />
 		MOVIE_MEDIA = |
 
-		PRG_3D = <span style="color: red;">3D</span>
+		VERSION3D = <span style="color: red;">3D</span>
 		
 		PRG_TIMETABLE = |
 		PRG_TIMETABLE_STYLE =

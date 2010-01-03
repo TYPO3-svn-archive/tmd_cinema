@@ -329,16 +329,17 @@ class  tx_tmdcinema_module1 extends t3lib_SCbase {
 
 		foreach($curTable as $key => $this->row) {
 				# get some missing info from the film
-			$rec = t3lib_BEfunc::getRecord('tx_tmdmovie_movie',$this->row['movie'],$fields='uid,title,poster',$where=''); 
+			$rec = t3lib_BEfunc::getRecord('tx_tmdmovie_movie',$this->row['movie'],$fields='uid,title,poster,version3d',$where=''); 
 			$this->row['title'] = $rec['title'];
 			$this->row['poster'] = $rec['poster'];
 			$this->row['mov_uid'] = $rec['uid'];
+			$this->row['version3d'] = $rec['version3d'];
 			
 			
 				// Datumszeile wenn es sich geändert hat.
 			$date1 = $this->getFieldContentPrg('date');
 			if($date1 != $date2) {
-				$out .= '<tr><td  bgcolor="#D9D5C9" colspan="5" style="text-align: right; font-size: 20px;"><b>'.strftime("%a, ", $date1).$date1.'</b></td></tr>';
+				$out .= '<tr><td  bgcolor="#D9D5C9" colspan="5" style="text-align: right; font-size: 20px; line-height: 24px;"><b>'.strftime("%a, ", $date1).$date1.'</b></td></tr>';
 			} 
 			$date2 = $date1;
 	
@@ -432,7 +433,9 @@ class  tx_tmdcinema_module1 extends t3lib_SCbase {
 			$out .= '<td style="vertical-align: top;">';
 			$out .= 	'<b>'.$this->getFieldContentPrg('cinema').'</b><br />';
 			$out .= 	$this->getFieldContentPrg('showtype').'<br />';
-			$out .= 	($this->getFieldContentPrg('3d')) ? '3D<br />' : '';;
+			if(($this->getFieldContentPrg('3d') || $this->getFieldContentMovie('version3d'))) {
+				$out .= '3D<br />';
+			}
 			$out .= 	($this->getFieldContentPrg('nores')) ? 'NoRes<br />' : '';
 			$out .= 	'Woche: '.$this->getFieldContentPrg('week');
 	
@@ -522,7 +525,9 @@ class  tx_tmdcinema_module1 extends t3lib_SCbase {
 				}
 				return '<table style="border-collapse: collapse; width:100%;">'.$timeRow.'</table>';
 			break;
-			
+			case '3d':
+				return $this->row['3d'];
+			break;
 			case 'date_raw': # for debugging only
 				return $this->row['date'];
 			break;	
@@ -558,8 +563,8 @@ class  tx_tmdcinema_module1 extends t3lib_SCbase {
 					$res = $GLOBALS[TYPO3_DB]->exec_SELECTquery($select,$local_table,$whereClause,$groupBy,$orderBy,$limit);
 					while($erg = $GLOBALS[TYPO3_DB]->sql_fetch_assoc($res)) {
 						$this->rating[$erg['uid']] = $erg['rating'];
-						}
 					}
+				}
 				
 				return $this->rating[$this->row[$fN]];
 			break;
@@ -643,7 +648,10 @@ class  tx_tmdcinema_module1 extends t3lib_SCbase {
 				
 				return implode(", ", $genre);
 			break;	
-			
+			case 'version3d':
+				return $this->row[$fN];
+			break;
+						
 			default:
 				return $this->row[$fN];
 		}

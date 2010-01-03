@@ -32,7 +32,9 @@
 			<label index="tt_content.list_type_pi1">Cinema Program</label>
 			<label index="tt_content.list_type_pi2">Book Reservation</label>
 		</languageKey>
+
 		<languageKey index="de" type="array">
+		                  
 			<label index="tmd_cinema_program">Kino Programm</label>
 			<label index="tmd_cinema_program.date">Erster Programmtag</label>
 			<label index="tmd_cinema_program.info">Besondere Informationen</label>
@@ -59,5 +61,6 @@
 			<label index="tt_content.list_type_pi1">Kino Programm</label>
 			<label index="tt_content.list_type_pi2">Reservierungen Bearbeiten</label>
 		</languageKey>
+		
 	</data>
 </T3locallang>

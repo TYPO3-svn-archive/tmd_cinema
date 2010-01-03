@@ -99,10 +99,8 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 		 * @param	array		$conf: PlugIn Configuration
 		 * @return	HTML list of table entries
 		 */
-	function view()
-		{
-		switch($this->ff['def']['mode'])
-			{
+	function view() {
+		switch($this->ff['def']['mode']) {
 			case 'shortView':
 			 	$content = $this->program($this->ff['def']['previewMin'], $this->ff['def']['previewMax'], "short");
 			break;
@@ -127,10 +125,10 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 				$this->internal['currentRow'] = $this->pi_getRecord('tx_tmdcinema_program',$this->piVars['showUid']);
 				$content = $this->singleView();
 			break;
-			}
+		}
 
 		return $content;
-		}
+	}
 
 
 
@@ -240,49 +238,45 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 		/**
 		 * Plätze Reservieren
 		 */
-	function booking()
-		{
+	function booking() {
 			# Daten vorbereiten 		
 		if($this->conf['cryptTime'] == 1) # verschlüsseltes entschlüsseln
 			list($this->piVars['res'], $this->piVars['uid'], $this->piVars['cinema']) = explode("-", $this->decrypt($this->piVars[crypt]));
 		else
 			list($this->piVars['res'], $this->piVars['uid'], $this->piVars['cinema']) = explode("-", $this->piVars[crypt]);
 			
-		if($this->conf['DEBUG'])
-			{
+		if($this->conf['DEBUG']) {
 			$out .= t3lib_div::view_array($this->conf);
 			$out .= t3lib_div::view_array(array($this->piVars['res'], $this->piVars['uid'], $this->piVars['cinema']));
-			}
+		}
 
 		$this->internal['currentRow']['movie'] = $this->piVars['uid'];
 
 		// Formular wird direkt aufgerufen?
-		if (!$this->piVars['crypt'])
-			{
+		if (!$this->piVars['crypt']) {
 		    $out .= "Bitte dieses Formular nicht direkt aufrufen!<br />";
 			$out .= "W&auml;hlen Sie einen Film &uuml;ber die Programm&uuml;bericht<br />";
 			$out .= "und klicken Sie auf die gew&uuml;nschte Spielzeit!<br/><br/>";
 			$out .= $this->pi_linkToPage('Zur Programmübersicht', $this->conf['prgPid']);
 			return $out;
-			}
+		}
 
 		// Spammern das Handwerk legen
 		// Res Limit berücksichtigen und das Kino auch.
-		if($this->conf['resLimit'] < time()-$this->piVars['res'] || !in_array($this->piVars['cinema'], explode(",", $this->conf['myCinema'])) )
-			{
+		if($this->conf['resLimit'] < time()-$this->piVars['res'] || !in_array($this->piVars['cinema'], explode(",", $this->conf['myCinema'])) ) {
 			$out .= "W&auml;hlen Sie einen Film &uuml;ber die Programm&uuml;bericht<br />";
 			$out .= "und klicken Sie auf die gew&uuml;nschte Spielzeit!<br/><br/>";
 			$out .= $this->pi_linkToPage('Zur Programm&uuml;bersicht', $this->conf['prgPid']);
 
 			return $out;
-			}
+		}
 
  		$this->oForm = t3lib_div::makeInstance("tx_ameosformidable");
 		$this->oForm->init($this, t3lib_extmgm::extPath($this->extKey) . "pi1/form/booking_form.xml");
 		$out .= $this->oForm->render();
 		
 		return $out;
-		}
+	}
 
 
 		
@@ -294,8 +288,7 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 		 * @param int Startwoche, 0 = aktuelle Woche, 1=nächste Woche, 2=übernächste u.s.w.
 		 * @param int Wieviele Wochen?
 		 */
-	function program($startWeek, $nextWeeks=1, $type="long")
-		{
+	function program($startWeek, $nextWeeks=1, $type="long") {
 		$oneDay = 60*60*24;
 		$oneWeek = $oneDay * 7;
 
@@ -461,8 +454,7 @@ $sortBy = "cinema,sorting,date DESC";
 		}
 
 
-	function singleView()
-		{
+	function singleView() {
 				// This sets the title of the page for use in indexed search results:
 #		if ($this->internal['currentRow']['title'])	$GLOBALS['TSFE']->indexedDocTitle=$this->internal['currentRow']['title'];
 #		$content  = '<a name="'.$this->prefixId."-".$this->internal['currentRow']['uid'].'"></a>';
@@ -472,17 +464,14 @@ $sortBy = "cinema,sorting,date DESC";
 		if(	$this->internal['currentRow']['date'] > 0 && (
 				7*24*60*60-$this->conf['resLimit'] < time()-$this->internal['currentRow']['date']  ||
 				!in_array($this->internal['currentRow']['cinema'], explode(",", $this->conf['myCinema']))   )
-			)
-			{
+			) {
 			$content = $this->pi_getLL("noValidPRG", "noValidPRG");
-			}
-		else
-			{
+		} else {
 			$content = $this->substituteMarkers("SINGLE_VIEW");
-			}
+		}
 
 		return $content;
-		}
+	}
 
 
 
@@ -492,14 +481,12 @@ $sortBy = "cinema,sorting,date DESC";
 	 * @param	string		$fN: name of table field
 	 * @return	Value of the field
 	 */
-	function getFieldContent($fN)
-		{
+	function getFieldContent($fN) {
 			/* Alles über den Film rausfinden */
-		if($this->film->id != $this->internal['currentRow']['movie'])
-			{
+		if($this->film->id != $this->internal['currentRow']['movie']) {
 			$this->film->getMovieById($this->internal['currentRow']['movie']);
 #			$this->film->debug();
-			}
+		}
 
 
 		switch($fN)	{
@@ -514,22 +501,20 @@ $sortBy = "cinema,sorting,date DESC";
 			break;
 			case 'movie_fskTooltip':
 				$out = $this->film->ratingTooltip;
-				if($out)
-					{
+				if($out) {
 					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_RATINGTOOLTIP']);
 					return $out;
-					}
+				}
 			break;
 
 			/* kommt aus anderer Tabelle */
 			case 'movie_distributor':
 				$out = $this->film->distibutor;
 
-				if($out)
-					{
+				if($out) {
 					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_DISTRIBUTOR']);
 					return $out;
-					}
+				}
 			break;
 			case 'movie_fbw':
 				$field = $this->film->fbw;
@@ -537,11 +522,10 @@ $sortBy = "cinema,sorting,date DESC";
 					if ($field & pow(2,$i))
 						$res .= $this->conf['fbw.'][$i]." ";
 
-				if($field)
-					{
+				if($field) {
 					$out = $this->cObj->wrap(trim($res), $this->conf[$this->ff['wrap.']['def']['mode'].'.']['MOVIE_FBW']);
 					return $out;
-					}
+				}
 			break;
 
 
@@ -769,29 +753,23 @@ $sortBy = "cinema,sorting,date DESC";
 			case 'movie_media-4':
 			case 'movie_media-5':
 			case 'movie_media-random':
-
 				list(,$nr) = explode("-", $fN);
 				$pic = explode(",", $this->film->media);
 
-				if($nr == 'random')
-					{
-					foreach($pic as $key => $val)
-						{
-						if($val == '')
-							unset($pic[$key]);
-						}
+				if($nr == 'random') {
+					foreach($pic as $key => $val) {
+						if($val == '') unset($pic[$key]);
+					}
 
 					$c = count($pic);
 					if($c == 0)
 						break;
 
 					return $pic[rand(0,$c-1)];
-					}
-				else
-					{
+				} else {
 					$nr--; // bei 0 anfangen zu zählen
 					$pic = $pic[$nr];
-					}
+				}
 
 				$this->conf['media.']['file'] = 'uploads/tx_tmdmovie/'.$pic;
 				$out = $this->cObj->IMAGE($this->conf['media.']);
@@ -799,12 +777,10 @@ $sortBy = "cinema,sorting,date DESC";
 				return $out;
 			break;
 
-
-			
-			case 'version3D':
-				if($this->film->version3D || $this->internal['currentRow']['version3D'] ) {
-					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode']]['VERSION_3D']);
-				}
+			case 'version3d': 
+				if($this->film->version3D || $this->internal['currentRow']['3d'] ) {
+					return $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['VERSION3D']);
+				} 
 			break;
 			
 
@@ -904,18 +880,16 @@ $sortBy = "cinema,sorting,date DESC";
 		 *	@param string string to be encrypted
 		 * 	@return string encrypted String as HEX number
 		 */
-	function encrypt($string)
-		{
+	function encrypt($string) {
 		$hex="";
 	    $length=strlen($string);
-	    for ($i=0; $i<$length; $i++)
-		    {
+	    for ($i=0; $i<$length; $i++) {
 		    $hex[] = dechex(ord(substr($string, $i, 1)));
-		    }
+		}
 		$hex = implode("", $hex);
 
 	    return $hex;
-		}
+	}
 
 
 
@@ -948,24 +922,21 @@ $sortBy = "cinema,sorting,date DESC";
 		$this->pi_initPIflexForm();
 
 			# Werte auslesen
-		$this->ff['def']['mode']  		= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'mode', 			  	's_DEF');
-		$this->ff['def']['noRes'] 		= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'disableReserved', 	's_DEF');
-		$this->ff['def']['previewMin'] 	= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'previewMin',		 	's_DEF');
-		$this->ff['def']['previewMax'] 	= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'previewMax', 			's_DEF');
-		$this->ff['def']['previewNotice'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'previewNotice', 			's_DEF');
+		$this->ff['def']['mode']  		= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'mode', 			's_DEF');
+		$this->ff['def']['noRes'] 		= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'disableReserved', 's_DEF');
+		$this->ff['def']['previewMin'] 	= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'previewMin',		's_DEF');
+		$this->ff['def']['previewMax'] 	= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'previewMax', 		's_DEF');
+		$this->ff['def']['previewNotice'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'previewNotice',	's_DEF');
 
-		$this->ff['def']['cinema'] 		= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'cinema',	 			's_DEF');
-#		$this->ff['def']['sortBy'] 		= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'sortBy',	 			's_DEF');
-		$this->ff['def']['special'] 	= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'special',	 			's_DEF');
-		$this->conf['pageReserve']	= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'pageReserve',  's_DEF');
+		$this->ff['def']['cinema'] 		= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'cinema',	 		's_DEF');
+		$this->ff['def']['special'] 	= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'special',	 		's_DEF');
+		$this->conf['pageReserve']	= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'pageReserve', 		's_DEF');
 
 		if(!$this->conf['image.']['file.']['width'])
 			$this->conf['image.']['file.']['width']	= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'width',		's_image');
 		$this->ff['image']['colums']		= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'colums', 		's_image');
 		$this->ff['image']['clickEnlarge'] 	= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'clickEnlarge', 's_image');
 		$this->conf['linkImagePage'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'linkImagePage','s_image');
-
-		
 
 			# besondere Vorrangregelungen
 		if($this->conf['mode'] == 'RSS') {
@@ -1021,7 +992,7 @@ $sortBy = "cinema,sorting,date DESC";
 		$markerArray['###MOVIE_ACTOR###'] 			= $this->getFieldContent('movie_actor');
 		$markerArray['###MOVIE_GENRE###'] 			= $this->getFieldContent('movie_genre');
 		
-		$markerArray['###VERSION_3D###'] 			= $this->getFieldContent('version');
+		$markerArray['###VERSION3D###'] 			= $this->getFieldContent('version3d');
 		
 		$markerArray['###PRG_WEEK###'] 				= $this->getFieldContent('week');
 		$markerArray['###PRG_SHOWTYPE###'] 			= $this->getFieldContent('showtype');
@@ -1225,7 +1196,7 @@ $sortBy = "cinema,sorting,date DESC";
 				{
 				$temp .= 'Ab '.$this->getFieldContent('date').'<br />';
 				}
-			$temp .= 'Die Spielzeiten sind noch nicht bekannt!<br />';
+			$temp .= $this->pi_getLL('timeNN');
 			$temp .= '</b>';
 			}
 

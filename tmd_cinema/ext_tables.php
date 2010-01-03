@@ -1,17 +1,15 @@
 <?php
 if (!defined ('TYPO3_MODE')) 	die ('Access denied.');
+
+include_once(t3lib_extMgm::extPath('tmd_cinema').'class.tx_tmd_cinema_title.php');
+
 $TCA["tx_tmdcinema_program"] = array (
     "ctrl" => array (
-        'title' => 'LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_program',
-        'label' => 'temp_title',
-	'label_alt' => 'week',
-	'label_alt_force' => 1,
+		'title' => 'LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_program',
 
+		'label' => 'movie',
+		'label_userFunc' => 'tx_tmd_cinema_title->getRecordTitle',
 
-/*		'label' => 'movie',
-		'label_alt' => 'tx_tmdmovie_movie',
-		'label_alt_force' => 1,
-*/
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
         'cruser_id' => 'cruser_id',
@@ -34,6 +32,9 @@ $TCA["tx_tmdcinema_program"] = array (
     )
 );
 
+
+	// initalize "context sensitive help" (csh)
+t3lib_extMgm::addLLrefForTCAdescr('tx_tmdcinema_program','EXT:tmd_cinema/locallang_csh_txtmdcinemaprogram.xml');
 
 $TCA["tx_tmdcinema_booking"] = array (
 	"ctrl" => array (

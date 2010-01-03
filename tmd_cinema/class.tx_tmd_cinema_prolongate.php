@@ -34,7 +34,7 @@ class tx_tmd_cinema_prolongate {
 
 			if($table != "tx_tmdcinema_program") return;
 
-
+/*
 				// if no title is given, then do so.
 				// use the Movie's Title 	
 			if(empty($incomingFieldArray['temp_title'])) {
@@ -50,7 +50,7 @@ class tx_tmd_cinema_prolongate {
 				}
 				
 			}
-			
+
 				// Movie finally is selected but still no title given 
 			if($incomingFieldArray['temp_title'] == 'No Title' && !empty($incomingFieldArray['movie'])) {
 				$lPart = strrchr($incomingFieldArray['movie'], '_');
@@ -61,7 +61,7 @@ class tx_tmd_cinema_prolongate {
 			}
 			
 
-			
+*/			
 			
 
 			

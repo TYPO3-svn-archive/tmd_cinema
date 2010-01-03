@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+    <meta type="array">
+        <description>CSH for tmd_movie main table</description>
+        <type>CSH</type>
+        <csh_table>tx_tmdmovie</csh_table>
+        <labelContext type="array">
+        </labelContext>
+    </meta>
+    <data type="array">
+
+        <languageKey index="default" type="array">
+            <label index=".description">english to follow...</label>
+        </languageKey>
+        
+        <languageKey index="de" type="array">
+            <label index=".description">Kino Programm</label>
+            <label index="hidden.description">Datensatz verstecken</label>
+
+            <label index="week.description">Spielwoche. 
+            							Wird automatisch verlängert wenn man die Kinoverwaltung benutzt, kann aber auch jederzeit von Hand korrigiert werden.</label>
+            <label index="date.description">Erster Tag = Beginn der Spiel Woche.
+            								Wird automatisch um eine Woche verlängert wenn man die Kinoverwaltung benutzt, kann aber auch jederzeit von Hand korrigiert werden.
+            								Sollte immer der Erste Tag der Kinowoche sein, auch wenn nur ein Tag in der Woche gespielt wird, z.B. Dienstag.
+            								In Deutschland = Donnerstag</label>
+            <label index="info.description">Kurze Information zum Programm</label>
+            <label index="info2.description">Ausführliche Informationen zum Programm</label>
+            <label index="nores.description">Keine der Vorstellungen kann reserviert werden.</label>
+            <label index="cinema.description">In welchem Kino läuft der Film</label>
+            <label index="showtype.description">Vorstellungstyp</label>
+            <label index="movie.description">Film auswählen. Im Suchfeld kann nach dem Titel gesucht werden, vorschläge werden angezeigt.
+											Beispiel: In der DB sind die Filme "Harry Potter 1-5" .
+											Es wird "harry" oder "Harry" gefunden, nicht jedoch "potter" oder "Potter".</label>
+            <label index="program.description">Spielzeiten. Die Tage werden mit | voneinander getrennt. Es steht ein Assistent zur Verfügung.</label>
+            <label index="3d.description">Diese Vorstellungen sind 3D.</label>
+
+        </languageKey>
+
+    </data>
+
+</T3locallang>

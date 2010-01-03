@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006-2009 Christian Tauscher <cms@media-distillery.de>
+*  (c) 2006-2010 Christian Tauscher <cms@media-distillery.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -89,7 +89,7 @@ class tx_tmdcinema_tx_tmdcinema_program_programwiz extends t3lib_SCbase {
 
 			// Setting options:
 		$this->xmlStorage = $this->P['params']['xmlOutput'];
-		$this->numNewRows = t3lib_div::intInRange($this->P['params']['numNewRows'],1,50,5);
+		$this->numNewRows = t3lib_div::intInRange($this->P['params']['numNewRows'],1,50,1);
 
 			// Textareas or input fields:
 		$this->inputStyle=isset($this->TABLECFG['textFields']) ? $this->TABLECFG['textFields'] : 1;
@@ -165,7 +165,7 @@ class tx_tmdcinema_tx_tmdcinema_program_programwiz extends t3lib_SCbase {
 
 			// Generation of the Table Wizards HTML code:
 		$content = $this->getTableHTML($tableCfgArray,$row);
-
+		
 			// Return content:
 		return $content;
 	}
@@ -364,7 +364,20 @@ class tx_tmdcinema_tx_tmdcinema_program_programwiz extends t3lib_SCbase {
 
 			// Add CSH:
 		$content.= t3lib_BEfunc::cshItem('xMOD_csh_corebe', 'wizard_table_wiz', $GLOBALS['BACK_PATH'],'');
+		
+		$tRowBottom = $tRows;
+		$tRowTop = '<td></td>
+					<td style="text-align: center; font-weight: bold;">Do</td>
+					<td style="text-align: center; font-weight: bold;">Fr</td>
+					<td style="text-align: center; font-weight: bold;">Sa</td>
+					<td style="text-align: center; font-weight: bold;">So</td>
+					<td style="text-align: center; font-weight: bold;">Mo</td>
+					<td style="text-align: center; font-weight: bold;">Di</td>
+					<td style="text-align: center; font-weight: bold;">Mi</td>'; 
 
+		$tRows[] = $tRowTop;
+		$tRows[] = $tRowBottom;
+				
 			// Implode all table rows into a string, wrapped in table tags.
 		$content.= '
 
@@ -580,7 +593,7 @@ class tx_tmdcinema_tx_tmdcinema_program_programwiz extends t3lib_SCbase {
 		if (!$cols && trim($tLines[0]))	{	// auto...
 			$cols = count(explode($this->tableParsing_delimiter,$tLines[0]));
 		}
-		$cols=$cols?$cols:4;
+		$cols=$cols?$cols:7;
 
 			// Traverse the number of table elements:
 		$cfgArr=array();

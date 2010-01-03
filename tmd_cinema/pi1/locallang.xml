@@ -19,7 +19,7 @@
 			<label index="Normal">Normal</label>
 			<label index="website">Zur Offiziellen Website</label>
 			<label index="noValidPRG">Dieses Programm ist bereits abgelaufen!</label>
-			<label index="timeNA">Die Spielzeiten sind noch nicht bekannt!</label>
+			<label index="timeNN">Die Spielzeiten sind noch nicht bekannt!</label>
 			
 			<label index="mailForm.name">Ihr Name:</label>
 			<label index="mailForm.email">Ihre E-Mail Adresse:</label>
