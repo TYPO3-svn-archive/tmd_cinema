@@ -367,39 +367,29 @@ $sortBy = "cinema,sorting,date DESC";
 			}
 			#return "Das Programm ab ".strftime($this->conf['timeFormat'], $wStart)." ist noch nicht bekannt.";
 
-		foreach($cinemaOrder as $cinema)
-			{
-			foreach($all as $this->internal['currentRow'])
-				{
-				if($this->internal['currentRow']['cinema'] == $cinema)
-					{
-
+		foreach($cinemaOrder as $cinema) {
+			foreach($all as $this->internal['currentRow']) {
+				if($this->internal['currentRow']['cinema'] == $cinema) {
 						# Sammelüberschrift
-					if($wStart != $this->internal['currentRow']['date'] && $type != 'special'/* && $type != 'RSS'*/)
-						{
+					if($wStart != $this->internal['currentRow']['date'] && $type != 'special'/* && $type != 'RSS'*/) {
 						$wStart = $this->internal['currentRow']['date'];
 
-						if($wStart > 0 && $this->conf['showWeekDate'] != 0 )
-							{
+						if($wStart > 0 && $this->conf['showWeekDate'] != 0 ) {
 							if ($type != "RSS")
 								$items[] = '<h2>'.((!$startWeek)?"Programm": "")." ab ".strftime($this->conf['timeFormat'], $wStart)."</h2>";
-							}
-						elseif($wStart == 0)
-							{
+						} elseif($wStart == 0) {
 							$noDate[] = '<h2>Demnächst</h2>';
-							}
 						}
+					}
 
 						# Film ausgeben
-					switch($type)
-						{
+					switch($type) {
 						case 'short':
-							if($wStart > 0)
+							if($wStart > 0) {
 								$items[] = $this->substituteMarkers("PROGRAMM_SHORTVIEW");
-							else
-								{
+							} else {
 								$noDate[] = $this->substituteMarkers("PROGRAMM_SHORTVIEW");
-								}
+							}
 						break;
 						case 'special':
 							$items[] = $this->substituteMarkers("PROGRAMM_SPECIAL");
@@ -408,50 +398,44 @@ $sortBy = "cinema,sorting,date DESC";
 							$items[] = $this->substituteMarkers("PROGRAMM_RSS2_ITEM");
 						break;
 						default:
-							if($wStart > 0)
-								{
+							if($wStart > 0) {
 								$items[] = '<a name="'.$this->prefixId."-".$this->internal['currentRow']['uid'].'"></a>'.
 									$this->substituteMarkers("PROGRAMM_FULLVIEW");
-								}
-							else
-								{
+							} else {
 								$noDate[] = '<a name="'.$this->prefixId."-".$this->internal['currentRow']['uid'].'"></a>'.
 									$this->substituteMarkers("PROGRAMM_FULLVIEW");
-								}
-						} # END switch
+							}
+					} # END switch
 
-					}
 				}
+			}
 
 
-			if(is_array($items))
-				{
-				if(count($items) > 0)
+			if(is_array($items)) {
+				if(count($items) > 0) {
 					$prg .= implode(chr(10), $items);
 				}
-			if(is_array($noDate))
-				{
-				if(count($noDate) > 0)
+			}
+			if(is_array($noDate)) {
+				if(count($noDate) > 0) {
 					$prg .= implode(chr(10), $noDate);
 				}
+			}
 
 			unset($items);
 			unset($noDate);
 			}
 
-		if($type == 'RSS')
-			{
+		if($type == 'RSS') {
 			$out = nl2br(htmlentities($prg));
-			}
-		else
-			{
+		} else {
 			$out .= '<div class="'.$this->pi_getClassName($type.'Program').'">';
 			$out .= $prg;
 			$out .= '</div>';
-			}
+		}
 
 		return $out;
-		}
+	}
 
 
 	function singleView() {
@@ -570,6 +554,7 @@ $sortBy = "cinema,sorting,date DESC";
 					case 'singleView':	$this->conf['image.'] = $this->conf['imageSingle.'];	break;
 					case 'special':		$this->conf['image.'] = $this->conf['imageSpecial.']; 	break;
 				}
+
 				
 				if($this->film->poster) {
 					$temp = explode(',', $this->film->poster); # mehrere Poster?
@@ -577,6 +562,7 @@ $sortBy = "cinema,sorting,date DESC";
 						$this->conf['image.']['file.']['10.']['file'] = $this->uploadPath.$temp[rand(0,count($temp)-1)];
 					} else {
 						$this->conf['image.']['file'] = $this->uploadPath.$temp[rand(0,count($temp)-1)];
+						$this->conf['image.']['file.']['width'] = $this->conf['image.']['file.']['width'];
 					}
 				} else { // Media File als Alternative
 					if($this->conf['image.']['file'] == 'GIFBUILDER') {
@@ -601,36 +587,32 @@ $sortBy = "cinema,sorting,date DESC";
 			break;
 			case 'movie_time':
 				$out = $this->film->length;
-				if($out)
-					{
+				if($out) {
 					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_TIME']);
 					return $out;
-					}
+				}
 			break;
 			case 'movie_www':
 				$out = $this->film->web;
-				if($out)
-					{
+				if($out) {
 					$out =  $this->pi_linkToPage($this->pi_getLL("website", "web"), $this->film->web, "_blank");
 					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_WWW']);
 					return $out;
-					}
+				}
 			break;
 			case 'movie_start':
 				$out = $this->film->releasedate;
-				if($out)
-					{
+				if($out) {
 					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_RELEASEDATE']);
 					return $out;
-					}
+				}
 			break;
 			case 'movie_format':
 				$out = $this->film->screenformat;
-				if($out)
-					{
+				if($out) {
 					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_FORMAT']);
 					return $out;
-					}
+				}
 			break;
 			case 'movie_sound':
 				$out = explode(" ", $this->film->sound);
@@ -932,8 +914,8 @@ $sortBy = "cinema,sorting,date DESC";
 		$this->ff['def']['special'] 	= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'special',	 		's_DEF');
 		$this->conf['pageReserve']	= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'pageReserve', 		's_DEF');
 
-		if(!$this->conf['image.']['file.']['width'])
-			$this->conf['image.']['file.']['width']	= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'width',		's_image');
+		if(empty($this->conf['image.']['file.']['width']))
+			$this->conf['image.']['file.']['width']	= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'width', 's_image');
 		$this->ff['image']['colums']		= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'colums', 		's_image');
 		$this->ff['image']['clickEnlarge'] 	= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'clickEnlarge', 's_image');
 		$this->conf['linkImagePage'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'linkImagePage','s_image');
@@ -1211,24 +1193,21 @@ $sortBy = "cinema,sorting,date DESC";
 		 * @param timestamp UNIX timestamp to be checked
 		 * @return timestamp UNIX timestanp corrected, if needed
 		 */
-	function checkSummerWinterBug($theDay)
-		{
+	function checkSummerWinterBug($theDay) {
 		if($this->correctDate)
 			return $theDay+$this->correctDate;
 
 		$oneDay = 24*60*60;
 		$oneHour = 60*60;
 
-		if(date("I", $theDay-$oneDay) != date("I", $theDay))
-			{
-			if(!date("I", $theDay))	# Sommer -> Winter
-				{
+		if(date("I", $theDay-$oneDay) != date("I", $theDay)) {
+			if(!date("I", $theDay)) { 	# Sommer -> Winter
 				$this->correctDate = $oneHour*24;
-				}
 			}
+		}
 
 		return $theDay+$this->correctDate;
-		}
+	}
 
 
 
