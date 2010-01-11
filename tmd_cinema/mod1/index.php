@@ -329,11 +329,12 @@ class  tx_tmdcinema_module1 extends t3lib_SCbase {
 
 		foreach($curTable as $key => $this->row) {
 				# get some missing info from the film
-			$rec = t3lib_BEfunc::getRecord('tx_tmdmovie_movie',$this->row['movie'],$fields='uid,title,poster,version3d',$where=''); 
+			$rec = t3lib_BEfunc::getRecord('tx_tmdmovie_movie',$this->row['movie'],$fields='uid,title,poster,version3d,runningtime',$where=''); 
 			$this->row['title'] = $rec['title'];
 			$this->row['poster'] = $rec['poster'];
 			$this->row['mov_uid'] = $rec['uid'];
 			$this->row['version3d'] = $rec['version3d'];
+			$this->row['length'] = $rec['runningtime'];
 			
 			
 				// Datumszeile wenn es sich geändert hat.
@@ -437,6 +438,7 @@ class  tx_tmdcinema_module1 extends t3lib_SCbase {
 				$out .= '3D<br />';
 			}
 			$out .= 	($this->getFieldContentPrg('nores')) ? 'NoRes<br />' : '';
+			$out .= 	"ca. ".$this->getFieldContentMovie('length')." min.<br />";
 			$out .= 	'Woche: '.$this->getFieldContentPrg('week');
 	
 			$out .= '</td>';
@@ -555,8 +557,7 @@ class  tx_tmdcinema_module1 extends t3lib_SCbase {
 			break;
 			case 'rating':
 				/* ShowType-Cache erstellen */
-				if(!$this->fskCache)
-					{
+				if(!$this->fskCache) {
 					$select = 'uid,rating';
 					$local_table = 'tx_tmdmovie_rating';
 #					$whereClause = "1=1 ".$GLOBALS['TYPO3_DB']->enableFields($local_table);
@@ -590,10 +591,9 @@ class  tx_tmdcinema_module1 extends t3lib_SCbase {
 				$thumbScript = '../../../../t3lib/thumbs.php';
 				$theFile =  PATH_site."uploads/tx_tmdmovie/".$img;
 				$tparams='';
-				$size='70x70';
 			 
 				if(file_exists($theFile)) {
-					$out = t3lib_BEfunc::getThumbNail($thumbScript,$theFile,$tparams,$size);
+					$out = t3lib_BEfunc::getThumbNail($thumbScript,$theFile,$tparams,'70x70');
 				}								
 				return $out;
 			break;
@@ -651,7 +651,10 @@ class  tx_tmdcinema_module1 extends t3lib_SCbase {
 			case 'version3d':
 				return $this->row[$fN];
 			break;
-						
+			case 'length':
+				return $this->row['length'];
+			break;
+			
 			default:
 				return $this->row[$fN];
 		}

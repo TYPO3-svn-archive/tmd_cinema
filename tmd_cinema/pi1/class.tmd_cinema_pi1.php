@@ -64,7 +64,7 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 		$this->pi_setPiVarDefaults();
 		$this->pi_loadLL();		// Loading the LOCAL_LANG values
 
-/* oelib			
+/* oelib
 		$this->init($conf);
 		$confCheck = $this->checkConfiguration();
 		if($confCheck) return $this->pi_wrapInBaseClass("->".$confCheck."<-");
@@ -230,21 +230,21 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 		return $markerArray;
 	}
 
-	
-	
-	
-	
+
+
+
+
 
 		/**
 		 * Plätze Reservieren
 		 */
 	function booking() {
-			# Daten vorbereiten 		
+			# Daten vorbereiten
 		if($this->conf['cryptTime'] == 1) # verschlüsseltes entschlüsseln
 			list($this->piVars['res'], $this->piVars['uid'], $this->piVars['cinema']) = explode("-", $this->decrypt($this->piVars[crypt]));
 		else
 			list($this->piVars['res'], $this->piVars['uid'], $this->piVars['cinema']) = explode("-", $this->piVars[crypt]);
-			
+
 		if($this->conf['DEBUG']) {
 			$out .= t3lib_div::view_array($this->conf);
 			$out .= t3lib_div::view_array(array($this->piVars['res'], $this->piVars['uid'], $this->piVars['cinema']));
@@ -274,13 +274,13 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
  		$this->oForm = t3lib_div::makeInstance("tx_ameosformidable");
 		$this->oForm->init($this, t3lib_extmgm::extPath($this->extKey) . "pi1/form/booking_form.xml");
 		$out .= $this->oForm->render();
-		
+
 		return $out;
 	}
 
 
-		
-		
+
+
 		/**
 		 * Zeit Große Übersicht
 		 *
@@ -293,8 +293,7 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 		$oneWeek = $oneDay * 7;
 
 		$now = mktime();
-		switch(strftime("%u", $now)) # %u = Tag der Woche 1= Montag
-			{
+		switch(strftime("%u", $now)) { # %u = Tag der Woche 1= Montag
 			case 1: $wStart = $now - $oneDay*4; break; # Mo
 			case 2: $wStart = $now - $oneDay*5; break; # DI
 			case 3: $wStart = $now - $oneDay*6; break; # MI
@@ -302,46 +301,46 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 			case 5: $wStart = $now - $oneDay*1; break; # FR
 			case 6: $wStart = $now - $oneDay*2; break; # SA
 			case 7: $wStart = $now - $oneDay*3; break; # SO
-			}
+		}
 #debug(strftime("%u  %d.%m.%y", $wStart), 'start');
 
 		$wStart += $startWeek*$oneWeek; #-$oneDay;	# n-te Woche vom jetzigen DO an - 1 tag damit Mittwoch das Ende ist.
-		if(strftime("%u", $now) != 3)
+		if(strftime("%u", $now) != 3) {
 			$wStart -= $oneDay;
+		}
 #debug(strftime("%u  %d.%m.%y $startWeek", $wStart), 'start');
 
 		$wStart = mktime ( 0, 0, 0, strftime("%m", $wStart), strftime("%d", $wStart),strftime("%Y", $wStart)); # Auf 0:00 Uhr setzten!
 		$wStart_tmp = $wStart; # für "kein progamm" zwischenspeichern
 
 			# Programm vorzeitig wechseln
-		if(mktime() + $this->conf['switchPrgBevore']*60*60 >= $wStart+$oneWeek)
-			{
+		if(mktime() + $this->conf['switchPrgBevore']*60*60 >= $wStart+$oneWeek) {
 			$wStart += $oneWeek;
 #			debug($this->conf['switchPrgBevore'], "sw");
-			}
+		}
 
 		$wEnd   = $wStart + $oneWeek*$nextWeeks;
 #debug(strftime("%d.%m.%y", $wStart).'-'.strftime("%d.%m.%y", $wEnd));
 
-		if($startWeek == 0)
-			{
-			if ($type != "RSS")
+		if($startWeek == 0) {
+			if ($type != "RSS") {
 				$items[] = "<h1>Programm ab ".strftime($this->conf['timeFormat'], $wStart)."</h1>";
+			}
 			$whereClause   .= 'AND date >= '.$wStart.' AND date < '.($wEnd);
-			}
-		else
-			{
-			if ($type != "RSS")
+		} else {
+			if ($type != "RSS") {
 				$items[] = "<h2>Vorschau ab ".strftime($this->conf['timeFormat'], $wStart)."</h2>";
-			#." bis ".strftime($this->conf['timeFormat'], $wEnd-1)."</h2>";
-			$whereClause .= ' AND (date = 0 OR (date >= '.$wStart.' AND date < '.$wEnd.'))';
+				#." bis ".strftime($this->conf['timeFormat'], $wEnd-1)."</h2>";
 			}
+			$whereClause .= ' AND (date = 0 OR (date >= '.$wStart.' AND date < '.$wEnd.'))';
+		}
 		$whereClause .= " AND cinema IN (".$this->ff['def']['cinema'].")";
-		if($type=="special")
+		if($type=="special") {
 			$whereClause .= " AND showtype IN (".$this->ff['def']['special'].")";
+		}
 
 #		$sortBy = $this->ff['def']['sortBy'];
-$sortBy = "cinema,sorting,date DESC";
+		$sortBy = "cinema,date,sorting ASC";
 
 			// Make listing query, pass query to SQL database:
 		$res = $this->pi_exec_query('tx_tmdcinema_program', 0, $whereClause,$mm_cat='',$groupBy, $sortBy);
@@ -354,23 +353,21 @@ $sortBy = "cinema,sorting,date DESC";
 
 		while($this->internal['currentRow'] = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 			$all[] = $this->internal['currentRow'];
-			}
+		}
 
-		if (count($all)  == 0) /* Es gibt noch kein Programm */
-			{
+		if (count($all)  == 0) {  /* Es gibt noch kein Programm */
 			if($this->ff['def']['previewNotice'])
-				$out = sprintf($this->ff['def']['previewNotice'], strftime($this->conf['timeFormat'], $wStart));
+				$out = sprintf($this->ff['def']['previewNotice'], strftime($this->conf['timeFormat'], $wStart+$oneDay));
 			else
-				$out = sprintf($this->conf['previewNotice'], strftime($this->conf['timeFormat'], $wStart));
+				$out = sprintf($this->conf['previewNotice'], strftime($this->conf['timeFormat'], $wStart+$oneDay));
 
 			return $out;
-			}
-			#return "Das Programm ab ".strftime($this->conf['timeFormat'], $wStart)." ist noch nicht bekannt.";
+		}
+		#return "Das Programm ab ".strftime($this->conf['timeFormat'], $wStart)." ist noch nicht bekannt.";
 
 		foreach($cinemaOrder as $cinema) {
 			foreach($all as $this->internal['currentRow']) {
-				if($this->internal['currentRow']['cinema'] == $cinema) {
-						# Sammelüberschrift
+				if($this->internal['currentRow']['cinema'] == $cinema) { # Sammelüberschrift
 					if($wStart != $this->internal['currentRow']['date'] && $type != 'special'/* && $type != 'RSS'*/) {
 						$wStart = $this->internal['currentRow']['date'];
 
@@ -555,7 +552,7 @@ $sortBy = "cinema,sorting,date DESC";
 					case 'special':		$this->conf['image.'] = $this->conf['imageSpecial.']; 	break;
 				}
 
-				
+
 				if($this->film->poster) {
 					$temp = explode(',', $this->film->poster); # mehrere Poster?
 					if($this->conf['image.']['file'] == 'GIFBUILDER') {
@@ -608,7 +605,12 @@ $sortBy = "cinema,sorting,date DESC";
 				}
 			break;
 			case 'movie_format':
-				$out = $this->film->screenformat;
+				switch($this->film->screenformat) {
+				  case 1: $out = $this->pi_getLL("WideScreen"); break;
+				  case 2: $out = $this->pi_getLL("CinemaScope"); break;
+				  case 3: $out = $this->pi_getLL("Normal"); break;
+				  default: $out = "";
+				  }
 				if($out) {
 					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_FORMAT']);
 					return $out;
@@ -663,13 +665,13 @@ $sortBy = "cinema,sorting,date DESC";
 					$parts= array();
 					$parts = explode(" ", $val);
 					foreach($parts as $namePart) {
-						$correctedName[] = ucfirst(strtolower($namePart));	
+						$correctedName[] = ucfirst(strtolower($namePart));
 					}
 					$names[] = implode(" ", $correctedName);
 					$correctedName = '';
 				}
 				$out = implode(", ", $names);
-				
+
 				if($out)
 					{
 					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_DIRECTOR']);
@@ -685,13 +687,13 @@ $sortBy = "cinema,sorting,date DESC";
 					$parts= array();
 					$parts = explode(" ", $val);
 					foreach($parts as $namePart) {
-						$correctedName[] = ucfirst(strtolower($namePart));	
+						$correctedName[] = ucfirst(strtolower($namePart));
 					}
 					$names[] = implode(" ", $correctedName);
 					$correctedName = '';
 				}
 				$out = implode(", ", $names);
-				
+
 				if($out)
 					{
 					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_PRODUCER']);
@@ -701,20 +703,20 @@ $sortBy = "cinema,sorting,date DESC";
 			case 'movie_actor':
 				$out = $this->film->actor;
 				$out = strip_tags($out);
-				
+
 				$fullName = explode(",", $out);
-				
+
 				foreach($fullName as $val){
 					$parts= array();
 					$parts = explode(" ", $val);
 					foreach($parts as $namePart) {
-						$correctedName[] = ucfirst(strtolower($namePart));	
+						$correctedName[] = ucfirst(strtolower($namePart));
 					}
 					$names[] = implode(" ", $correctedName);
 					$correctedName = '';
 				}
 				$out = implode(", ", $names);
-				
+
 				if($out)
 					{
 					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_ACTOR']);
@@ -759,12 +761,12 @@ $sortBy = "cinema,sorting,date DESC";
 				return $out;
 			break;
 
-			case 'version3d': 
+			case 'version3d':
 				if($this->film->version3D || $this->internal['currentRow']['3d'] ) {
 					return $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['VERSION3D']);
-				} 
+				}
 			break;
-			
+
 
 			/* Ab hier die Programm-Tabelle */
 			case 'uid':
@@ -886,7 +888,7 @@ $sortBy = "cinema,sorting,date DESC";
 	    for ($i=0; $i<$length; $i+=2) {
 		    $dec[] = chr(hexdec(substr($string, $i, 2)));
 		}
-		
+
 		if(is_array($dec)) $dec = implode("", $dec);
 
 	    return $dec;
@@ -973,9 +975,9 @@ $sortBy = "cinema,sorting,date DESC";
 		$markerArray['###MOVIE_PRODUCER###'] 		= $this->getFieldContent('movie_producer');
 		$markerArray['###MOVIE_ACTOR###'] 			= $this->getFieldContent('movie_actor');
 		$markerArray['###MOVIE_GENRE###'] 			= $this->getFieldContent('movie_genre');
-		
+
 		$markerArray['###VERSION3D###'] 			= $this->getFieldContent('version3d');
-		
+
 		$markerArray['###PRG_WEEK###'] 				= $this->getFieldContent('week');
 		$markerArray['###PRG_SHOWTYPE###'] 			= $this->getFieldContent('showtype');
 		$markerArray['###PRG_TIMETABLE###'] 		= $this->getFieldContent('program');
@@ -1103,12 +1105,12 @@ $sortBy = "cinema,sorting,date DESC";
 				    		 "title" => $this->pi_getLL("howtoReserve"),
 						     "parameter" => $this->conf['pageReserve'],
 						     );
-						     
+
 						if($this->conf['cryptTime'] == 1)
 							$linkconf["additionalParams"] = "&".$this->prefixId."[crypt]=".$this->encrypt($theTime."-".$this->internal['currentRow']['movie']."-".$this->internal['currentRow']['cinema']);
 						else
 							$linkconf["additionalParams"] = "&".$this->prefixId."[crypt]=".$theTime."-".$this->internal['currentRow']['movie']."-".$this->internal['currentRow']['cinema'];
-							
+
 						if($this->conf['noRes'] == 'pageLinkOnly') unset($linkconf['additionalParams']);
 						if($this->conf['noRes'] == 'ticket')
 							{
