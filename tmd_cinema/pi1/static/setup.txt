@@ -120,6 +120,7 @@ plugin.tx_tmdcinema_pi1.wrap {
 		MOVIE_IMAGE = |
 		MOVIE_TIME = |
 		MOVIE_WWW = |
+		MOVIE_YOUTUBE = |
 		MOVIE_RELEASEDATE = |
 		MOVIE_FORMAT = |
 		MOVIE_SOUND = |
@@ -149,6 +150,7 @@ longView {
 		MOVIE_IMAGE = |
 		MOVIE_TIME = ca.&nbsp;| min. -
 		MOVIE_WWW = |
+		MOVIE_YOUTUBE = |
 		MOVIE_RELEASEDATE = |
 		MOVIE_FORMAT = |
 		MOVIE_SOUND = |
@@ -186,6 +188,7 @@ special {
 		MOVIE_IMAGE = |
 		MOVIE_TIME = |
 		MOVIE_WWW = |
+		MOVIE_YOUTUBE = |
 		MOVIE_RELEASEDATE = |
 		MOVIE_FORMAT = |
 		MOVIE_SOUND = |
@@ -223,6 +226,7 @@ special {
 		MOVIE_IMAGE = |
 		MOVIE_TIME = ca.&nbsp; | &nbsp;min.<br />
 		MOVIE_WWW = | <br />
+		MOVIE_YOUTUBE = | <br />
 		MOVIE_RELEASEDATE = Bundesstart:&nbsp; | <br />
 		MOVIE_FORMAT = Bildformat:&nbsp; | <br />
 		MOVIE_SOUND = Tonsysteme:&nbsp; | <br />

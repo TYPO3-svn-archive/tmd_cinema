@@ -434,19 +434,21 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 		return $out;
 	}
 
-
+	
+	
+	/**
+	 * Returns the detail View
+	 *
+	 * @return	the view
+	 */
 	function singleView() {
-				// This sets the title of the page for use in indexed search results:
-#		if ($this->internal['currentRow']['title'])	$GLOBALS['TSFE']->indexedDocTitle=$this->internal['currentRow']['title'];
-#		$content  = '<a name="'.$this->prefixId."-".$this->internal['currentRow']['uid'].'"></a>';
-
 		// Spammern das Handwerk legen
 		// Res Limit berücksichtigen und das Kino auch.
 		if(	$this->internal['currentRow']['date'] > 0 && (
 				7*24*60*60-$this->conf['resLimit'] < time()-$this->internal['currentRow']['date']  ||
 				!in_array($this->internal['currentRow']['cinema'], explode(",", $this->conf['myCinema']))   )
 			) {
-			$content = $this->pi_getLL("noValidPRG", "noValidPRG");
+			$content = $this->pi_getLL("noValidPRG", "_noValidPRG_");
 		} else {
 			$content = $this->substituteMarkers("SINGLE_VIEW");
 		}
@@ -555,6 +557,7 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 
 				if($this->film->poster) {
 					$temp = explode(',', $this->film->poster); # mehrere Poster?
+
 					if($this->conf['image.']['file'] == 'GIFBUILDER') {
 						$this->conf['image.']['file.']['10.']['file'] = $this->uploadPath.$temp[rand(0,count($temp)-1)];
 					} else {
@@ -578,7 +581,6 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 
 				$this->conf['image.']['altText'] = $this->film->titel;
 				$out = $this->cObj->IMAGE($this->conf['image.']);
-
 				$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_IMAGE']);
 				return $out;
 			break;
@@ -594,6 +596,14 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 				if($out) {
 					$out =  $this->pi_linkToPage($this->pi_getLL("website", "web"), $this->film->web, "_blank");
 					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_WWW']);
+					return $out;
+				}
+			break;
+			case 'movie_youtube':
+				$out = $this->film->youtube;
+				if($out) {
+					$out = $this->pi_linkToPage($this->pi_getLL("youtube", "_youtube_"), $this->film->youtube, "_blank");
+					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_YOUTUBE']);
 					return $out;
 				}
 			break;
@@ -945,7 +955,7 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 			// oben weil ein array zurück kommt
 #		$markerArray = $this->getFieldContent('movie_media');
 
-		$markerArray['###MOVIE_TITLE###'] 			= $this->getFieldContent('movie_title');
+		$markerArray['###MOVIE_TITLE###'] 			= $this->getFieldContent('movie_title'); 
 		$markerArray['###MOVIE_TITLE_ORIGINAL###']  = $this->getFieldContent('movie_originaltitle');
 		$markerArray['###MOVIE_TITLE_SHORT###']		= $this->getFieldContent('movie_subtitle');
 		$markerArray['###MOVIE_TITLE_SHORT_FIRST###'] = $this->getFieldContent('movie_subtitle_first');
@@ -959,6 +969,7 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 		$markerArray['###MOVIE_SOUND###'] 			= $this->getFieldContent('movie_sound');
 		$markerArray['###MOVIE_DISTRIBUTOR###'] 	= $this->getFieldContent('movie_distributor');
 		$markerArray['###MOVIE_WWW###'] 			= $this->getFieldContent('movie_www');
+		$markerArray['###MOVIE_YOUTUBE###'] 		= $this->getFieldContent('movie_youtube');
 		$markerArray['###MOVIE_DESCRIPTION###'] 	= $this->getFieldContent('movie_summary');
 		$markerArray['###MOVIE_DESCRIPTION_SHORT###'] =	$this->getFieldContent('movie_summary_short');
 		$markerArray['###MOVIE_EXTRAPICS###'] 		= $this->getFieldContent('movie_mediafile');
@@ -996,30 +1007,31 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
  * Das ist zum Programm
  *
 */
-										# noch verlinken wenn es gewünscht ist
-		$linkProgramm = array(
+			# Programm verlinken
+		$conf = array(
 						"section" => $this->prefixId."-".$this->internal['currentRow']['uid'],
 						"parameter" => $this->conf['linkImagePage']
 						);
-
-		$linkProgramm = $this->cObj->typoLink("|", $linkProgramm);
-
-		$wrappedSubpartArray['###LINK_PROGRAMM###'] = explode('|', $linkProgramm);
-
-
-		$linkSingle = $this->pi_list_linkSingle(
+		$link['###LINK_PROGRAMM###'] = explode('|', $this->cObj->typoLink("|", $conf));
+		
+			# Einzelansicht verlinken
+		$conf = $this->pi_list_linkSingle(
 					"|",
 					$this->internal['currentRow']['uid'],
 					TRUE,
 					$mergeArr=array(),
 					$urlOnly=FALSE,
 					$this->conf['linkImagePage']);
+		$link['###LINK_SINGLE###'] = explode('|', $conf);
 
-		$wrappedSubpartArray['###LINK_SINGLE###'] = explode('|', $linkSingle);
+		#Read more: http://dmitry-dulepov.com/article/why-substitutemarkerarraycached-is-bad.html#ixzz0dC2MuVq9
+		$template = $this->cObj->substituteMarkerArray($template, $markerArray);
+		foreach ($link as $subPart => $subContent) {
+		    $template = $this->cObj->substituteSubpart($template, $subPart, $subContent);
+		}
 
-		$template = $this->cObj->substituteMarkerArrayCached($template, (array)$markerArray, (array)$subpartArray, (array)$wrappedSubpartArray);
 
-
+		
 		return $template;
 		}
 
@@ -1161,17 +1173,22 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 				foreach($val as $key1 => $val1)
 					{
 					$val1 = $this->cObj->wrap($val1, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_TIMETABLE_TD']);
-					if($key1 == $todaysNr) # Heute!
-						$tmp[$i] .= '<td style="background-color: '.$this->conf['todaysColor'].';">'.$val1."</td>";
-					else
-						$tmp[$i] .= "<td>".$val1."</td>";
+					if($key1 == $todaysNr) {# Heute!
+						if(isset($this->conf['todaysColor'])) { # eigene Hintergundfarbe
+							$tmp[$i] .= '<td style="'.$this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_TIMETABLE_TD_STYLE'].' background-color: '.$this->conf['todaysColor'].';">'.$val1.'</td>';
+						} else { 
+							$tmp[$i] .= '<td style="'.$this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_TIMETABLE_TD_STYLE'].';">'.$val1.'</td>';
+						}
+					} else {
+						$tmp[$i] .= '<td style="'.$this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_TIMETABLE_TD_STYLE'].'">'.$val1.'</td>';
+					}
 
 					}
 				$tmp[$i] .= "</tr>";
 				$i++;
 				}
 
-			$temp = '<table class="program" style="'.$this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_TIMETABLE_STYLE'].'">'.$head."<tbody>".implode(chr(10),$tmp)."</tbody></table>";
+			$temp = '<table class="program" style="'.$this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_TIMETABLE_STYLE'].'">'.$head."<tbody>".implode(chr(10),$tmp).'</tbody></table>';
 			}
 		else
 			{ # Spielplan nicht bekannt

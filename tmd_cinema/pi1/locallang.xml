@@ -18,6 +18,7 @@
 			<label index="CinemaScope">CinemaScope</label>
 			<label index="Normal">Normal</label>
 			<label index="website">Zur Offiziellen Website</label>
+			<label index="youtube">Trailer auf YouTube</label>
 			<label index="noValidPRG">Dieses Programm ist bereits abgelaufen!</label>
 			<label index="timeNN">Die Spielzeiten sind noch nicht bekannt!</label>
 			
