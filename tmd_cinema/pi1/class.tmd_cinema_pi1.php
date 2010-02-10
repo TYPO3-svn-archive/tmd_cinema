@@ -1095,16 +1095,17 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 
 				# tBody
 			$temp = $this->internal['currentRow']['program'];
-			$temp = explode("\n", $temp);
+			$temp = explode("\n", trim($temp));
 
 			# Mit Zeit verlinken
 			$i=0; $n =0;
 			foreach($temp as $row => $val)
 				{
+				#if(strlen($temp)>0) debug(trim($temp));
+				
 				$temp[$i] = explode("|", $val);
 
-				foreach($temp[$i] as $key1 => $timeString)
-					{
+				foreach($temp[$i] as $key1 => $timeString) {
 					$timeString = trim($timeString); # Zeilenende bereinigen
 
 					if(preg_match( '/[0-9]?[0-9]:[0-9][0-9]/m', $timeString)) /* Exchte Uhrzeit */
