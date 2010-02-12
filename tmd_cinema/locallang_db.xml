@@ -31,6 +31,29 @@
 			<label index="tmd_cinema_showtype.link">Description</label>
 			<label index="tt_content.list_type_pi1">Cinema Program</label>
 			<label index="tt_content.list_type_pi2">Book Reservation</label>
+			
+			<label index="configure">Configure</label>
+			<label index="mode">Mode</label>
+			<label index="shortView">Short View</label>
+			<label index="completeView">Long View</label>
+			<label index="singelView">Singel View</label>
+			<label index="specialView">Special Show</label>
+			<label index="newsFeed">RSS 2.0 Newsfeed</label>
+			<label index="booking">Booking</label>
+			<label index="tipafriend">Tip A Friend</label>
+			<label index="cinemas">Cinemas</label>
+			<label index="showScpecial">Show Special Shows</label>
+			<label index="weeksAheadMin">Weeks ahead min.</label>
+			<label index="weeksAheadMax">Weeks ahead max.</label>
+			<label index="noPrg">Text if no program is given (%s = Date).</label>
+			<label index="noPrgDefault">The Program %s is not known.</label>
+			<label index="noBooking">No Booking!</label>
+			<label index="booking">Bookings:</label>
+			<label index="image">Image</label>
+			<label index="specialConfiguration">Special Configuration</label>
+			<label index="linkPage">Link image with this page</label>
+			<label index="width">max width</label>
+			<label index="clickEnlarge">Click Enlarge?</label>
 		</languageKey>
 
 		<languageKey index="de" type="array">
@@ -60,7 +83,34 @@
 			<label index="tmd_cinema_showtype.link">Weiterführender Link</label>
 			<label index="tt_content.list_type_pi1">Kino Programm</label>
 			<label index="tt_content.list_type_pi2">Reservierungen Bearbeiten</label>
+			
+			<label index="configure">Konfiguration</label>
+			<label index="mode">Modus</label>
+			<label index="shortView">Kurze Übersicht</label>
+			<label index="completeView">Ausführliche Übersicht</label>
+			<label index="singelView">Einzelansicht</label>
+			<label index="specialView">Sondervorstellung</label>
+			<label index="newsFeed">RSS 2.0 Newsfeed</label>
+			<label index="tipafriend">Freunde einladen</label>
+			<label index="booking">Reservierung</label>
+			<label index="cinemas">Kinos</label>
+			<label index="showScpecial">Sondervorstellungen anzeigen</label>
+			<label index="weeksAheadMin">Wochen voraus min.</label>
+			<label index="weeksAheadMax">Wochen voraus max.</label>
+			<label index="noPrg">Text wenn kein Programm vorhanden (%s = Datum).</label>
+			<label index="noPrgDefault">Das Programm ab %s ist noch nicht bekannt.</label>
+			<label index="noBooking">Keine Reservierung!</label>
+			<label index="booking">Reservierung:</label>
+			<label index="image">Bilder</label>
+			<label index="specialConfiguration">Besondere Einstellungen</label>
+			<label index="linkPage">Bilder mit dieser Seite verlinken</label>
+			<label index="width">max width</label>
+			<label index="clickEnlarge">Klick Enlarge?</label>
 		</languageKey>
 		
 	</data>
 </T3locallang>
+
+
+
+

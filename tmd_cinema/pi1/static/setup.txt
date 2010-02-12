@@ -250,5 +250,42 @@ special {
 		PRG_THEATRE	 = Diesen Film sehen Sie im <b>|</b><br />
 		PRG_DATE = |
 		}
+		
+	tipAFriend {
+		MOVIE_RATING = |
+		MOVIE_RATINGTOOLTIP = |
+		MOVIE_DISTRIBUTOR = im Verleih von&nbsp; | <br />
+		MOVIE_FBW = Prädikat:&nbsp; |
+		MOVIE_TITLE = <h1> | </h1>
+		MOVIE_TITLE_SHORT = <b> | </b>
+		MOVIE_TITLE_ORIGINAL = (|)<br />
+		MOVIE_IMAGE = |
+		MOVIE_TIME = ca.&nbsp; | &nbsp;min.<br />
+		MOVIE_WWW = | <br />
+		MOVIE_YOUTUBE = | <br />
+		MOVIE_RELEASEDATE = Bundesstart:&nbsp; | <br />
+		MOVIE_FORMAT = Bildformat:&nbsp; | <br />
+		MOVIE_SOUND = Tonsysteme:&nbsp; | <br />
+		MOVIE_DESCRIPTION =  | <br />
+		MOVIE_DESCRIPTION_SHORT  =  | <br />
+		MOVIE_DIRECTOR = <b>Regie:</b>&nbsp; | <br />
+		MOVIE_PRODUCER = <b>Produktion:</b>&nbsp;| <br />
+		MOVIE_ACTOR = <b>Darsteller:</b>&nbsp; | <br />
+		MOVIE_GENRE = <b>Genre:</b>&nbsp;| <br />
+		MOVIE_MEDIA = |
+
+		VERSION3D = <span style="color: red;">3D</span>
+		
+		PRG_TIMETABLE = |
+		PRG_TIMETABLE_STYLE =
+		PRG_TIMETABLE_TD = |
+		PRG_TIMETABLE_TH = |
+		PRG_INFO = <pre> | </pre>
+		PRG_SHOWTYPE = | <br />
+		PRG_WEEK = |. Woche<br />
+		PRG_THEATRE	 = Diesen Film sehen Sie im <b>|</b><br />
+		PRG_DATE = |
+		}
+
 	}
 

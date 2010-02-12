@@ -11,48 +11,54 @@
 			<el>
 				<mode>
 					<TCEforms>
-					<label>Modus</label>
+					<label>LLL:EXT:tmd_cinema/locallang_db.xml:mode</label>
 					<config>
 						<type>select</type>
 						<items>
 							<numIndex index="0">
-								<numIndex index="0">Kurze Übersicht</numIndex>
+								<numIndex index="0">LLL:EXT:tmd_cinema/locallang_db.xml:shortView</numIndex>
 								<numIndex index="1">shortView</numIndex>
 							</numIndex>
 							
 							<numIndex index="1">
-								<numIndex index="0">Ausführliche Übersicht</numIndex>
+								<numIndex index="0">LLL:EXT:tmd_cinema/locallang_db.xml:completeView</numIndex>
 								<numIndex index="1">longView</numIndex>
 							</numIndex>
 							
 							<numIndex index="4">
-								<numIndex index="0">Einzelansicht</numIndex>
+								<numIndex index="0">LLL:EXT:tmd_cinema/locallang_db.xml:singelView</numIndex>
 								<numIndex index="1">singleView</numIndex>
 							</numIndex>
 							
 							<numIndex index="5">
-								<numIndex index="0">Sondervorstellung</numIndex>
+								<numIndex index="0">LLL:EXT:tmd_cinema/locallang_db.xml:specialView</numIndex>
 								<numIndex index="1">special</numIndex>
 							</numIndex>
 
 							<numIndex index="6">
-								<numIndex index="0">RSS 2.0 Newsfeed</numIndex>
+								<numIndex index="0">LLL:EXT:tmd_cinema/locallang_db.xml:newsFeed</numIndex>
 								<numIndex index="1">RSS</numIndex>
 							</numIndex>
 
 							<numIndex index="7">
-								<numIndex index="0">Reservierung</numIndex>
+								<numIndex index="0">LLL:EXT:tmd_cinema/locallang_db.xml:booking</numIndex>
 								<numIndex index="1">booking</numIndex>
 							</numIndex>
 
+							<numIndex index="7">
+								<numIndex index="0">LLL:EXT:tmd_cinema/locallang_db.xml:tipafriend</numIndex>
+								<numIndex index="1">tipAFriend</numIndex>
+							</numIndex>
+							
 						</items>
 					</config>
 				</TCEforms>
 				</mode>
 
+
 				<cinema>
 				<TCEforms>
-					<label>Kinos</label>
+				<label>LLL:EXT:tmd_cinema/locallang_db.xml:cinemas</label>
 					<config>
 						<type>select</type>
 						<foreign_table>tt_address</foreign_table>
@@ -64,27 +70,12 @@
 				</TCEforms>
 				</cinema>
 
-				<!-- sortBy>
-				<TCEforms>
-					<label>Programm Select</label>
-					<config>
-						<type>input</type>
-						<size>40</size>
-						<eval></eval>
-						<default>cinema,sorting,date DESC</default>
-						<eval>trim</eval>
-						<eval>required</eval>
-						<required>1</required>
-					</config>
-				</TCEforms>
-				</sortBy -->
-
 
 <!-- Condition -->
 				<special>
 				<TCEforms>
 					<displayCond>FIELD:mode:IN:special</displayCond>
-					<label>Sondervorstellungen anzeigen</label>
+					<label>LLL:EXT:tmd_cinema/locallang_db.xml:showScpecial</label>
 					<config>
 						<type>select</type>
 						<foreign_table>tx_tmdcinema_showtype</foreign_table>
@@ -100,10 +91,10 @@
 
 				<previewMin>
 				<TCEforms>
-					<label>Wochen voraus min.</label>
+					<label>LLL:EXT:tmd_cinema/locallang_db.xml:weeksAheadMin</label>
 					<config>
 						<type>input</type>
-						<size>	5</size>
+						<size>5</size>
 						<eval>int</eval>
 						<default>1</default>
 						<range><lower>0</lower></range>
@@ -113,10 +104,10 @@
 
 				<previewMax>
 				<TCEforms>
-					<label>Wochen voraus max.</label>
+				<label>LLL:EXT:tmd_cinema/locallang_db.xml:weeksAheadMax</label>
 					<config>
 						<type>input</type>
-						<size>	5</size>
+						<size>5</size>
 						<eval>int</eval>
 						<default>5</default>
 						<range><lower>1</lower></range>
@@ -126,9 +117,10 @@
 
 				<previewNotice>
 				<TCEforms>
-					<label>Text wenn kein Programm vorhanden (%s = Datum).</label>
+				<label>LLL:EXT:tmd_cinema/locallang_db.xml:noPrg</label>
 					<config>
 						<type>input</type>
+						<!-- default>LLL:EXT:tmd_cinema/locallang_db.xml:noPrgDefault</default geht das nicht?-->
 						<default>Das Programm ab %s ist noch nicht bekannt.</default>
 					</config>
 				</TCEforms>
@@ -136,7 +128,7 @@
 
 				<disableReserved>
 				<TCEforms>
-					<label>Keine Reservierung!</label>
+				<label>LLL:EXT:tmd_cinema/locallang_db.xml:noBooking</label>
 					<config>
 						<type>check</type>
 					</config>
@@ -146,7 +138,7 @@
 				<pageReserve>
 				<TCEforms>
 					<exclude>1</exclude>
-					<label>Reservierung:</label>
+					<label>LLL:EXT:tmd_cinema/locallang_db.xml:Booking</label>
 					<config>
 						<type>group</type>
 						<internal_type>db</internal_type>
@@ -171,7 +163,7 @@
 	<s_image>
 		<ROOT>
 			<TCEforms>
-			<sheetTitle>Bilder</sheetTitle>
+			<sheetTitle>LLL:EXT:tmd_cinema/locallang_db.xml:image</sheetTitle>
 			</TCEforms>
 
 			<type>array</type>
@@ -180,7 +172,7 @@
 				<linkImagePage>
 				<TCEforms>
 					<exclude>1</exclude>
-					<label>Bilder mit dieser Seite verlinken</label>
+					<label>LLL:EXT:tmd_cinema/locallang_db.xml:linkPage</label>
 					<config>
 						<type>group</type>
 						<internal_type>db</internal_type>
@@ -195,7 +187,7 @@
 
 				<width>
 				<TCEforms>
-					<label>max width</label>
+				<label>LLL:EXT:tmd_cinema/locallang_db.xml:width</label>
 					<config>
 						<type>input</type>
 						<size>5</size>
@@ -207,7 +199,7 @@
 			
 				<clickEnlarge>
 				<TCEforms>
-					<label>Klick Enlarge?</label>
+					<label>LLL:EXT:tmd_cinema/locallang_db.xml:clickEnlarge</label>
 					<config>
 						<type>check</type>
 					</config>
@@ -216,6 +208,35 @@
 			</el>
 		</ROOT>
 	</s_image>
+
+
+	<s_specialConfiguration>
+		<ROOT>
+			<TCEforms>
+			<sheetTitle>LLL:EXT:tmd_cinema/locallang_db.xml:specialConfiguration</sheetTitle>
+			</TCEforms>
+
+			<type>array</type>
+			<el>
+
+				<pageTipAFriend>
+				<TCEforms>
+					<exclude>1</exclude>
+					<label>LLL:EXT:tmd_cinema/locallang_db.xml:tipafriend</label>
+					<config>
+						<type>group</type>
+						<internal_type>db</internal_type>
+						<allowed>pages</allowed>
+						<size>1</size>
+						<maxitems>1</maxitems>
+						<minitems>0</minitems>
+						<show_thumbs>0</show_thumbs>
+					</config>
+				</TCEforms>
+				</pageTipAFriend>
+			</el>
+		</ROOT>
+	</s_specialConfiguration>
 	
 	
 </sheets>

@@ -125,6 +125,12 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 				$this->internal['currentRow'] = $this->pi_getRecord('tx_tmdcinema_program',$this->piVars['showUid']);
 				$content = $this->singleView();
 			break;
+			case 'tipAFriend':
+				$this->internal['currentTable'] = 'tx_tmdcinema_program';
+				$this->internal['currentRow'] = $this->pi_getRecord('tx_tmdcinema_program',$this->piVars['showUid']);
+				$content = $this->tipaFriendView();
+			break;
+			
 		}
 
 		return $content;
@@ -458,6 +464,32 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 
 
 
+	
+	
+	/**
+	 * Returns the detail View
+	 *
+	 * @return	the view
+	 */
+	function tipaFriendView() {
+		// Spammern das Handwerk legen
+		// Res Limit berücksichtigen und das Kino auch.
+		if(	$this->internal['currentRow']['date'] > 0 && (
+				7*24*60*60-$this->conf['resLimit'] < time()-$this->internal['currentRow']['date']  ||
+				!in_array($this->internal['currentRow']['cinema'], explode(",", $this->conf['myCinema']))   )
+			) {
+			$content = $this->pi_getLL("noValidPRG", "_noValidPRG_");
+		} else {
+			$content = $this->substituteMarkers("TIPAFRIEND_VIEW");
+					
+		}
+
+		return $content;
+	}
+	
+	
+	
+	
 	/**
 	 * Returns the content of a given field
 	 *
@@ -539,8 +571,7 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 				else
 					$out = $this->film->titel;
 
-				if($out)
-					{
+				if($out) {
 					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_TITLE_SHORT']);
 					return $out;
 					}
@@ -930,9 +961,15 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 			$this->conf['image.']['file.']['width']	= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'width', 's_image');
 		$this->ff['image']['colums']		= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'colums', 		's_image');
 		$this->ff['image']['clickEnlarge'] 	= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'clickEnlarge', 's_image');
+
+		$this->ff['special']['pageTipAFriend']= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'pageTipAFriend', 's_image');
+		
 		$this->conf['linkImagePage'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'linkImagePage','s_image');
 
-			# besondere Vorrangregelungen
+
+		
+		
+		# besondere Vorrangregelungen
 		if($this->conf['mode'] == 'RSS') {
 			$this->ff['def']['mode']  	= 'RSS';
 			$this->ff['def']['cinema']	= $this->conf['myCinema'];
@@ -998,6 +1035,7 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 		$markerArray['###PRG_FIRSTDAY###'] 			= $this->getFieldContent('firstday');
 		$markerArray['###PRG_STARTDAY###'] 			= $this->getFieldContent('date');
 
+	
 		$markerArray['###ANCHOR###']				= $this->getFieldContent('anchor');
 
 /*
@@ -1024,6 +1062,16 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 					$this->conf['linkImagePage']);
 		$link['###LINK_SINGLE###'] = explode('|', $conf);
 
+					# Einen Freund einladen
+		$conf = $this->pi_list_linkSingle(
+					"|",
+					$this->internal['currentRow']['uid'],
+					TRUE,
+					$mergeArr=array(),
+					$urlOnly=FALSE,
+					$this->ff['special']['pageTipAFriend']);
+		$link['###TIPAFRIEND###'] = explode('|', $conf);
+		
 		#Read more: http://dmitry-dulepov.com/article/why-substitutemarkerarraycached-is-bad.html#ixzz0dC2MuVq9
 		$template = $this->cObj->substituteMarkerArray($template, $markerArray);
 		foreach ($link as $subPart => $subContent) {
@@ -1031,7 +1079,7 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 		}
 
 
-		
+
 		return $template;
 		}
 
@@ -1108,7 +1156,7 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 				foreach($temp[$i] as $key1 => $timeString) {
 					$timeString = trim($timeString); # Zeilenende bereinigen
 
-					if(preg_match( '/[0-9]?[0-9]:[0-9][0-9]/m', $timeString)) /* Exchte Uhrzeit */
+					if(preg_match( '/[0-9]?[0-9]:[0-9][0-9]/m', $timeString)) /* Exakte Uhrzeit */
 						{
 						list($theHour, $theMinute) = explode(":",$timeString);
 
@@ -1125,12 +1173,10 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 							$linkconf["additionalParams"] = "&".$this->prefixId."[crypt]=".$theTime."-".$this->internal['currentRow']['movie']."-".$this->internal['currentRow']['cinema'];
 
 						if($this->conf['noRes'] == 'pageLinkOnly') unset($linkconf['additionalParams']);
-						if($this->conf['noRes'] == 'ticket')
-							{
+						
+						if($this->conf['noRes'] == 'ticket') {
 							$linkconf = $this->ticketLink($theTime);
-#							debug($linkconf, $theTime);
-							}
-						$link = $this->cObj->typoLink($timeString, $linkconf);
+						}
 
 							# Reservierungsschluss?
 						$thisDay = time();
@@ -1140,24 +1186,23 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 						if(	(time() > $theTime-60*60*$this->conf['resLimit']) ||
 							$this->ff['def']['noRes'] ||
 							$this->conf['noRes'] == '1' ||
-							$this->internal['currentRow']['nores'] )
-							{
-							#debug(strftime("%H:%M", $theTime));
+							$this->internal['currentRow']['nores'] 
+							) {
 							$temp[$i][$key1] = $timeString;
-							}
-						else
-							{
-							$temp[$i][$key1] = $link;
-							}
+						} else {
+							$temp[$i][$key1] = $this->cObj->typoLink($timeString, $linkconf);
 						}
-					elseif(preg_match( '/[0-9]?[0-9]\.[0-9][0-9]/m', $timeString)) # keine Reservierung
-						{
+						
+							/* Tip A Friend */
+						if(time() < $theTime-60*60*$this->conf['resLimit'] && $this->ff['def']['mode'] == 'tipAFriend'){
+							$temp[$i][$key1] .= '<input type="radio" name="tipafriend" value="">';
+						}
+						
+					} elseif(preg_match( '/[0-9]?[0-9]\.[0-9][0-9]/m', $timeString)) { # keine Reservierung
 						$temp[$i][$key1] = str_replace(".", ":", $temp[$i][$key1]);
-						}
-					else # leere Zelle
-						{
+					} else { # leere Zelle
 						$temp[$i][$key1] = $this->conf['emptyTable'];
-						}
+					}
 
 					$n++;
 					}
