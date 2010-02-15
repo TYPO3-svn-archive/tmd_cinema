@@ -480,10 +480,37 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 			) {
 			$content = $this->pi_getLL("noValidPRG", "_noValidPRG_");
 		} else {
-			$content = $this->substituteMarkers("TIPAFRIEND_VIEW");
-					
-		}
+			
+			switch($this->piVars['step']) {
+				case '1': # Formular
+					$markerArray['###ACTION_URL###'] = $this->pi_linkTP_keepPIvars_url(array('step' => 2),$cache=0,$clearAnyway=0,$altPageId=0);
+					$content = $this->substituteMarkers("TIPAFRIEND_FORM", $markerArray);
+				break;
+				case '2': # Vorschau
+					$markerArray['###ACTION_URL###'] = $this->pi_linkTP_keepPIvars_url(array('step' => 3),$cache=0,$clearAnyway=0,$altPageId=0);
+					$markerArray['###DATE###'] = $this->piVars['tipafriend'];
+					$markerArray['###MYNAME###'] = $this->piVars['myName']; 
+					$markerArray['###MYEMAIL###'] = $this->piVars['myEMail'];
 
+###FRIENDNAME_3###"
+###FRIENDMAIL_3###"
+					$n=0;
+					foreach($this->piVars['friendName'] as $key => $name) {
+						$n++;
+						$markerArray['###FRIENDNAME_'.$n.'###'] .= $name;
+						$markerArray['###FRIENDMAIL_'.$n.'###'] .= $this->piVars['friendMail'][$key]; 
+					} 
+
+					$content = $this->substituteMarkers("TIPAFRIEND_PREVIEW", $markerArray);
+				break;
+				case '3': # Absenden
+					#$markerArray['###ACTION_URL###'] = $this->pi_linkTP_keepPIvars_url(array('step' => 3),$cache=0,$clearAnyway=0,$altPageId=0);
+					$content = $this->substituteMarkers("TIPAFRIEND_SENT", $markerArray);
+				break;
+				
+			}
+		}
+	
 		return $content;
 	}
 	
@@ -985,7 +1012,7 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 
 
 
-	function substituteMarkers($subPart, $subpartArray="")
+	function substituteMarkers($subPart, $markerArray="")
 		{
 		$template = $GLOBALS['TSFE']->cObj->getSubpart($this->template, "###".$subPart."###");
 
@@ -1067,7 +1094,7 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 					"|",
 					$this->internal['currentRow']['uid'],
 					TRUE,
-					$mergeArr=array(),
+					array('step' => 1),
 					$urlOnly=FALSE,
 					$this->ff['special']['pageTipAFriend']);
 		$link['###TIPAFRIEND###'] = explode('|', $conf);
@@ -1195,7 +1222,7 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 						
 							/* Tip A Friend */
 						if(time() < $theTime-60*60*$this->conf['resLimit'] && $this->ff['def']['mode'] == 'tipAFriend'){
-							$temp[$i][$key1] .= '<input type="radio" name="tipafriend" value="">';
+							$temp[$i][$key1] .= '<input type="radio" name="tx_tmdcinema_pi1[tipafriend]" value="'.$thisDay.'-'.$timeString.'">';
 						}
 						
 					} elseif(preg_match( '/[0-9]?[0-9]\.[0-9][0-9]/m', $timeString)) { # keine Reservierung
