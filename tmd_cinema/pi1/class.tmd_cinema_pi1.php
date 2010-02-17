@@ -480,10 +480,65 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 			) {
 			$content = $this->pi_getLL("noValidPRG", "_noValidPRG_");
 		} else {
+			# Captcha test
+			if ($this->conf['captcha'] == true && 
+				$this->piVars['step'] == 2 && 
+				($this->conf['captcha'] == true && t3lib_extMgm::isLoaded('captcha')))	{
+				session_start();
+				$captchaStr = $_SESSION['tx_captcha_string'];
+				$_SESSION['tx_captcha_string'] = '';
+			} else {
+				$captchaStr = -1;
+			}
 			
+			if ( 	($captchaStr===-1 || 
+					($captchaStr && $this->piVars['captchaResponse']===$captchaStr)) ||
+				 	isset($this->piVars['tipafriend']) ) {
+				 	# Captcha ist OK
+			} else {
+				$this->piVars['step'] = 1; /* Formular nochmal ausfüllen! */
+			}
+
+			
+				# fehlerhaft oder sonstwas falsches
+			if(isset($this->piVars['tipafriend'])) { 
+				list($theTimeDate, $theMovie, $theCinema) = explode("-", $this->decrypt($this->piVars['tipafriend']));
+				
+				if(!t3lib_div::inList($this->conf['myCinema'], $theCinema)) { # Kino ist nicht korrekt
+					$this->piVars['step'] = 1; /* Formular nochmal ausfüllen! */
+				}
+				
+				if(time() > ($theTimeDate - $this->conf['resLimit']*60*60)) { # Resevierungsschluß
+					$this->piVars['step'] = 'timelimit'; /* Formular nochmal ausfüllen! */
+				}
+			} else { # No time chosen
+				$this->piVars['step'] = 1; /* Formular nochmal ausfüllen! */
+			}
+			
+				# Auf den Leim gegangen, elender Spammer
+			if($this->conf['honeyPot'] == true && $this->piVars['pritt'] != '') {
+				debug($this->piVars);
+				$this->piVars['step'] = 'honeyPot'; /* Formular nochmal ausfüllen! */
+			}
+
 			switch($this->piVars['step']) {
 				case '1': # Formular
 					$markerArray['###ACTION_URL###'] = $this->pi_linkTP_keepPIvars_url(array('step' => 2),$cache=0,$clearAnyway=0,$altPageId=0);
+
+					#http://www.rustylime.com/show_article.php?id=338
+					if($this->conf['honeyPot'] == true) {		#document . the name of the form . the name of the field to shift focus to
+						$markerArray['###HONEYPOT###'] = '<input id="pritt" type="text" size=30 name="tx_tmdcinema_pi1[pritt]" onfocus="document.tx_tmdcinema_pi1_tipafriend.startfield.focus();"  value="">';
+					} else {
+						$markerArray['###HONEYPOT###'] = '';
+					}
+					
+					if (t3lib_extMgm::isLoaded('captcha') && $this->conf['captcha'] == true)	{
+						$markerArray['###CAPTCHA###']  = '<img src="'.t3lib_extMgm::siteRelPath('captcha').'captcha/captcha.php" alt="" />';
+						$markerArray['###CAPTCHA###'] .= '<input type="text" size=30 name="tx_tmdcinema_pi1[captchaResponse]" value="">';
+					} else {
+						$markerArray['###CAPTCHA###'] = '';
+					}
+					
 					$content = $this->substituteMarkers("TIPAFRIEND_FORM", $markerArray);
 				break;
 				case '2': # Vorschau
@@ -492,15 +547,16 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 					$markerArray['###MYNAME###'] = $this->piVars['myName']; 
 					$markerArray['###MYEMAIL###'] = $this->piVars['myEMail'];
 
-###FRIENDNAME_3###"
-###FRIENDMAIL_3###"
+					#$theTime."-".$this->internal['currentRow']['movie']."-".$this->internal['currentRow']['cinema'];
+					#debug($this->piVars['tipafriend'], "piVars");
+					
 					$n=0;
 					foreach($this->piVars['friendName'] as $key => $name) {
 						$n++;
 						$markerArray['###FRIENDNAME_'.$n.'###'] .= $name;
 						$markerArray['###FRIENDMAIL_'.$n.'###'] .= $this->piVars['friendMail'][$key]; 
-					} 
-
+					}
+					 
 					$content = $this->substituteMarkers("TIPAFRIEND_PREVIEW", $markerArray);
 				break;
 				case '3': # Absenden
@@ -508,6 +564,14 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 					$content = $this->substituteMarkers("TIPAFRIEND_SENT", $markerArray);
 				break;
 				
+				case 'timelimit':
+					$content = "Fehler bei TipAFriend<br />Leider schon Res. Schluss";
+				break;
+				case 'honeyPot':
+					$content = "Fehler bei TipAFriend<br />Honig klebt";
+				default:
+					$content = $content;
+				break;				
 			}
 		}
 	
@@ -578,19 +642,17 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 			break;
 			case 'movie_originaltitle':
 				$out = $this->film->originaltitle;
-				if($out)
-					{
+				if($out) {
 					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_TITLE_ORIGINAL']);
 					return 	$out;
-					}
+				}
 			break;
 			case 'movie_subtitle':
 				$out = $this->film->short;
-				if($out)
-					{
+				if($out) {
 					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_TITLE_SHORT']);
 					return $out;
-					}
+				}
 			break;
 			case 'movie_subtitle_first':
 				if($this->film->short)
@@ -611,7 +673,6 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 					case 'singleView':	$this->conf['image.'] = $this->conf['imageSingle.'];	break;
 					case 'special':		$this->conf['image.'] = $this->conf['imageSpecial.']; 	break;
 				}
-
 
 				if($this->film->poster) {
 					$temp = explode(',', $this->film->poster); # mehrere Poster?
@@ -706,23 +767,21 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 			break;
 			case 'movie_summary':
 				$out = $this->film->summary;
-				if($out)
-					{
+				if($out) {
 					$out = $this->pi_RTEcssText($out);
 					$out = $this->cObj->stdWrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_DESCRIPTION']);
 					return $out;
-					}
+				}
 			break;
 			case 'movie_summary_short':
 				$out = $this->film->summary;
-				if($out)
-					{
+				if($out) {
 					$out = $this->cObj->stdWrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_DESCRIPTION_SHORT.']);
 					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_DESCRIPTION_SHORT']);
 
 	#				return $this->pi_RTEcssText($out);
 					return strip_tags($out); // z.B. <b> die nicht geschlossen werden duch crop
-					}
+				}
 			break;
 			case 'movie_director':
 				$out = $this->film->director;
@@ -740,11 +799,10 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 				}
 				$out = implode(", ", $names);
 
-				if($out)
-					{
+				if($out) {
 					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_DIRECTOR']);
 					return $out;
-					}
+				}
 			break;
 			case 'movie_producer':
 				$out = $this->film->producer;
@@ -989,7 +1047,8 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 		$this->ff['image']['colums']		= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'colums', 		's_image');
 		$this->ff['image']['clickEnlarge'] 	= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'clickEnlarge', 's_image');
 
-		$this->ff['special']['pageTipAFriend']= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'pageTipAFriend', 's_image');
+		$t = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'pageTipAFriend', 's_specialConfiguration');
+		($t) ? $this->ff['special']['pageTipAFriend'] = $t : $this->ff['special']['pageTipAFriend'] = $this->conf['tipafriend'];  
 		
 		$this->conf['linkImagePage'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'linkImagePage','s_image');
 
@@ -1194,10 +1253,11 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 						     "parameter" => $this->conf['pageReserve'],
 						     );
 
-						if($this->conf['cryptTime'] == 1)
+						if($this->conf['cryptTime'] == 1) {
 							$linkconf["additionalParams"] = "&".$this->prefixId."[crypt]=".$this->encrypt($theTime."-".$this->internal['currentRow']['movie']."-".$this->internal['currentRow']['cinema']);
-						else
+						} else {
 							$linkconf["additionalParams"] = "&".$this->prefixId."[crypt]=".$theTime."-".$this->internal['currentRow']['movie']."-".$this->internal['currentRow']['cinema'];
+						}
 
 						if($this->conf['noRes'] == 'pageLinkOnly') unset($linkconf['additionalParams']);
 						
@@ -1213,17 +1273,20 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 						if(	(time() > $theTime-60*60*$this->conf['resLimit']) ||
 							$this->ff['def']['noRes'] ||
 							$this->conf['noRes'] == '1' ||
-							$this->internal['currentRow']['nores'] 
+							$this->internal['currentRow']['nores'] ||
+							$this->ff['def']['mode'] == 'tipAFriend' 
 							) {
 							$temp[$i][$key1] = $timeString;
 						} else {
 							$temp[$i][$key1] = $this->cObj->typoLink($timeString, $linkconf);
 						}
-						
+
 							/* Tip A Friend */
-						if(time() < $theTime-60*60*$this->conf['resLimit'] && $this->ff['def']['mode'] == 'tipAFriend'){
-							$temp[$i][$key1] .= '<input type="radio" name="tx_tmdcinema_pi1[tipafriend]" value="'.$thisDay.'-'.$timeString.'">';
+						if($this->ff['def']['mode'] == 'tipAFriend' && (time() < $theTime-60*60*$this->conf['resLimit'])) { 		
+							$value = $theTime."-".$this->internal['currentRow']['movie']."-".$this->internal['currentRow']['cinema'];
+							$temp[$i][$key1] .= '<input type="radio" name="tx_tmdcinema_pi1[tipafriend]" value="'.$this->encrypt($value).'">';
 						}
+					
 						
 					} elseif(preg_match( '/[0-9]?[0-9]\.[0-9][0-9]/m', $timeString)) { # keine Reservierung
 						$temp[$i][$key1] = str_replace(".", ":", $temp[$i][$key1]);
