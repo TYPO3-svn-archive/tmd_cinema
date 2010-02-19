@@ -80,7 +80,8 @@ plugin.tx_tmdcinema_pi1 {
 	captcha = 0
 	honeyPot = 1
 	tipafriend = 771
-		
+	sendHTML = 1
+	
 		#-----------
 		# Bilder
 		#-----------

@@ -480,6 +480,8 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 			) {
 			$content = $this->pi_getLL("noValidPRG", "_noValidPRG_");
 		} else {
+			$GLOBALS['TSFE']->set_no_cache();
+			
 			# Captcha test
 			if ($this->conf['captcha'] == true && 
 				$this->piVars['step'] == 2 && 
@@ -542,6 +544,7 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 					$content = $this->substituteMarkers("TIPAFRIEND_FORM", $markerArray);
 				break;
 				case '2': # Vorschau
+					#htmlspecialchars($url)
 					$markerArray['###ACTION_URL###'] = $this->pi_linkTP_keepPIvars_url(array('step' => 3),$cache=0,$clearAnyway=0,$altPageId=0);
 					$markerArray['###DATE###'] = $this->piVars['tipafriend'];
 					$markerArray['###MYNAME###'] = $this->piVars['myName']; 
@@ -561,6 +564,37 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 				break;
 				case '3': # Absenden
 					#$markerArray['###ACTION_URL###'] = $this->pi_linkTP_keepPIvars_url(array('step' => 3),$cache=0,$clearAnyway=0,$altPageId=0);
+					
+						# Ist der Absender korrekt?
+					if( $this->piVars['myName'] == '' || $this->piVars['myEMail'] == '' || !t3lib_div::validEmail($this->piVars['myEMail']) ) {
+						$content = "Fehlerhafte Angaben: Absender.";
+						debug($this->piVars);
+					}
+
+					
+					$n = 0;
+					foreach($this->piVars['friendName'] as $key => $name) {
+						$recipient[$n]['name']  = htmlspecialchars($name);
+						$recipient[$n]['EMail'] = htmlspecialchars($this->piVars['friendMail'][$key]); 
+						$n++;
+					}
+					debug($recipient, "Empfänger");
+					
+					foreach($recipient as $key => $data){
+						if ($data['EMail'] && t3lib_div::validEmail($data['EMail'])) {
+							$markerArray['###MYNAME###'] 	= htmlspecialchars($this->piVars['myName']);
+							$markerArray['###MYEMAIL###'] 	= htmlspecialchars($this->piVars['myEMail']);
+							$margerArray['###MESSAGE###'] 	= htmlspecialchars($this->piVars['message']);
+							$margerArray['###DATE###'] 		= htmlspecialchars($this->piVars['tipafriend']);
+
+							$subject = "Betreff";
+							$email = $this->substituteMarkers("TIPAFRIEND_EMAIL", $markerArray);
+							
+							$this->sendTip($senderName, $senderEMail, $data['name'], $data['EMail'], $subject, trim($email));
+						}
+						
+					}
+					
 					$content = $this->substituteMarkers("TIPAFRIEND_SENT", $markerArray);
 				break;
 				
@@ -577,6 +611,55 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 	
 		return $content;
 	}
+	
+
+	/**
+	 * [Describe function...]
+	 *
+	 * @param	[type]		$tipData: ...
+	 * @param	[type]		$url: ...
+	 * @return	[type]		...
+	 */
+	function sendTip($senderName, $senderEMail, $recipientName, $recipientEMail, $subject, $email)	{
+			// Set subject, conten and headers
+		$headers=array(); # wozu ?
+		$headers[]='FROM: '.$senderName.' <'.$senderEMail.'>';
+
+		$plain_message = 'TextOnly alle tags entfernen?'; 
+		
+			// HTML
+		$cls=t3lib_div::makeInstanceClassName('t3lib_htmlmail');
+
+		if ($this->conf['sendHTML'] && class_exists($cls))	{	// If htmlmail lib is included, then generate a nice HTML-email
+			$Typo3_htmlmail = t3lib_div::makeInstance('t3lib_htmlmail');
+			$Typo3_htmlmail->start();
+			$Typo3_htmlmail->useBase64();
+
+			$Typo3_htmlmail->subject = $subject;
+			$Typo3_htmlmail->from_email = $senderEMail;
+			$Typo3_htmlmail->from_name = $senderName;
+			$Typo3_htmlmail->replyto_email = $email;
+			$Typo3_htmlmail->replyto_name = $senderEMail;
+			$Typo3_htmlmail->organisation = '';
+			$Typo3_htmlmail->priority = 3;
+
+				// this will fail if the url is password protected!
+			$Typo3_htmlmail->addPlain($plain_message);
+
+			$Typo3_htmlmail->setHeaders();
+			$Typo3_htmlmail->setContent();
+			$Typo3_htmlmail->setRecipient($recipient['recipientEMail'].' <'.$recipient['recipientEMail'].'>');
+
+//			debug($Typo3_htmlmail->theParts);
+			$Typo3_htmlmail->sendtheMail();
+		} else { // Plain mail:
+				// Sending mail:
+#			$GLOBALS['TSFE']->plainMailEncoded(, $subject, , implode($headers,chr(10)));
+			$this->cObj->sendNotifyEmail($plain_message, $recipient['recipientEMail'], '', $email, $recipient['recipientName']);
+		}
+	}
+	
+	
 	
 	
 	
