@@ -81,6 +81,7 @@ plugin.tx_tmdcinema_pi1 {
 	honeyPot = 1
 	tipafriend = 771
 	sendHTML = 1
+	spamLog = 773
 	
 		#-----------
 		# Bilder

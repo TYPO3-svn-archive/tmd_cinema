@@ -85,3 +85,22 @@ CREATE TABLE tx_tmdcinema_showtype (
     PRIMARY KEY (uid),
     KEY parent (pid)
 );
+
+
+#
+# Table structure for table 'tx_tmdcinema_spamlog'
+#
+CREATE TABLE tx_tmdcinema_spamlog (
+    uid int(11) NOT NULL auto_increment,
+    pid int(11) DEFAULT '0' NOT NULL,
+    tstamp int(11) DEFAULT '0' NOT NULL,
+    crdate int(11) DEFAULT '0' NOT NULL,
+    cruser_id int(11) DEFAULT '0' NOT NULL,
+    ip tinytext NOT NULL,
+    sender tinytext NOT NULL,
+    recipient tinytext NOT NULL,
+    msg tinytext NOT NULL,
+    
+    PRIMARY KEY (uid),
+    KEY parent (pid)
+);

@@ -320,9 +320,9 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 		$wStart_tmp = $wStart; # für "kein progamm" zwischenspeichern
 
 			# Programm vorzeitig wechseln
-		if(mktime() + $this->conf['switchPrgBevore']*60*60 >= $wStart+$oneWeek) {
+		if(mktime() + $this->conf['switchPrgBevore']*60 >= $wStart+$oneWeek) {
 			$wStart += $oneWeek;
-#			debug($this->conf['switchPrgBevore'], "sw");
+	debug($this->conf['switchPrgBevore'], "sw");
 		}
 
 		$wEnd   = $wStart + $oneWeek*$nextWeeks;
@@ -578,7 +578,7 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 						$recipient[$n]['EMail'] = htmlspecialchars($this->piVars['friendMail'][$key]); 
 						$n++;
 					}
-					debug($recipient, "Empfänger");
+debug($recipient, "Empfänger");
 					
 					foreach($recipient as $key => $data){
 						if ($data['EMail'] && t3lib_div::validEmail($data['EMail'])) {
@@ -603,6 +603,18 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 				break;
 				case 'honeyPot':
 					$content = "Fehler bei TipAFriend<br />Honig klebt";
+					$table = 'tx_tmdcinema_spamlog';
+					$fields_values = array(
+    					'pid' 		=> $this->conf['spamLog'],
+					    'tstamp'	=> time(),
+					    'crdate'	=> time(),
+					    'ip'		=> 'ip',
+					    'sender'	=> htmlspecialchars($this->piVars['myName']).' '.htmlspecialchars($this->piVars['myEMail']),
+					    'recipient'	=> implode(', ', htmlspecialchars($this->piVars['message'])),
+					    'msg'		=> htmlspecialchars($this->piVars['message']),
+					);
+					
+					$GLOBALS['TYPO3_DB']->exec_INSERTquery($table,$fields_values,$no_quote_fields=FALSE); 
 				default:
 					$content = $content;
 				break;				

@@ -31,7 +31,13 @@
 			<label index="tmd_cinema_showtype.link">Description</label>
 			<label index="tt_content.list_type_pi1">Cinema Program</label>
 			<label index="tt_content.list_type_pi2">Book Reservation</label>
-			
+
+            <label index="tx_tmdcinema_spamlog">Spamlog</label>
+            <label index="tx_tmdcinema_spamlog.ip">ip</label>
+            <label index="tx_tmdcinema_spamlog.sender">Sender</label>
+            <label index="tx_tmdcinema_spamlog.recipient">Recipient</label>
+			<label index="tx_tmdcinema_spamlog.msg">Message</label>
+	
 			<label index="configure">Configure</label>
 			<label index="mode">Mode</label>
 			<label index="shortView">Short View</label>
@@ -83,6 +89,12 @@
 			<label index="tmd_cinema_showtype.link">Weiterführender Link</label>
 			<label index="tt_content.list_type_pi1">Kino Programm</label>
 			<label index="tt_content.list_type_pi2">Reservierungen Bearbeiten</label>
+
+			<label index="tx_tmdcinema_spamlog">Spamlog</label>
+            <label index="tx_tmdcinema_spamlog.ip">ip</label>
+            <label index="tx_tmdcinema_spamlog.sender">Absender</label>
+            <label index="tx_tmdcinema_spamlog.recipient">Empfänger</label>
+			<label index="tx_tmdcinema_spamlog.msg">Nachricht</label>
 			
 			<label index="configure">Konfiguration</label>
 			<label index="mode">Modus</label>

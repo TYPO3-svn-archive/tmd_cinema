@@ -378,4 +378,50 @@ $TCA["tx_tmdcinema_showtype"] = array (
         "1" => array("showitem" => "")
     )
 );
+
+
+$TCA["tx_tmdcinema_spamlog"] = array (
+    "ctrl" => $TCA["tx_tmdcinema_spamlog"]["ctrl"],
+    "interface" => array (
+        "showRecordFieldList" => "ip,sender,recipient,msg"
+    ),
+    "feInterface" => $TCA["tx_tmdcinema_spamlog"]["feInterface"],
+    "columns" => array (
+        "ip" => Array (        
+            "exclude" => 1,        
+            "label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tx_tmdcinema_spamlog.ip",        
+            "config" => Array (
+                "type" => "none",
+            )
+        ),
+        "sender" => Array (        
+            "exclude" => 1,        
+            "label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tx_tmdcinema_spamlog.sender",        
+            "config" => Array (
+                "type" => "none",
+            )
+        ),
+        "recipient" => Array (        
+            "exclude" => 1,        
+            "label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tx_tmdcinema_spamlog.recipient",        
+            "config" => Array (
+                "type" => "none",
+            )
+        ),
+        "msg" => Array (        
+            "exclude" => 1,        
+            "label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tx_tmdcinema_spamlog.msg",        
+            "config" => Array (
+                "type" => "none",
+            )
+        ),
+    ),
+    "types" => array (
+        "0" => array("showitem" => "ip;;;;1-1-1, sender, recipient, msg")
+    ),
+    "palettes" => array (
+        "1" => array("showitem" => "")
+    )
+);
+
 ?>
