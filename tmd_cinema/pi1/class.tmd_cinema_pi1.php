@@ -762,13 +762,14 @@ debug($recipient, "Empfänger");
 			break;
 			case 'movie_image':
 				# Für welchen Bereich?
+/*
 				switch($this->ff['def']['mode']) {
 					case 'shortView': 	$this->conf['image.'] = $this->conf['listViewShort.']; 	break;
 					case 'longView':	$this->conf['image.'] = $this->conf['listViewLong.'];	break;
 					case 'singleView':	$this->conf['image.'] = $this->conf['imageSingle.'];	break;
 					case 'special':		$this->conf['image.'] = $this->conf['imageSpecial.']; 	break;
 				}
-
+*/
 				if($this->film->poster) {
 					$temp = explode(',', $this->film->poster); # mehrere Poster?
 
@@ -1150,11 +1151,14 @@ debug($recipient, "Empfänger");
 
 		
 		
+		
 		# besondere Vorrangregelungen
 		if($this->conf['mode'] == 'RSS') {
 			$this->ff['def']['mode']  	= 'RSS';
 			$this->ff['def']['cinema']	= $this->conf['myCinema'];
 		}
+		
+
 	}
 
 
@@ -1272,25 +1276,20 @@ debug($recipient, "Empfänger");
 		 *
 		 * @return string Time Table
 		 */
-	function buildTimeTable()
-		{
+	function buildTimeTable() {
 
-		if($this->internal['currentRow']['program'])
-			{
+		if($this->internal['currentRow']['program']) {
 				# Uhr auf 0 Uhr stellen!
 				# Erster Programmtag
 			$theDay = $this->internal['currentRow']['date'];
 			$theDay = mktime ( 0, 0, 0, strftime("%m", $theDay),strftime("%d", $theDay), strftime("%Y", $theDay));
 
-			if( (time() > $theDay ) && 	( time() < $theDay + 7*60*60*24 ) )
-				{
+			if( (time() > $theDay ) && 	( time() < $theDay + 7*60*60*24 ) ) {
 				$todaysNr = strftime("%u", time()) + 3;
 				if($todaysNr > 6) $todaysNr = $todaysNr%7;
-				}
-			else
-				{
+			} else {
 				$todaysNr = -1;
-				}
+			}
 
 				# tHead
 			$head = '<thead><tr>';
@@ -1398,11 +1397,9 @@ debug($recipient, "Empfänger");
 
 			# Tabellenzeilen zusammenbauen
 			$i=0;
-			foreach($temp as $key => $val)
-				{
+			foreach($temp as $key => $val) {
 				$tmp[$i] = "<tr>";
-				foreach($val as $key1 => $val1)
-					{
+				foreach($val as $key1 => $val1) {
 					$val1 = $this->cObj->wrap($val1, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_TIMETABLE_TD']);
 					if($key1 == $todaysNr) {# Heute!
 						if(isset($this->conf['todaysColor'])) { # eigene Hintergundfarbe
@@ -1413,27 +1410,23 @@ debug($recipient, "Empfänger");
 					} else {
 						$tmp[$i] .= '<td style="'.$this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_TIMETABLE_TD_STYLE'].'">'.$val1.'</td>';
 					}
-
-					}
+				}
 				$tmp[$i] .= "</tr>";
 				$i++;
-				}
+			}
 
 			$temp = '<table class="program" style="'.$this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_TIMETABLE_STYLE'].'">'.$head."<tbody>".implode(chr(10),$tmp).'</tbody></table>';
-			}
-		else
-			{ # Spielplan nicht bekannt
+		} else { # Spielplan nicht bekannt
 			$temp = "<br /><b>";
-			if($this->internal['currentRow']['date'])
-				{
+			if($this->internal['currentRow']['date']) {
 				$temp .= 'Ab '.$this->getFieldContent('date').'<br />';
-				}
+			}
 			$temp .= $this->pi_getLL('timeNN');
 			$temp .= '</b>';
-			}
-
-		return $temp;
 		}
+
+	return $temp;
+	}
 
 
 
@@ -1487,7 +1480,7 @@ debug($recipient, "Empfänger");
 
 /*
 		 * Adresse als Session speichern
-		 * wird f�r den Link zum Newsletter ben�tigt!
+		 * wird für den Link zum Newsletter benötigt!
 		 *
 	function saveAddressToSession()
 		{

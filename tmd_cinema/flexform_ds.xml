@@ -138,7 +138,7 @@
 				<pageReserve>
 				<TCEforms>
 					<exclude>1</exclude>
-					<label>LLL:EXT:tmd_cinema/locallang_db.xml:Booking</label>
+					<label>LLL:EXT:tmd_cinema/locallang_db.xml:booking</label>
 					<config>
 						<type>group</type>
 						<internal_type>db</internal_type>
