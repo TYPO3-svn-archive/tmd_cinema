@@ -861,14 +861,23 @@ debug($recipient, "Empfänger");
 			break;
 			case 'movie_image':
 				# Für welchen Bereich?
-/*
 				switch($this->ff['def']['mode']) {
-					case 'shortView': 	$this->conf['image.'] = $this->conf['listViewShort.']; 	break;
-					case 'longView':	$this->conf['image.'] = $this->conf['listViewLong.'];	break;
-					case 'singleView':	$this->conf['image.'] = $this->conf['imageSingle.'];	break;
-					case 'special':		$this->conf['image.'] = $this->conf['imageSpecial.']; 	break;
+					case 'shortView': 	$this->conf['image.'] = ($this->ff['image']['pluginWidth'] > 0) ? $this->ff['image']['pluginWidth'] : $this->conf['listViewShort.']; 	break;
+					case 'longView':	$this->conf['image.'] = ($this->ff['image']['pluginWidth'] > 0) ? $this->ff['image']['pluginWidth'] : $this->conf['listViewLong.'];		break;
+					case 'singleView':	$this->conf['image.'] = ($this->ff['image']['pluginWidth'] > 0) ? $this->ff['image']['pluginWidth'] : $this->conf['imageSingle.'];		break;
+					case 'special':		$this->conf['image.'] = ($this->ff['image']['pluginWidth'] > 0) ? $this->ff['image']['pluginWidth'] : $this->conf['imageSpecial.']; 	break;
+					case 'tipAFriend':  
+						if($this->ff['image']['pluginWidth'] > 0) {
+							$this->conf['image.']['file.']['width'] = $this->ff['image']['pluginWidth'];
+						} else {
+							$this->conf['image.'] = $this->conf['imageTipAFriend.'];
+							if($this->piVars['step'] == 2) $this->conf['image.'] = $this->conf['imageTipAFriend2.'];
+							if($this->piVars['step'] == 3) $this->conf['image.'] = $this->conf['imageTipAFriend3.'];
+						}
+						#$this->conf['image.'] = ($this->ff['image']['pluginWidth'] == 0) ? $this->conf['imageTipAFriend.'] : $this->ff['image']['pluginWidth']; 	break;
+					break;
 				}
-*/
+
 				if($this->film->poster) {
 					$temp = explode(',', $this->film->poster); # mehrere Poster?
 
@@ -1236,9 +1245,11 @@ debug($recipient, "Empfänger");
 		$this->ff['def']['cinema'] 		= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'cinema',	 		's_DEF');
 		$this->ff['def']['special'] 	= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'special',	 		's_DEF');
 		$this->conf['pageReserve']	= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'pageReserve', 		's_DEF');
-
+/*
 		if(empty($this->conf['image.']['file.']['width']))
 				$this->conf['image.']['file.']['width']	= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'width', 's_image');
+*/
+		$this->ff['image']['pluginWidth'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'width', 's_image');
 		
 		$this->ff['image']['colums']		= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'colums', 		's_image');
 		$this->ff['image']['clickEnlarge'] 	= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'clickEnlarge', 's_image');

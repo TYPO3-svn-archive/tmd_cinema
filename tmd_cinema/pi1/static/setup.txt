@@ -91,15 +91,14 @@ plugin.tx_tmdcinema_pi1 {
 		#-----------
 		# Kompakte Vorschau
 	listViewShort.file.width = 100
-
 		# Sondervorschau
 	imageSpecial.file.width = 100
-
 		# Ausführliche Liste
 	listViewLong.file.width = 150
-
 		# Einzelbild
 	imageSingle.file.width = 170
+		# Tip A Friend
+	imageTipAFriend.file.width = 150
 
 			# Die  Mediafiles separat behandeln
 	media.file.height = 120
