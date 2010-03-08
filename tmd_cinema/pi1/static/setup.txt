@@ -1,5 +1,6 @@
 
 
+
 plugin.tx_tmdcinema_pi1 {
 	isStaticTemplateLoaded = 1
 	
@@ -77,11 +78,13 @@ plugin.tx_tmdcinema_pi1 {
 	#template = EXT:pi1/res/rss_template.html
 
 		# Captcha bei TipAFriend
-	captcha = 0
+	captcha = 1
 	honeyPot = 1
 	tipafriend = 771
+	friendCount = 3
 	sendHTML = 1
 	spamLog = 773
+	maxMsgLength = 200
 	
 		#-----------
 		# Bilder
@@ -290,7 +293,7 @@ special {
 		PRG_INFO = <pre> | </pre>
 		PRG_SHOWTYPE = | <br />
 		PRG_WEEK = |. Woche<br />
-		PRG_THEATRE	 = Diesen Film sehen Sie im <b>|</b><br />
+		PRG_THEATRE	 = &nbsp;-&nbsp;|<br />
 		PRG_DATE = |
 		}
 
