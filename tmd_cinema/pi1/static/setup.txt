@@ -84,7 +84,8 @@ plugin.tx_tmdcinema_pi1 {
 	friendCount = 3
 	sendHTML = 1
 	spamLog = 773
-	maxMsgLength = 200
+	maxMsgLength = 300
+	
 	
 		#-----------
 		# Bilder
@@ -98,7 +99,11 @@ plugin.tx_tmdcinema_pi1 {
 		# Einzelbild
 	imageSingle.file.width = 170
 		# Tip A Friend
-	imageTipAFriend.file.width = 150
+	imageTipAFriend.file.width = 80
+	imageTipAFriend2.file.width = 140
+	imageTipAFriend3.file.width = 200
+
+
 
 			# Die  Mediafiles separat behandeln
 	media.file.height = 120

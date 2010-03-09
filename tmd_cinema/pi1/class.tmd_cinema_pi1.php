@@ -513,11 +513,23 @@ Christian.";
 				list($this->piVars['step'], $markerArray['###ERROR###'])  = $this->validateStep1();
 			}
 		
-debug($this->piVars, 'piVars');		
+
+debug($this->piVars, 'piVars');
 
 			switch($this->piVars['step']) {
 				case '1': # Formular
 					$markerArray['###ACTION_URL###'] = $this->pi_list_linkSingle($str,$uid,FALSE,array('step' => '', 'showUid'=>$this->piVars[showUid]),$urlOnly=TRUE,$altPageId=0);  
+
+					
+					
+					if($this->piVars['timestamp']) {
+						$markerArray['###TIMESTAMP###'] = $this->piVars['timestamp'];
+					} else {
+						$markerArray['###TIMESTAMP###'] = time();
+						$GLOBALS["TSFE"]->fe_user->setKey("ses", $this->prefixId."[".$markerArray['###TIMESTAMP###']."]", "NEW");
+					}
+					  
+					
 					
 					#http://www.rustylime.com/show_article.php?id=338
 					if($this->conf['honeyPot'] == true) {		#document . the name of the form . the name of the field to shift focus to
@@ -550,7 +562,13 @@ debug($this->piVars, 'piVars');
 				break;
 				
 				case '2': # Vorschau
-					#htmlspecialchars($url)
+					$formStatus = $GLOBALS["TSFE"]->fe_user->getKey("ses", $this->prefixId."[".$this->piVars['timestamp']."]");
+					debug($formStatus, "session");
+					if($formStatus == 'SENT') {
+						$content = $this->pi_linkToPage("Hier kommen Sie zurück zum Programm.", $this->conf['prgPid']); 
+						break;
+					}
+					
 					$markerArray['###ACTION_URL###'] = $this->pi_list_linkSingle($str,$uid,FALSE,array('step' => '', 'showUid'=>$this->piVars[showUid]),$urlOnly=TRUE,$altPageId=0);
 					$markerArray['###TIPDATE###'] = $this->piVars['tipDate'];
 					$markerArray['###MYNAME###'] = $this->piVars['myName']; 
@@ -571,15 +589,15 @@ debug($this->piVars, 'piVars');
 				break;
 				
 				case '3': # Absenden
-					#$markerArray['###ACTION_URL###'] = $this->pi_linkTP_keepPIvars_url(array('step' => 3),$cache=0,$clearAnyway=0,$altPageId=0);
-					
-						# Ist der Absender korrekt?
-					if( $this->piVars['myName'] == '' || $this->piVars['myEMail'] == '' || !t3lib_div::validEmail($this->piVars['myEMail']) ) {
-						$content = "Fehlerhafte Angaben: Absender.";
-						debug($this->piVars);
+					$formStatus = $GLOBALS["TSFE"]->fe_user->getKey("ses", $this->prefixId."[".$this->piVars['timestamp']."]");
+					if($formStatus != 'NEW') {
+						$content  = "Diese Mail wurde bereits verschickt.<br />";
+						$content .= $this->pi_linkToPage("Hier kommen Sie zurück zum Programm.", $this->conf['prgPid']); 
+						break;
+					} else {
+						$GLOBALS["TSFE"]->fe_user->setKey("ses", $this->prefixId."[".$this->piVars['timestamp']."]", "SENT");
 					}
 
-					
 					$n = 0;
 					foreach($this->piVars['friendName'] as $key => $name) {
 						$recipient[$n]['name']  = htmlspecialchars($name);
@@ -616,7 +634,7 @@ debug($recipient, "Empfänger");
     					'pid' 		=> $this->conf['spamLog'],
 					    'tstamp'	=> time(),
 					    'crdate'	=> time(),
-					    'ip'		=> 'ip',
+					    'ip'		=> getenv(REMOTE_ADDR),
 					    'sender'	=> htmlspecialchars($this->piVars['myName']).' '.htmlspecialchars($this->piVars['myEMail']),
 					    'recipient'	=> implode(', ', htmlspecialchars($this->piVars['message'])),
 					    'msg'		=> htmlspecialchars($this->piVars['message']),
@@ -636,7 +654,6 @@ debug($recipient, "Empfänger");
 	
 	
 	function validateStep1() {
-		$regEx = '^([a-zA-Z0-9]((\.|\-)?[a-zA-Z0-9])*)@([a-zA-Z]((\.|\-)?[a-zA-Z0-9])*)\.([a-zA-Z]{2,8})$';
 		$setStepTo = $this->piVars['step'];
 		
 		# Captcha test
@@ -689,7 +706,7 @@ debug($recipient, "Empfänger");
 		if(!$this->piVars['myName']) {
 			$error[] = "Dein Name fehlt";
 		}
-		if(!ereg($regEx, $this->piVars['myEMail'])) { 
+		if(!t3lib_div::validEmail($this->piVars['myEMail'])) { 
 			$error[] = "Deine E-Mail Adresse ist ungültig";
 		}
 	
@@ -705,7 +722,7 @@ debug($recipient, "Empfänger");
 				if(strlen($this->piVars['friendName'][$n]) < 1) {
 					$error[] = "Name $n fehlt!";
 				}
-				if(!ereg($regEx, $this->piVars['friendMail'][$n])) {
+				if(!t3lib_div::validEmail($this->piVars['friendMail'][$n])) {
 					$error[] = "E-Mail Adresse $n fehlt oder ist ungültig!";
 				}
 			}
@@ -862,14 +879,14 @@ debug($recipient, "Empfänger");
 			case 'movie_image':
 				# Für welchen Bereich?
 				switch($this->ff['def']['mode']) {
-					case 'shortView': 	$this->conf['image.'] = ($this->ff['image']['pluginWidth'] > 0) ? $this->ff['image']['pluginWidth'] : $this->conf['listViewShort.']; 	break;
-					case 'longView':	$this->conf['image.'] = ($this->ff['image']['pluginWidth'] > 0) ? $this->ff['image']['pluginWidth'] : $this->conf['listViewLong.'];		break;
-					case 'singleView':	$this->conf['image.'] = ($this->ff['image']['pluginWidth'] > 0) ? $this->ff['image']['pluginWidth'] : $this->conf['imageSingle.'];		break;
-					case 'special':		$this->conf['image.'] = ($this->ff['image']['pluginWidth'] > 0) ? $this->ff['image']['pluginWidth'] : $this->conf['imageSpecial.']; 	break;
+					case 'shortView': 	$this->conf['image.'] = ($this->ff['image']['pluginWidth'] > 0) ? array("file." => array("width" => $this->ff['image']['pluginWidth'])) : $this->conf['listViewShort.']; 	break;
+					case 'longView':	$this->conf['image.'] = ($this->ff['image']['pluginWidth'] > 0) ? array("file." => array("width" => $this->ff['image']['pluginWidth'])) : $this->conf['listViewLong.'];		break;
+					case 'singleView':	$this->conf['image.'] = ($this->ff['image']['pluginWidth'] > 0) ? array("file." => array("width" => $this->ff['image']['pluginWidth'])) : $this->conf['imageSingle.'];		break;
+					case 'special':		$this->conf['image.'] = ($this->ff['image']['pluginWidth'] > 0) ? array("file." => array("width" => $this->ff['image']['pluginWidth'])) : $this->conf['imageSpecial.']; 	break;
 					case 'tipAFriend':  
-						if($this->ff['image']['pluginWidth'] > 0) {
+						if($this->ff['image']['pluginWidth'] > 0) { # Plugin hat vorrang
 							$this->conf['image.']['file.']['width'] = $this->ff['image']['pluginWidth'];
-						} else {
+						} else { # größe kommt aus TS
 							$this->conf['image.'] = $this->conf['imageTipAFriend.'];
 							if($this->piVars['step'] == 2) $this->conf['image.'] = $this->conf['imageTipAFriend2.'];
 							if($this->piVars['step'] == 3) $this->conf['image.'] = $this->conf['imageTipAFriend3.'];
@@ -880,28 +897,34 @@ debug($recipient, "Empfänger");
 
 				if($this->film->poster) {
 					$temp = explode(',', $this->film->poster); # mehrere Poster?
-
+					$temp = $temp[rand(0,count($temp)-1)];
+					
 					if($this->conf['image.']['file'] == 'GIFBUILDER') {
-						$this->conf['image.']['file.']['10.']['file'] = $this->uploadPath.$temp[rand(0,count($temp)-1)];
+						$this->conf['image.']['file.']['10.']['file'] = $this->uploadPath.$temp;
 					} else {
-						$this->conf['image.']['file'] = $this->uploadPath.$temp[rand(0,count($temp)-1)];
-						$this->conf['image.']['file.']['width'] = $this->conf['image.']['file.']['width'];
+						$this->conf['image.']['file'] = $this->uploadPath.$temp;
+#						$this->conf['image.']['file.']['width'] = $this->conf['image.']['file.']['width'];
 					}
 				} else { // Media File als Alternative
 					if($this->conf['image.']['file'] == 'GIFBUILDER') {
 						$this->conf['image.']['file.']['10.']['file'] = $this->uploadPath.$this->getFieldContent('movie_media-random');
 
-					if($this->conf['image.']['file.']['10.']['file'] == '')
-						$this->conf['image.']['file.']['10.']['file'] = $this->conf['dummyPoster'];
+						if($this->conf['image.']['file.']['10.']['file'] == '') {
+							$this->conf['image.']['file.']['10.']['file'] = $this->conf['dummyPoster'];
+						}
 					} else {
-						$this->conf['image.']['file'] = $this->uploadPath.$this->getFieldContent('movie_media-random');
+							$this->conf['image.']['file'] = $this->uploadPath.$this->getFieldContent('movie_media-random');
 					}
 				}
 
-				if($this->conf['image.']['file.']['10.']['file'] == 'uploads/tx_tmdmovie/') {
-					$this->conf['image.']['file.']['10.']['file'] = $this->conf['dummyPoster'];
+
+				if($this->conf['image.']['file'] == 'uploads/tx_tmdmovie/') {
+					$this->conf['image.']['file'] = $this->conf['dummyPoster'];
 				}
 
+
+
+				
 				$this->conf['image.']['altText'] = $this->film->titel;
 				$out = $this->cObj->IMAGE($this->conf['image.']);
 				$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_IMAGE']);
@@ -1524,9 +1547,9 @@ debug($recipient, "Empfänger");
 							$value = $theTime."-".$this->internal['currentRow']['movie']."-".$this->internal['currentRow']['cinema'];
 							$value = $this->encrypt($value);
 							if($this->piVars['tipDate'] == $value) {
-								$temp[$i][$key1] .= '<input type="radio" name="tx_tmdcinema_pi1[tipDate]" value="'.$value.'" checked="checked" >';
+								$temp[$i][$key1] .= '<input class="tipaf-select" type="radio" name="tx_tmdcinema_pi1[tipDate]" value="'.$value.'" checked="checked" ><br />';
 							} else {
-								$temp[$i][$key1] .= '<input type="radio" name="tx_tmdcinema_pi1[tipDate]" value="'.$value.'">';
+								$temp[$i][$key1] = '<input class="tipaf-select" type="radio" name="tx_tmdcinema_pi1[tipDate]" value="'.$value.'"><br />'.$temp[$i][$key1];
 							}
 						}
 					
