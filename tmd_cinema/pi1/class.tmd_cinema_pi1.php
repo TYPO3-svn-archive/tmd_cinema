@@ -514,7 +514,7 @@ Christian.";
 			}
 		
 
-debug($this->piVars, 'piVars');
+#debug($this->piVars, 'piVars');
 
 			switch($this->piVars['step']) {
 				case '1': # Formular
@@ -564,7 +564,7 @@ debug($this->piVars, 'piVars');
 				case '2': # Vorschau
 					$formStatus = $GLOBALS["TSFE"]->fe_user->getKey("ses", $this->prefixId."[".$this->piVars['timestamp']."]");
 					debug($formStatus, "session");
-					if($formStatus == 'SENT') {
+					if($formStatus == 'SENT' && !$this->conf['debug']) {
 						$content = $this->pi_linkToPage("Hier kommen Sie zurück zum Programm.", $this->conf['prgPid']); 
 						break;
 					}
@@ -590,7 +590,7 @@ debug($this->piVars, 'piVars');
 				
 				case '3': # Absenden
 					$formStatus = $GLOBALS["TSFE"]->fe_user->getKey("ses", $this->prefixId."[".$this->piVars['timestamp']."]");
-					if($formStatus != 'NEW') {
+					if($formStatus != 'NEW' && !$this->conf['debug']) {
 						$content  = "Diese Mail wurde bereits verschickt.<br />";
 						$content .= $this->pi_linkToPage("Hier kommen Sie zurück zum Programm.", $this->conf['prgPid']); 
 						break;
@@ -604,23 +604,25 @@ debug($this->piVars, 'piVars');
 						$recipient[$n]['EMail'] = htmlspecialchars($this->piVars['friendMail'][$key]); 
 						$n++;
 					}
-debug($recipient, "Empfänger");
+#debug($recipient, "Empfänger");
 					
 					foreach($recipient as $key => $data){
 						if ($data['EMail'] && t3lib_div::validEmail($data['EMail'])) {
+							list($date, $movie, $cinema) = explode("-", $this->decrypt($this->piVars['tipDate']));
 							$markerArray['###MYNAME###'] 	= htmlspecialchars($this->piVars['myName']);
 							$markerArray['###MYEMAIL###'] 	= htmlspecialchars($this->piVars['myEMail']);
-							$margerArray['###MESSAGE###'] 	= htmlspecialchars($this->piVars['message']);
-							$margerArray['###DATE###'] 		= htmlspecialchars($this->piVars['tipafriend']);
-
-							$subject = "Betreff";
-							$email = $this->substituteMarkers("TIPAFRIEND_EMAIL", $markerArray);
+							$markerArray['###MESSAGE###'] 	= nl2br(htmlspecialchars($this->piVars['message']));
+							$markerArray['###TIPDATE_DECRYPT###'] = strftime("%d.%B %Y - %H:%M Uhr", $date);
 							
-							$this->sendTip($senderName, $senderEMail, $data['name'], $data['EMail'], $subject, trim($email));
+							$subject = "Betreff";
+							$email['html'] = $this->substituteMarkers("TIPAFRIEND_HTMLEMAIL", $markerArray);
+							$email['txt']  = html_entity_decode($this->substituteMarkers("TIPAFRIEND_TXTEMAIL",  $markerArray),  ENT_COMPAT, "utf-8" );
+							
+#debug(array($markerArray['###MYEMAIL###'], $markerArray['###MYNAME###'], $data['name'], $data['EMail'], $subject, trim($email)), "hier");
+							$this->sendTip($markerArray['###MYEMAIL###'], $markerArray['###MYNAME###'], $data['name'], $data['EMail'], $subject, $email);
 						}
-						
 					}
-					
+				
 					$content = $this->substituteMarkers("TIPAFRIEND_SENT", $markerArray);
 				break;
 				
@@ -748,42 +750,42 @@ debug($recipient, "Empfänger");
 	 * @param	[type]		$url: ...
 	 * @return	[type]		...
 	 */
-	function sendTip($senderName, $senderEMail, $recipientName, $recipientEMail, $subject, $email)	{
+	function sendTip($senderEMail, $senderName, $recipientName, $recipientEMail, $subject, $msg)	{
 			// Set subject, conten and headers
 		$headers=array(); # wozu ?
 		$headers[]='FROM: '.$senderName.' <'.$senderEMail.'>';
 
-		$plain_message = 'TextOnly alle tags entfernen?'; 
+		$plain_message = trim(strip_tags($msg['txt'])); 
 		
 			// HTML
 		$cls=t3lib_div::makeInstanceClassName('t3lib_htmlmail');
 
 		if ($this->conf['sendHTML'] && class_exists($cls))	{	// If htmlmail lib is included, then generate a nice HTML-email
 			$Typo3_htmlmail = t3lib_div::makeInstance('t3lib_htmlmail');
+	
 			$Typo3_htmlmail->start();
 			$Typo3_htmlmail->useBase64();
 
 			$Typo3_htmlmail->subject = $subject;
 			$Typo3_htmlmail->from_email = $senderEMail;
 			$Typo3_htmlmail->from_name = $senderName;
-			$Typo3_htmlmail->replyto_email = $email;
-			$Typo3_htmlmail->replyto_name = $senderEMail;
+			$Typo3_htmlmail->replyto_email = $senderEMail;
+			$Typo3_htmlmail->replyto_name = $senderName;
 			$Typo3_htmlmail->organisation = '';
 			$Typo3_htmlmail->priority = 3;
 
+			 
 				// this will fail if the url is password protected!
 			$Typo3_htmlmail->addPlain($plain_message);
-
+			$Typo3_htmlmail->setHTML($Typo3_htmlmail->encodeMsg($msg['html']));
+			
 			$Typo3_htmlmail->setHeaders();
 			$Typo3_htmlmail->setContent();
-			$Typo3_htmlmail->setRecipient($recipient['recipientEMail'].' <'.$recipient['recipientEMail'].'>');
+			$Typo3_htmlmail->setRecipient($recipientName.' <'.$recipientEMail.'>');
 
-//			debug($Typo3_htmlmail->theParts);
-#			$Typo3_htmlmail->sendtheMail();
-		} else { // Plain mail:
-				// Sending mail:
-#			$GLOBALS['TSFE']->plainMailEncoded(, $subject, , implode($headers,chr(10)));
-#			$this->cObj->sendNotifyEmail($plain_message, $recipient['recipientEMail'], '', $email, $recipient['recipientName']);
+			$Typo3_htmlmail->sendtheMail();
+		} else {
+			$this->cObj->sendNotifyEmail($subject.chr(10).$plain_message, $recipientEMail, $cc, $senderEMail, $senderName, $senderEMail);
 		}
 	}
 	
@@ -1547,7 +1549,7 @@ debug($recipient, "Empfänger");
 							$value = $theTime."-".$this->internal['currentRow']['movie']."-".$this->internal['currentRow']['cinema'];
 							$value = $this->encrypt($value);
 							if($this->piVars['tipDate'] == $value) {
-								$temp[$i][$key1] .= '<input class="tipaf-select" type="radio" name="tx_tmdcinema_pi1[tipDate]" value="'.$value.'" checked="checked" ><br />';
+								$temp[$i][$key1] = '<input class="tipaf-select" type="radio" name="tx_tmdcinema_pi1[tipDate]" value="'.$value.'" checked="checked" ><br />'.$temp[$i][$key1];
 							} else {
 								$temp[$i][$key1] = '<input class="tipaf-select" type="radio" name="tx_tmdcinema_pi1[tipDate]" value="'.$value.'"><br />'.$temp[$i][$key1];
 							}
