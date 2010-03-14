@@ -565,7 +565,7 @@ Christian.";
 					$formStatus = $GLOBALS["TSFE"]->fe_user->getKey("ses", $this->prefixId."[".$this->piVars['timestamp']."]");
 					debug($formStatus, "session");
 					if($formStatus == 'SENT' && !$this->conf['debug']) {
-						$content = $this->pi_linkToPage("Hier kommen Sie zurück zum Programm.", $this->conf['prgPid']); 
+						$content = $this->pi_linkToPage($this->pi_getLL("back", "Hier kommen Sie zurück zum Programm."), $this->conf['prgPid']); 
 						break;
 					}
 					
@@ -582,7 +582,7 @@ Christian.";
 					$markerArray['###MESSAGE###'] = nl2br($this->piVars['message']);
 					
 					list($date, $movie, $cinema) = explode("-", $this->decrypt($this->piVars['tipDate']));
-					$markerArray['###TIPDATE_DECRYPT###'] = strftime("%d.%B %Y - %H:%M Uhr", $date);
+					$markerArray['###TIPDATE_DECRYPT###'] = strftime($this->conf['dateString'], $date);
 					$markerArray['###TIPDATE###'] = $this->piVars['tipDate'];
 
 					$content = $this->substituteMarkers("TIPAFRIEND_PREVIEW", $markerArray);
@@ -591,8 +591,8 @@ Christian.";
 				case '3': # Absenden
 					$formStatus = $GLOBALS["TSFE"]->fe_user->getKey("ses", $this->prefixId."[".$this->piVars['timestamp']."]");
 					if($formStatus != 'NEW' && !$this->conf['debug']) {
-						$content  = "Diese Mail wurde bereits verschickt.<br />";
-						$content .= $this->pi_linkToPage("Hier kommen Sie zurück zum Programm.", $this->conf['prgPid']); 
+						$content  = $this->pi_getLL("err_alreadySent", "Diese Mail wurde bereits verschickt.<br />");
+						$content .= $this->pi_linkToPage($this->pi_getLL("back", "Hier kommen Sie zurück zum Programm.", $this->conf['prgPid'])); 
 						break;
 					} else {
 						$GLOBALS["TSFE"]->fe_user->setKey("ses", $this->prefixId."[".$this->piVars['timestamp']."]", "SENT");
@@ -612,9 +612,9 @@ Christian.";
 							$markerArray['###MYNAME###'] 	= htmlspecialchars($this->piVars['myName']);
 							$markerArray['###MYEMAIL###'] 	= htmlspecialchars($this->piVars['myEMail']);
 							$markerArray['###MESSAGE###'] 	= nl2br(htmlspecialchars($this->piVars['message']));
-							$markerArray['###TIPDATE_DECRYPT###'] = strftime("%d.%B %Y - %H:%M Uhr", $date);
+							$markerArray['###TIPDATE_DECRYPT###'] = strftime($this->conf['dateString'], $date);
 							
-							$subject = "Betreff";
+							$subject = printf($this->conf['subject'], $markerArray['###MYNAME###']);
 							$email['html'] = $this->substituteMarkers("TIPAFRIEND_HTMLEMAIL", $markerArray);
 							$email['txt']  = html_entity_decode($this->substituteMarkers("TIPAFRIEND_TXTEMAIL",  $markerArray),  ENT_COMPAT, "utf-8" );
 							
@@ -627,10 +627,10 @@ Christian.";
 				break;
 				
 				case 'timelimit':
-					$content = "Fehler bei TipAFriend<br />Leider schon Res. Schluss";
+					$content = $this->getLL('err_timeLimit', "Fehler bei TipAFriend<br />Leider schon Res. Schluss");
 				break;
 				case 'honeyPot':
-					$content = "Fehler bei TipAFriend<br />Honig klebt";
+					$content = $this->pi_getLL("err_honeyPot", "Fehler bei TipAFriend<br />Honig klebt");
 					$table = 'tx_tmdcinema_spamlog';
 					$fields_values = array(
     					'pid' 		=> $this->conf['spamLog'],
@@ -669,11 +669,10 @@ Christian.";
 
 		if (	$captchaStr===-1 || 
 				$this->piVars['captchaResponse']===$captchaStr) {
-#				 	die('ok');
 		} else {
 			#debug($captchaStr);
 			$setStepTo  = 1; /* Formular nochmal ausfüllen! */
-			$error[] = "Der Kontrollcode ist falsch!";
+			$error[] = $this->pigetLL("err_captcha", "Der Kontrollcode ist falsch!");
 		}
 
 
@@ -691,11 +690,11 @@ Christian.";
 			}
 			
 			if(time() > ($theTimeDate - $this->conf['resLimit']*60*60)) { # Resevierungsschluß
-				$setStepTo = 'timelimit'; /* Formular nochmal ausfüllen! */
+				$setStepTo = $this->getLL('err_timeLimit', "Fehler bei TipAFriend<br />Leider schon Res. Schluss"); /* Formular nochmal ausfüllen! */
 			}
 		} else { # No time chosen
 			$setStepTo  = 1; /* Formular nochmal ausfüllen! */
-			$error[] = "Bitte eine Vorstellung auswählen!";
+			$error[] = $this->pi_getLL("err_chooseShow", "Bitte eine Vorstellung auswählen!");
 		}
 			
 		
@@ -706,10 +705,10 @@ Christian.";
 		
 				
 		if(!$this->piVars['myName']) {
-			$error[] = "Dein Name fehlt";
+			$error[] = $this->pi_getLL("err_yourName", "Dein Name fehlt");
 		}
 		if(!t3lib_div::validEmail($this->piVars['myEMail'])) { 
-			$error[] = "Deine E-Mail Adresse ist ungültig";
+			$error[] = $this->pi_getLL("err_yourMail", "Deine E-Mail Adresse ist ungültig");
 		}
 	
 		$n = 0;
@@ -722,16 +721,16 @@ Christian.";
 			
 			if($this->piVars['friendName'][$n] || $this->piVars['friendMail'][$n]) {
 				if(strlen($this->piVars['friendName'][$n]) < 1) {
-					$error[] = "Name $n fehlt!";
+					$error[] = $this->pi_getLL("err_nameFriend", "Name $n fehlt!");
 				}
 				if(!t3lib_div::validEmail($this->piVars['friendMail'][$n])) {
-					$error[] = "E-Mail Adresse $n fehlt oder ist ungültig!";
+					$error[] = $this->pi_getLL("err_mailFriend", "E-Mail Adresse $n fehlt oder ist ungültig!");
 				}
 			}
 		}
 			
 		if($missCount == $this->conf['friendCount']) {
-			$error[] = "Du musst mindestens eine Adresse und einen Namen eines Freundes angeben!"; 
+			$error[] = $this->pi_getLL("err_friendMail", "Du musst mindestens eine Adresse und einen Namen eines Freundes angeben!"); 
 		}
 
 		
@@ -781,7 +780,7 @@ Christian.";
 			
 			$Typo3_htmlmail->setHeaders();
 			$Typo3_htmlmail->setContent();
-			$Typo3_htmlmail->setRecipient($recipientName.' <'.$recipientEMail.'>');
+			($recipientName) ? $Typo3_htmlmail->setRecipient($recipientName.' <'.$recipientEMail.'>') : $Typo3_htmlmail->setRecipient($recipientEMail); 
 
 			$Typo3_htmlmail->sendtheMail();
 		} else {

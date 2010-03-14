@@ -85,6 +85,8 @@ plugin.tx_tmdcinema_pi1 {
 	sendHTML = 1
 	spamLog = 773
 	maxMsgLength = 300
+	dateString = %d.%B %Y - %H:%M Uhr
+	subject = Du hast eine Kino-Einlandung von %s erhalten  
 	
 	
 		#-----------
