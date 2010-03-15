@@ -10,6 +10,8 @@
 		</languageKey>
 
 		<languageKey index="de" type="array">
+
+			<label index="backToStart">Hier kommen Sie zurück zum Programm.</label>
 			
 			<label index="today">Heute</label>
 			<label index="howtoReserve">Hier klicken um für diese Vorstellung zu Reservieren!</label>
@@ -38,17 +40,19 @@
 			<label index="mailForm.requiredNote_missing">diese Angaben werden benötigt!</label>
 
 				<!-- tipAFriend -->			
-			<label index="back">Hier kommen Sie zurück zum Programm.</label>
 			<label index="err_alreadySent">Diese Mail wurde bereits verschickt</label>
 			<label index="err_timeLimit">Leider schon Res. Schluss</label>
-			<label index="err_captcha">Der Kontrollcode ist falsch!</label>
-			<label index="err_timeLimit">Leider schon Res. Schluss</label>
+			<label index="err_captcha">Das Spamschutzfeld wurde nicht korrekt ausgefüllt.</label>
+			<label index="err_timeLimit">Leider ist für diese Vorstellung schon Reservierungschluß. Wähle eine andere Vorstellung.</label>
 			<label index="err_chooseShow">Bitte eine Vorstellung auswählen!</label>
 			<label index="err_yourName">Dein Name fehlt</label>
 			<label index="err_yourMail">Deine E-Mail Adresse ist ungültig</label>
-			<label index="err_nameFriend">Name $n fehlt!</label>
-			<label index="err_mailFriend">E-Mail Adresse $n fehlt oder ist ungültig!</label>
-			<label index="err_friendMail">Du musst mindestens eine Adresse und einen Namen eines Freundes angeben!</label> 
+			<label index="err_nameFriend">Der Name von Freund %s fehlt!</label>
+			<label index="err_mailFriend">Die E-Mail Adresse von Freund %s fehlt oder ist ungültig!</label>
+			<label index="err_missFriendMail">Du musst mindestens eine Adresse und einen Namen eines Freundes angeben!</label> 
+			<label index="err_wrongCinema">Falsche Daten (Cinema not in List)</label>
+			<label index="err_honeyPot">Internet Fehler: Ein Logfile wurde geschrieben.</label>
+			<label index="err_invitePossible">Diese Woche ist der Film leider nicht mehr im Programm. Informieren Sie sich über das weitere Programm über unsere Homepage oder unseren kostenlosen, wöchentlichen Newsletter.</label> 
 
 		</languageKey>
 

@@ -80,11 +80,13 @@ $TCA["tx_tmdcinema_showtype"] = array (
 $TCA["tx_tmdcinema_spamlog"] = array (
     "ctrl" => array (
         'title'     => 'LLL:EXT:tmd_cinema/locallang_db.xml:tx_tmdcinema_spamlog',        
-        'label'     => 'uid',    
+        'label'     => 'uid',
+		'label_alt'	=> 'ip',
+		'label_alt_force' => 0,
         'tstamp'    => 'tstamp',
         'crdate'    => 'crdate',
         'cruser_id' => 'cruser_id',
-        'default_sortby' => "ORDER BY crdate",    
+        'default_sortby' => "ORDER BY crdate DESC",    
         'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY).'tca.php',
         'iconfile'          => t3lib_extMgm::extRelPath($_EXTKEY).'icon_tx_tmdcinema_spamlog.gif',
     ),

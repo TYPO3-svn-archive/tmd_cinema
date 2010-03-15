@@ -322,7 +322,7 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 			# Programm vorzeitig wechseln
 		if(mktime() + $this->conf['switchPrgBevore']*60 >= $wStart+$oneWeek) {
 			$wStart += $oneWeek;
-	debug($this->conf['switchPrgBevore'], "sw");
+#debug($this->conf['switchPrgBevore'], "sw");
 		}
 
 		$wEnd   = $wStart + $oneWeek*$nextWeeks;
@@ -345,7 +345,6 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 			$whereClause .= " AND showtype IN (".$this->ff['def']['special'].")";
 		}
 
-#		$sortBy = $this->ff['def']['sortBy'];
 		$sortBy = "cinema,date,sorting ASC";
 
 			// Make listing query, pass query to SQL database:
@@ -494,33 +493,22 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 				unset($this->piVars['step3']);
 				$this->piVars['step'] = 3;
 			}
-			
-			if($this->conf['debug']) {
-				$this->piVars['myName'] = "Christian";
-				$this->piVars['myEMail'] = "crtausch@tmd.dynalias.net";
-				$this->piVars['friendName']['1'] = "Freund 1";
-				$this->piVars['friendMail']['1'] = "crtausch@tmd.dynalias.net";
-				$this->piVars['message'] = "Hallo 
-wie wäre es mit einem schönen Abend im Kino?
-mal sehen wie das nun  ausgegeben wird.
 
-Christian.";
-			}
-			
+debug($this->piVars, 'piVars');
+
 				/* Validieren wenn abgeschickt */
 			$markerArray['###ERROR###'] = '&nbsp;';
 			if($this->piVars['step'] > 1) {
 				list($this->piVars['step'], $markerArray['###ERROR###'])  = $this->validateStep1();
 			}
 		
+debug($this->piVars, 'piVars');
 
-#debug($this->piVars, 'piVars');
+
 
 			switch($this->piVars['step']) {
 				case '1': # Formular
 					$markerArray['###ACTION_URL###'] = $this->pi_list_linkSingle($str,$uid,FALSE,array('step' => '', 'showUid'=>$this->piVars[showUid]),$urlOnly=TRUE,$altPageId=0);  
-
-					
 					
 					if($this->piVars['timestamp']) {
 						$markerArray['###TIMESTAMP###'] = $this->piVars['timestamp'];
@@ -528,12 +516,12 @@ Christian.";
 						$markerArray['###TIMESTAMP###'] = time();
 						$GLOBALS["TSFE"]->fe_user->setKey("ses", $this->prefixId."[".$markerArray['###TIMESTAMP###']."]", "NEW");
 					}
-					  
-					
-					
+
 					#http://www.rustylime.com/show_article.php?id=338
 					if($this->conf['honeyPot'] == true) {		#document . the name of the form . the name of the field to shift focus to
 						$markerArray['###HONEYPOT###'] = '<input id="pritt" type="text" size=30 name="tx_tmdcinema_pi1[pritt]" onfocus="document.tx_tmdcinema_pi1_tipafriend.startfield.focus();"  value="">';
+						if($this->conf['DEBUG.']['forceHoneyPot'] == 1)
+							$markerArray['###HONEYPOT###'] = '<input id="pritt" type="text" size=30 name="tx_tmdcinema_pi1[pritt]" value="Ich bin Spammer">';
 					} else {
 						$markerArray['###HONEYPOT###'] = '';
 					}
@@ -544,10 +532,10 @@ Christian.";
 					} else {
 						$markerArray['###CAPTCHA###'] = '';
 					}
-
+				
 					$markerArray['###MYNAME###']  = $this->piVars['myName']  ? htmlspecialchars($this->piVars['myName'])  : '';
 					$markerArray['###MYEMAIL###'] = $this->piVars['myEMail'] ? htmlspecialchars($this->piVars['myEMail']) : '';
-				
+					
 					for($n = 1; $n<=$this->conf['friendCount']; $n++) { 
 						$markerArray['###FRIENDNAME_'.$n.'###'] = ($this->piVars['friendName'][$n]) ? htmlspecialchars($this->piVars['friendName'][$n]) : '';
 						$markerArray['###FRIENDMAIL_'.$n.'###'] = ($this->piVars['friendMail'][$n]) ? htmlspecialchars($this->piVars['friendMail'][$n]) : '';
@@ -563,10 +551,12 @@ Christian.";
 				
 				case '2': # Vorschau
 					$formStatus = $GLOBALS["TSFE"]->fe_user->getKey("ses", $this->prefixId."[".$this->piVars['timestamp']."]");
-					debug($formStatus, "session");
-					if($formStatus == 'SENT' && !$this->conf['debug']) {
-						$content = $this->pi_linkToPage($this->pi_getLL("back", "Hier kommen Sie zurück zum Programm."), $this->conf['prgPid']); 
+#debug($formStatus, "session Time");
+					if($formStatus == 'SENT') { # schon mal abgeschickt worden
+						$content = $this->pi_linkToPage($this->pi_getLL("backToStart", "_backToStart_"), $this->conf['prgPid']); 
 						break;
+					} else {
+						$GLOBALS["TSFE"]->fe_user->setKey("ses", $this->prefixId."[".$this->piVars['timestamp']."]", "OK");
 					}
 					
 					$markerArray['###ACTION_URL###'] = $this->pi_list_linkSingle($str,$uid,FALSE,array('step' => '', 'showUid'=>$this->piVars[showUid]),$urlOnly=TRUE,$altPageId=0);
@@ -590,12 +580,13 @@ Christian.";
 				
 				case '3': # Absenden
 					$formStatus = $GLOBALS["TSFE"]->fe_user->getKey("ses", $this->prefixId."[".$this->piVars['timestamp']."]");
-					if($formStatus != 'NEW' && !$this->conf['debug']) {
-						$content  = $this->pi_getLL("err_alreadySent", "Diese Mail wurde bereits verschickt.<br />");
-						$content .= $this->pi_linkToPage($this->pi_getLL("back", "Hier kommen Sie zurück zum Programm.", $this->conf['prgPid'])); 
-						break;
-					} else {
+#debug($formStatus, "session Time");
+					if($formStatus === 'NEW' || $formStatus === 'OK') {
 						$GLOBALS["TSFE"]->fe_user->setKey("ses", $this->prefixId."[".$this->piVars['timestamp']."]", "SENT");
+					} else {
+						$content  = $this->pi_getLL("err_alreadySent", "_err_alreadySent_")."<br />ss";
+						$content .= $this->pi_linkToPage($this->pi_getLL("backToStart", "_backToStart_"), $this->conf['prgPid']);
+						break;
 					}
 
 					$n = 0;
@@ -604,21 +595,19 @@ Christian.";
 						$recipient[$n]['EMail'] = htmlspecialchars($this->piVars['friendMail'][$key]); 
 						$n++;
 					}
-#debug($recipient, "Empfänger");
 					
 					foreach($recipient as $key => $data){
 						if ($data['EMail'] && t3lib_div::validEmail($data['EMail'])) {
-							list($date, $movie, $cinema) = explode("-", $this->decrypt($this->piVars['tipDate']));
-							$markerArray['###MYNAME###'] 	= htmlspecialchars($this->piVars['myName']);
-							$markerArray['###MYEMAIL###'] 	= htmlspecialchars($this->piVars['myEMail']);
-							$markerArray['###MESSAGE###'] 	= nl2br(htmlspecialchars($this->piVars['message']));
-							$markerArray['###TIPDATE_DECRYPT###'] = strftime($this->conf['dateString'], $date);
+							list($date, $movie, $cinema) 			= explode("-", $this->decrypt($this->piVars['tipDate']));
+							$markerArray['###MYNAME###'] 			= htmlspecialchars($this->piVars['myName']);
+							$markerArray['###MYEMAIL###'] 			= htmlspecialchars($this->piVars['myEMail']);
+							$markerArray['###MESSAGE###'] 			= nl2br(htmlspecialchars($this->piVars['message']));
+							$markerArray['###TIPDATE_DECRYPT###'] 	= strftime($this->conf['dateString'], $date);
 							
-							$subject = printf($this->conf['subject'], $markerArray['###MYNAME###']);
+							$subject = sprintf($this->conf['subject'], $markerArray['###MYNAME###']);
 							$email['html'] = $this->substituteMarkers("TIPAFRIEND_HTMLEMAIL", $markerArray);
 							$email['txt']  = html_entity_decode($this->substituteMarkers("TIPAFRIEND_TXTEMAIL",  $markerArray),  ENT_COMPAT, "utf-8" );
 							
-#debug(array($markerArray['###MYEMAIL###'], $markerArray['###MYNAME###'], $data['name'], $data['EMail'], $subject, trim($email)), "hier");
 							$this->sendTip($markerArray['###MYEMAIL###'], $markerArray['###MYNAME###'], $data['name'], $data['EMail'], $subject, $email);
 						}
 					}
@@ -627,10 +616,11 @@ Christian.";
 				break;
 				
 				case 'timelimit':
-					$content = $this->getLL('err_timeLimit', "Fehler bei TipAFriend<br />Leider schon Res. Schluss");
+					$content = $this->getLL('err_timeLimit', "_err_timeLimit_");
 				break;
+				
 				case 'honeyPot':
-					$content = $this->pi_getLL("err_honeyPot", "Fehler bei TipAFriend<br />Honig klebt");
+					$content = $this->pi_getLL("err_honeyPot", "_err_honeyPot_");
 					$table = 'tx_tmdcinema_spamlog';
 					$fields_values = array(
     					'pid' 		=> $this->conf['spamLog'],
@@ -638,10 +628,10 @@ Christian.";
 					    'crdate'	=> time(),
 					    'ip'		=> getenv(REMOTE_ADDR),
 					    'sender'	=> htmlspecialchars($this->piVars['myName']).' '.htmlspecialchars($this->piVars['myEMail']),
-					    'recipient'	=> implode(', ', htmlspecialchars($this->piVars['message'])),
+					    'recipient'	=> htmlspecialchars(implode(', ', $this->piVars['friendMail'])),
 					    'msg'		=> htmlspecialchars($this->piVars['message']),
 					);
-					
+
 					$GLOBALS['TYPO3_DB']->exec_INSERTquery($table,$fields_values,$no_quote_fields=FALSE); 
 				default:
 					$content = $content;
@@ -667,18 +657,22 @@ Christian.";
 			$captchaStr = -1;
 		}
 
-		if (	$captchaStr===-1 || 
-				$this->piVars['captchaResponse']===$captchaStr) {
+		$formStatus = $GLOBALS["TSFE"]->fe_user->getKey("ses", $this->prefixId."[".$this->piVars['timestamp']."]");
+		if ($captchaStr===-1 || $this->piVars['captchaResponse']===$captchaStr || 
+				(
+					( $formStatus != 'NEW' && $this->piVars['step'] > 2 ) || 
+					( $formStatus != 'OK'  && $this->piVars['step'] > 2 )
+				)
+			) {
 		} else {
-			#debug($captchaStr);
 			$setStepTo  = 1; /* Formular nochmal ausfüllen! */
-			$error[] = $this->pigetLL("err_captcha", "Der Kontrollcode ist falsch!");
+			$error[] = $this->pi_getLL("err_captcha", "_err_captcha_");
 		}
 
-
+	
 			# Auf den Leim gegangen, elender Spammer
-		if($this->conf['honeyPot'] == true && $this->piVars['pritt'] != '') {
-			$setStepTo = 'honeyPot'; /* Formular nochmal ausfüllen! */
+		if($this->conf['honeyPot'] == true && strlen($this->piVars['pritt']) >1 ) {
+			$this->piVars['step'] = 'honeyPot'; /* Formular nochmal ausfüllen! */
 		}
 		
 			# fehlerhaft oder sonstwas falsches
@@ -686,15 +680,14 @@ Christian.";
 			list($theTimeDate, $theMovie, $theCinema) = explode("-", $this->decrypt($this->piVars['tipDate']));
 			
 			if(!t3lib_div::inList($this->conf['myCinema'], $theCinema)) { # Kino ist nicht korrekt
-				$this->piVars['step'] = 1; /* Formular nochmal ausfüllen! */
+				$error[] = $this->pi_getLL('err_wrongCinema', "_err_wrongCinema_"); /* Formular nochmal ausfüllen! */
 			}
 			
 			if(time() > ($theTimeDate - $this->conf['resLimit']*60*60)) { # Resevierungsschluß
-				$setStepTo = $this->getLL('err_timeLimit', "Fehler bei TipAFriend<br />Leider schon Res. Schluss"); /* Formular nochmal ausfüllen! */
+				$error[] = $this->pi_getLL('err_timeLimit', "_err_timeLimit_"); /* Formular nochmal ausfüllen! */
 			}
 		} else { # No time chosen
-			$setStepTo  = 1; /* Formular nochmal ausfüllen! */
-			$error[] = $this->pi_getLL("err_chooseShow", "Bitte eine Vorstellung auswählen!");
+			$error[] = $this->pi_getLL("err_chooseShow", "_err_chooseShow_");
 		}
 			
 		
@@ -705,10 +698,10 @@ Christian.";
 		
 				
 		if(!$this->piVars['myName']) {
-			$error[] = $this->pi_getLL("err_yourName", "Dein Name fehlt");
+			$error[] = $this->pi_getLL("err_yourName", "_err_yourName_");
 		}
 		if(!t3lib_div::validEmail($this->piVars['myEMail'])) { 
-			$error[] = $this->pi_getLL("err_yourMail", "Deine E-Mail Adresse ist ungültig");
+			$error[] = $this->pi_getLL("err_yourMail", "_err_yourMail_");
 		}
 	
 		$n = 0;
@@ -721,19 +714,20 @@ Christian.";
 			
 			if($this->piVars['friendName'][$n] || $this->piVars['friendMail'][$n]) {
 				if(strlen($this->piVars['friendName'][$n]) < 1) {
-					$error[] = $this->pi_getLL("err_nameFriend", "Name $n fehlt!");
+					$error[] = sprintf($this->pi_getLL("err_nameFriend", "Name %s fehlt!"), $n);
 				}
 				if(!t3lib_div::validEmail($this->piVars['friendMail'][$n])) {
-					$error[] = $this->pi_getLL("err_mailFriend", "E-Mail Adresse $n fehlt oder ist ungültig!");
+					$error[] = sprintf($this->pi_getLL("err_mailFriend", "_err_mailFriend_"), $n);
 				}
 			}
 		}
 			
 		if($missCount == $this->conf['friendCount']) {
-			$error[] = $this->pi_getLL("err_friendMail", "Du musst mindestens eine Adresse und einen Namen eines Freundes angeben!"); 
+			$error[] = $this->pi_getLL("err_missFriendMail", "_err_missFriendMail_"); 
 		}
 
-		
+		$setStepTo = (count($error)) ? 1 : $this->piVars['step'];
+								
 		return array($setStepTo, $error);
 	}
 			
@@ -750,8 +744,6 @@ Christian.";
 	 * @return	[type]		...
 	 */
 	function sendTip($senderEMail, $senderName, $recipientName, $recipientEMail, $subject, $msg)	{
-			// Set subject, conten and headers
-		$headers=array(); # wozu ?
 		$headers[]='FROM: '.$senderName.' <'.$senderEMail.'>';
 
 		$plain_message = trim(strip_tags($msg['txt'])); 
@@ -1308,7 +1300,11 @@ Christian.";
 	function substituteMarkers($subPart, $markerArray="")
 		{
 		$template = $GLOBALS['TSFE']->cObj->getSubpart($this->template, "###".$subPart."###");
-
+		if(strlen($template) < 1) {
+			debug("Kein Template!! ###".$subPart."###");
+			return;
+		}
+		
 			// oben weil ein array zurück kommt
 #		$markerArray = $this->getFieldContent('movie_media');
 
@@ -1355,7 +1351,10 @@ Christian.";
 		$markerArray['###PRG_FIRSTDAY###'] 			= $this->getFieldContent('firstday');
 		$markerArray['###PRG_STARTDAY###'] 			= $this->getFieldContent('date');
 
-	
+			// ACHTUNG: Reihenfolge beachten:
+			// diese Feld NACH ###PRG_TIMETABLE###
+		$markerArray['###INVITE_POSSIBLE###'] = ($this->invite == true) ?  "" : $this->pi_getLL("err_invitePossible", "_err_invitePossible_");
+		
 		$markerArray['###ANCHOR###']				= $this->getFieldContent('anchor');
 
 /*
@@ -1434,7 +1433,7 @@ Christian.";
 
 
 		return $template;
-		}
+	}
 
 
 
@@ -1458,6 +1457,9 @@ Christian.";
 			} else {
 				$todaysNr = -1;
 			}
+			
+				# TipaFriend
+			$this->invite = false;
 
 				# tHead
 			$head = '<thead><tr>';
@@ -1549,8 +1551,10 @@ Christian.";
 							$value = $this->encrypt($value);
 							if($this->piVars['tipDate'] == $value) {
 								$temp[$i][$key1] = '<input class="tipaf-select" type="radio" name="tx_tmdcinema_pi1[tipDate]" value="'.$value.'" checked="checked" ><br />'.$temp[$i][$key1];
+								$this->invite = true;
 							} else {
 								$temp[$i][$key1] = '<input class="tipaf-select" type="radio" name="tx_tmdcinema_pi1[tipDate]" value="'.$value.'"><br />'.$temp[$i][$key1];
+								$this->invite = true;
 							}
 						}
 					
