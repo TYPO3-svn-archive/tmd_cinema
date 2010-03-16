@@ -14,7 +14,9 @@ plugin.tx_tmdcinema_pi1 {
 	
 		#Verschlsselte Reservierung
 	cryptTime = 1
-	
+		
+		# abgelaufenes Programm verbergen
+	hideExpiredProgram = 1
 	
 	dummyPoster = EXT:tmd_cinema/pi1/res/dummy.png
 	
