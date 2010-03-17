@@ -79,8 +79,7 @@ plugin.tx_tmdcinema_pi1 {
 		# RSS definitionen
 	#template = EXT:pi1/res/rss_template.html
 
-		# Captcha bei TipAFriend
-	DEBUG.forceHoneyPot = 0
+		# TipAFriend
 	captcha = 1
 	honeyPot = 1
 	tipafriend = 771

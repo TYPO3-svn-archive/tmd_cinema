@@ -210,6 +210,7 @@
 	</s_image>
 
 
+	<!-- 
 	<s_specialConfiguration>
 		<ROOT>
 			<TCEforms>
@@ -234,10 +235,11 @@
 					</config>
 				</TCEforms>
 				</pageTipAFriend>
+				
 			</el>
 		</ROOT>
 	</s_specialConfiguration>
-	
+	-->
 	
 </sheets>
 </T3DataStructure>
