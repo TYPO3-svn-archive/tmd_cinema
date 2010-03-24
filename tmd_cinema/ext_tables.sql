@@ -96,10 +96,12 @@ CREATE TABLE tx_tmdcinema_spamlog (
     tstamp int(11) DEFAULT '0' NOT NULL,
     crdate int(11) DEFAULT '0' NOT NULL,
     cruser_id int(11) DEFAULT '0' NOT NULL,
-    ip tinytext NOT NULL,
-    sender tinytext NOT NULL,
-    recipient tinytext NOT NULL,
-    msg tinytext NOT NULL,
+    ip tinytext,
+    sender tinytext,
+    recipient tinytext,
+    msg tinytext,
+    spam tinyint(3) DEFAULT '0' NOT NULL,
+    showdata tinytext,
     
     PRIMARY KEY (uid),
     KEY parent (pid)

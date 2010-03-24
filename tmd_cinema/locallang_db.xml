@@ -37,6 +37,8 @@
             <label index="tx_tmdcinema_spamlog.sender">Sender</label>
             <label index="tx_tmdcinema_spamlog.recipient">Recipient</label>
 			<label index="tx_tmdcinema_spamlog.msg">Message</label>
+			<label index="tx_tmdcinema_spamlog.spam">Spam erkannt</label>,
+			<label index="tx_tmdcinema_spamlog.showData">Vorstellung</label>,
 	
 			<label index="configure">Configure</label>
 			<label index="mode">Mode</label>

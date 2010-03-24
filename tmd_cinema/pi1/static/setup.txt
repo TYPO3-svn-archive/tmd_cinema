@@ -85,10 +85,14 @@ plugin.tx_tmdcinema_pi1 {
 	tipafriend = 771
 	friendCount = 3
 	sendHTML = 1
-	spamLog = 773
+	spamLogPid = 764
+	logSpam = 1
+	logMail = 1
 	maxMsgLength = 300
 	dateString = %d.%B %Y - %H:%M Uhr
 	subject = Du hast eine Kino-Einlandung von %s erhalten  
+	baseURL = http://tmd.dynalias.net/tmd/kinoakt/
+	sendMeMailToo = 0
 	
 	
 		#-----------
@@ -103,7 +107,7 @@ plugin.tx_tmdcinema_pi1 {
 		# Einzelbild
 	imageSingle.file.width = 170
 		# Tip A Friend
-	imageTipAFriend.file.width = 80
+	imageTipAFriend1.file.width = 80
 	imageTipAFriend2.file.width = 140
 	imageTipAFriend3.file.width = 200
 
@@ -274,7 +278,7 @@ special {
 		MOVIE_RATINGTOOLTIP = |
 		MOVIE_DISTRIBUTOR = im Verleih von&nbsp; | <br />
 		MOVIE_FBW = Prädikat:&nbsp; |
-		MOVIE_TITLE = <h1> | </h1>
+		MOVIE_TITLE = | 
 		MOVIE_TITLE_SHORT = <b> | </b>
 		MOVIE_TITLE_ORIGINAL = (|)<br />
 		MOVIE_IMAGE = |
@@ -301,9 +305,10 @@ special {
 		PRG_INFO = <pre> | </pre>
 		PRG_SHOWTYPE = | <br />
 		PRG_WEEK = |. Woche<br />
-		PRG_THEATRE	 = &nbsp;-&nbsp;|<br />
+		PRG_THEATRE	 = |
 		PRG_DATE = |
 		}
 
 	}
+
 

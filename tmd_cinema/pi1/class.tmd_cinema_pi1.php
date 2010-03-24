@@ -59,7 +59,6 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 		 */
 	function main($content,$conf)
 		{
-
 		$this->conf = $conf;		// Setting the TypoScript passed to this function in $this->conf
 		$this->pi_setPiVarDefaults();
 		$this->pi_loadLL();		// Loading the LOCAL_LANG values
@@ -496,14 +495,16 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 				unset($this->piVars['step3']);
 				$this->piVars['step'] = 3;
 			}
-#debug($this->piVars);
-/*
-$this->piVars['myName'] = "Christian";
-$this->piVars['myEMail'] = "crtausch@tmd.dynalias.net";
-$this->piVars['friendName']['1'] = "Freund 1";
-$this->piVars['friendMail']['1'] = "crtausch@tmd.dynalias.net";
-$this->piVars['message'] = "Deine Nachricht";
-*/
+
+			#debug($this->piVars);
+			if($this->conf['DEBUG'] == 1) {
+				$this->piVars['myName'] = "Christian";
+				$this->piVars['myEMail'] = "crtausch@tmd.dynalias.net";
+				$this->piVars['friendName']['1'] = "Freund 1";
+				$this->piVars['friendMail']['1'] = "crtausch@tmd.dynalias.net";
+				$this->piVars['message'] = "Deine Nachricht";
+			}
+
 				/* Validieren wenn abgeschickt */
 			$markerArray['###ERROR###'] = '&nbsp;';
 			if($this->piVars['step'] > 1) {
@@ -586,15 +587,15 @@ $this->piVars['message'] = "Deine Nachricht";
 
 				case '3': # Absenden
 					$formStatus = $GLOBALS["TSFE"]->fe_user->getKey("ses", $this->prefixId."[".$this->piVars['timestamp']."]");
-#debug($formStatus, "session Time");
 					if($formStatus === 'NEW' || $formStatus === 'OK') {
 						$GLOBALS["TSFE"]->fe_user->setKey("ses", $this->prefixId."[".$this->piVars['timestamp']."]", "SENT");
 					} else {
-						$content  = $this->pi_getLL("err_alreadySent", "_err_alreadySent_")."<br />ss";
+						$content  = $this->pi_getLL("err_alreadySent", "_err_alreadySent_")."<br />";
 						$content .= $this->pi_linkToPage($this->pi_getLL("backToStart", "_backToStart_"), $this->conf['prgPid']);
 						break;
 					}
 
+					
 					$n = 0;
 					foreach($this->piVars['friendName'] as $key => $name) {
 						$recipient[$n]['name']  = htmlspecialchars($name);
@@ -602,6 +603,12 @@ $this->piVars['message'] = "Deine Nachricht";
 						$n++;
 					}
 
+#					debug($this->piVars['friendName']);
+					if($this->conf['sendMeMailToo']) {
+						$recipient[$n]['name']  = htmlspecialchars($this->piVars['myName']);
+						$recipient[$n]['EMail'] = htmlspecialchars($this->piVars['myEMail']);
+					}
+					
 					foreach($recipient as $key => $data){
 						if ($data['EMail'] && t3lib_div::validEmail($data['EMail'])) {
 							list($date, $movie, $cinema) 			= explode("-", $this->decrypt($this->piVars['tipDate']));
@@ -609,12 +616,18 @@ $this->piVars['message'] = "Deine Nachricht";
 							$markerArray['###MYEMAIL###'] 			= htmlspecialchars($this->piVars['myEMail']);
 							$markerArray['###MESSAGE###'] 			= nl2br(htmlspecialchars($this->piVars['message']));
 							$markerArray['###TIPDATE_DECRYPT###'] 	= strftime($this->conf['dateString'], $date);
+							$markerArray['###BASEURL###']			= $this->conf['baseURL'];
 
 							$subject = sprintf($this->conf['subject'], $markerArray['###MYNAME###']);
 							$email['html'] = $this->substituteMarkers("TIPAFRIEND_HTMLEMAIL", $markerArray);
 							$email['txt']  = html_entity_decode($this->substituteMarkers("TIPAFRIEND_TXTEMAIL",  $markerArray),  ENT_COMPAT, "utf-8" );
 
 							$this->sendTip($markerArray['###MYEMAIL###'], $markerArray['###MYNAME###'], $data['name'], $data['EMail'], $subject, $email);
+							
+							if($this->conf['spamLog'] > 0 && $this->conf['logMail'] == 1) { # log every entry
+								$this->writeTAFLogfile(0,1); # anonym
+							}
+							
 						}
 					}
 
@@ -627,18 +640,10 @@ $this->piVars['message'] = "Deine Nachricht";
 
 				case 'honeyPot':
 					$content = $this->pi_getLL("err_honeyPot", "_err_honeyPot_");
-					$table = 'tx_tmdcinema_spamlog';
-					$fields_values = array(
-    					'pid' 		=> $this->conf['spamLog'],
-					    'tstamp'	=> time(),
-					    'crdate'	=> time(),
-					    'ip'		=> getenv(REMOTE_ADDR),
-					    'sender'	=> htmlspecialchars($this->piVars['myName']).' '.htmlspecialchars($this->piVars['myEMail']),
-					    'recipient'	=> htmlspecialchars(implode(', ', $this->piVars['friendMail'])),
-					    'msg'		=> htmlspecialchars($this->piVars['message']),
-					);
 
-					$GLOBALS['TYPO3_DB']->exec_INSERTquery($table,$fields_values,$no_quote_fields=FALSE);
+					if($this->conf['spamLogPid'] > 0 && $this->conf['logSpam'] == 1) { 
+						$this->writeTAFLogfile(1,0); # log everything
+					}
 				default:
 					$content = $content;
 				break;
@@ -649,8 +654,34 @@ $this->piVars['message'] = "Deine Nachricht";
 	}
 
 
+	
+		/**
+		 * Writes Logfileentry to DB
+		 * @param $spam		bool	spam flag
+		 * @param $anonym	bool	no names, email
+		 * @return void
+		 */
+	function writeTAFLogfile($spam, $anonym=1) {
+		list($date, $movie, $cinema) = explode("-", $this->decrypt($this->piVars['tipDate']));
+		$table = 'tx_tmdcinema_spamlog';
+		$this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_TITLE'] = '|'; # nicht schön.....
+		$this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_THEATRE'] = '|';
+		$fields_values = array(
+    		'pid' 		=> $this->conf['spamLog'],
+		    'tstamp'	=> time(),
+		    'crdate'	=> time(),
+		    'ip'		=> getenv(REMOTE_ADDR),
+		    'sender'	=> $anonym ? '' : htmlspecialchars($this->piVars['myName']).' '.htmlspecialchars($this->piVars['myEMail']), 
+		    'recipient'	=> $anonym ? '' : htmlspecialchars(implode(', ', $this->piVars['friendMail'])), 
+		    'msg'		=> $anonym ? '' : htmlspecialchars($this->piVars['message']), 
+			'spam'		=> $spam,
+			'showdata'	=> $this->getFieldContent('movie_title').' - '.strftime("%d.%m.%y %H:%M", $date).' - '.$this->getFieldContent('cinema'),
+		);
+		$GLOBALS['TYPO3_DB']->exec_INSERTquery($table,$fields_values,$no_quote_fields=FALSE);
+	}
 
-
+	
+	
 	function validateStep1() {
 		$setStepTo = $this->piVars['step'];
 
@@ -770,7 +801,6 @@ $this->piVars['message'] = "Deine Nachricht";
 			$Typo3_htmlmail->organisation = '';
 			$Typo3_htmlmail->priority = 3;
 
-
 				// this will fail if the url is password protected!
 			$Typo3_htmlmail->addPlain($plain_message);
 			$Typo3_htmlmail->setHTML($Typo3_htmlmail->encodeMsg($msg['html']));
@@ -793,11 +823,12 @@ $this->piVars['message'] = "Deine Nachricht";
 		 * @return unknown_type
 		 */
 	function checkExpiredProgram() {
+		if($this->getFieldContent('firstday_raw') > time()) // Programm in der Zukunft 
+			return false; 
+		
 		$today= strftime("%w", time()); # 0 = Sonntag
 		$table = $this->getFieldContent('program_raw');
 		$lines = explode(chr(10), $table);
-
-		#debug($today);
 
 		foreach($lines as $line) {
 			#   ($do,$fr,$sa,$so,$mo,$di,$mi)
@@ -903,9 +934,6 @@ $this->piVars['message'] = "Deine Nachricht";
 		$this->conf['linkImagePage'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'linkImagePage','s_image');
 
 
-
-
-
 		# besondere Vorrangregelungen
 		if($this->conf['mode'] == 'RSS') {
 			$this->ff['def']['mode']  	= 'RSS';
@@ -984,8 +1012,9 @@ $this->piVars['message'] = "Deine Nachricht";
 		$inviteImPossible = $this->checkExpiredProgram();
 		if($this->ff['def']['mode'] == 'tipAFriend' && !$inviteImPossible) {
 			$markerArray['###INVITE_POSSIBLE###'] = ''; # OK
-		} else {
+		} elseif($this->ff['def']['mode'] == 'tipAFriend') {
 			$markerArray['###INVITE_POSSIBLE###'] = $this->pi_getLL("err_invitePossible", "_err_invitePossible_");
+			$markerArray['###PRG_TIMETABLE###'] = '';
 		}
 
 		$markerArray['###ANCHOR###']				= $this->getFieldContent('anchor');
@@ -1014,7 +1043,7 @@ $this->piVars['message'] = "Deine Nachricht";
 					$this->conf['linkImagePage']);
 		$link['###LINK_SINGLE###'] = explode('|', $conf);
 
-					# Einen Freund einladen
+			# Einen Freund einladen
 		$conf = $this->pi_list_linkSingle(
 					"|",
 					$this->internal['currentRow']['uid'],
@@ -1029,29 +1058,24 @@ $this->piVars['message'] = "Deine Nachricht";
 		}
 
 
-
-
-
 				# Reservierungs Link
 		$linkconf = array(
 	    	 "title" => $this->pi_getLL("howtoReserve"),
 		     "parameter" => $this->conf['pageReserve'],
 		     );
+		list($date, $movie, $cinema) = explode("-", $this->decrypt($this->piVars['tipDate']));
 		if($this->conf['cryptTime'] == 1) {
-			$linkconf["additionalParams"] = "&".$this->prefixId."[crypt]=".$this->encrypt($theTime."-".$this->internal['currentRow']['movie']."-".$this->internal['currentRow']['cinema']);
+			$linkconf["additionalParams"] = "&".$this->prefixId."[crypt]=".$this->encrypt($date."-".$this->internal['currentRow']['movie']."-".$this->internal['currentRow']['cinema']);
 		} else {
-			$linkconf["additionalParams"] = "&".$this->prefixId."[crypt]=".$theTime."-".$this->internal['currentRow']['movie']."-".$this->internal['currentRow']['cinema'];
+			$linkconf["additionalParams"] = "&".$this->prefixId."[crypt]=".$date."-".$this->internal['currentRow']['movie']."-".$this->internal['currentRow']['cinema'];
 		}
 		if($this->conf['noRes'] == 'pageLinkOnly') unset($linkconf['additionalParams']);
 		if($this->conf['noRes'] == 'ticket') {
 			list($date, $movie, $cinema) = explode("-", $this->decrypt($this->piVars['tipDate']));
 			$linkconf = $this->ticketLink($date);
 		}
-
 		$conf = $this->cObj->typoLink('|', $linkconf);
 		$link['###BOOKLINK###'] = explode('|', $conf);
-
-
 
 
 
@@ -1421,11 +1445,10 @@ $this->piVars['message'] = "Deine Nachricht";
 						if($this->ff['image']['pluginWidth'] > 0) { # Plugin hat vorrang
 							$this->conf['image.']['file.']['width'] = $this->ff['image']['pluginWidth'];
 						} else { # größe kommt aus TS
-							$this->conf['image.'] = $this->conf['imageTipAFriend.'];
+							$this->conf['image.'] = $this->conf['imageTipAFriend1.'];
 							if($this->piVars['step'] == 2) $this->conf['image.'] = $this->conf['imageTipAFriend2.'];
 							if($this->piVars['step'] == 3) $this->conf['image.'] = $this->conf['imageTipAFriend3.'];
 						}
-						#$this->conf['image.'] = ($this->ff['image']['pluginWidth'] == 0) ? $this->conf['imageTipAFriend.'] : $this->ff['image']['pluginWidth']; 	break;
 					break;
 				}
 
@@ -1659,10 +1682,13 @@ $this->piVars['message'] = "Deine Nachricht";
 				return $this->prefixId."-".$this->internal['currentRow']['uid'];
 			break;
 			case 'firstday':
-			case "date":
+			case 'date':
 				$out = strftime($this->conf['timeFormat'], $this->internal['currentRow']['date']);
 				$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode']]['PRG_DATE']);
 				return $out;
+			break;
+			case 'firstday_raw':
+				return $this->internal['currentRow']['date'];
 			break;
 			case "program":
 				$out = $this->cObj->wrap($this->buildTimeTable(), $this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_TIMETABLE']);
@@ -1671,7 +1697,6 @@ $this->piVars['message'] = "Deine Nachricht";
 			case "program_raw":
 				return $this->internal['currentRow']['program'];
 			break;
-
 			case 'info':
 				$out = $this->internal['currentRow']['info'];
 				if($out)
