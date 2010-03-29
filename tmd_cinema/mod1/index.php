@@ -296,7 +296,11 @@ class  tx_tmdcinema_module1 extends t3lib_SCbase {
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 				/* Sortierung nur innerhalb der gleichen Woche */
 			$curTable[$c] = $row;
-			
+
+				# Programm auf 0:00:00 Uhr setzen
+			list($day, $month, $year) = explode(",", strftime("%e,%m,%Y", $curTable[$c]['date']));
+			$curTable[$c]['date'] = mktime(0,0,0, $month, $day, $year);
+						
 			$curTable[$c]['info']  = t3lib_div::fixed_lgd_cs(strip_tags($row['info'] ), 80); 
 			$curTable[$c]['info2'] = t3lib_div::fixed_lgd_cs(strip_tags($row['info2']), 80);
 			

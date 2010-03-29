@@ -313,19 +313,18 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 		if(strftime("%u", $now) != 3) {
 			$wStart -= $oneDay;
 		}
-#debug(strftime("%u  %d.%m.%y $startWeek", $wStart), 'start');
+debug(strftime("%u  %d.%m.%y", $wStart), 'start');
 
 		$wStart = mktime ( 0, 0, 0, strftime("%m", $wStart), strftime("%d", $wStart),strftime("%Y", $wStart)); # Auf 0:00 Uhr setzten!
 		$wStart_tmp = $wStart; # für "kein progamm" zwischenspeichern
 
 			# Programm vorzeitig wechseln
-		if(mktime() + $this->conf['switchPrgBevore']*60 >= $wStart+$oneWeek) {
+		if(mktime() + $this->conf['switchPrgBevore']*60*60 >= $wStart+$oneWeek) {
 			$wStart += $oneWeek;
-#debug($this->conf['switchPrgBevore'], "sw");
 		}
 
 		$wEnd   = $wStart + $oneWeek*$nextWeeks;
-#debug(strftime("%d.%m.%y", $wStart).'-'.strftime("%d.%m.%y", $wEnd));
+#debug(strftime("%d.%m.%y", $startWeek).'-'.strftime("%d.%m.%y", $wEnd));
 
 		if($startWeek == 0) {
 			if ($type != "RSS") {
@@ -355,18 +354,24 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 		$cinemaOrder = explode(",", $this->ff['def']['cinema']);
 
 		while($this->internal['currentRow'] = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+				# Sommerzeit Problem
+				# Uhrzeit des Programms explizip auf 0:0:0  Uhr setzten.
+			$tempTime = $this->internal['currentRow']['date'];
+			list($day, $month, $year) = explode(",", strftime("%e,%m,%Y", $tempTime));
+			$this->internal['currentRow']['date'] = mktime(0,0,0,$month,$day, $year);
+			
 			$all[] = $this->internal['currentRow'];
 		}
 
 		if (count($all)  == 0) {  /* Es gibt noch kein Programm */
 			if($this->ff['def']['previewNotice'])
-				$out = sprintf($this->ff['def']['previewNotice'], strftime($this->conf['timeFormat'], $wStart+$oneDay));
+				$out = sprintf($this->ff['def']['previewNotice'], strftime($this->conf['timeFormat'], $wStart));
 			else
-				$out = sprintf($this->conf['previewNotice'], strftime($this->conf['timeFormat'], $wStart+$oneDay));
+				$out = sprintf($this->conf['previewNotice'], strftime($this->conf['timeFormat'], $wStart));
 
 			return $out;
 		}
-
+		
 		foreach($cinemaOrder as $cinema) {
 			foreach($all as $this->internal['currentRow']) {
 
@@ -377,7 +382,7 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 						$wStart = $this->internal['currentRow']['date'];
 
 						if($wStart > 0 && $this->conf['showWeekDate'] != 0 ) {
-							if ($type != "RSS")
+							if ($type != "RSS") 
 								$items[] = '<h2>'.((!$startWeek)?"Programm": "")." ab ".strftime($this->conf['timeFormat'], $wStart)."</h2>";
 						} elseif($wStart == 0) {
 							$noDate[] = '<h2>Demnächst</h2>';
@@ -1438,7 +1443,8 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 				# Für welchen Bereich?
 				switch($this->ff['def']['mode']) {
 					case 'shortView': 	$this->conf['image.'] = ($this->ff['image']['pluginWidth'] > 0) ? array("file." => array("width" => $this->ff['image']['pluginWidth'])) : $this->conf['listViewShort.']; 	break;
-					case 'longView':	$this->conf['image.'] = ($this->ff['image']['pluginWidth'] > 0) ? array("file." => array("width" => $this->ff['image']['pluginWidth'])) : $this->conf['listViewLong.'];		break;
+					case 'longView':	
+						$this->conf['image.'] = ($this->ff['image']['pluginWidth'] > 0) ? array("file." => array("width" => $this->ff['image']['pluginWidth'])) : $this->conf['listViewLong.'];		break;
 					case 'singleView':	$this->conf['image.'] = ($this->ff['image']['pluginWidth'] > 0) ? array("file." => array("width" => $this->ff['image']['pluginWidth'])) : $this->conf['imageSingle.'];		break;
 					case 'special':		$this->conf['image.'] = ($this->ff['image']['pluginWidth'] > 0) ? array("file." => array("width" => $this->ff['image']['pluginWidth'])) : $this->conf['imageSpecial.']; 	break;
 					case 'tipAFriend':
@@ -1452,6 +1458,7 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 					break;
 				}
 
+#debug($this->conf['image.']);
 				if($this->film->poster) {
 					$temp = explode(',', $this->film->poster); # mehrere Poster?
 					$temp = $temp[rand(0,count($temp)-1)];

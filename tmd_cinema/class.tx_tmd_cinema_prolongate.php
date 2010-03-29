@@ -71,7 +71,10 @@ class tx_tmd_cinema_prolongate {
 				// only if it's a copy.
 			if(isset($incomingFieldArray['t3_origuid'])) {
 				$incomingFieldArray['week']++;
-				$incomingFieldArray['date'] = $incomingFieldArray['date'] + 7*24*60*60;
+				
+									# Urzeit garantiert auf 0:00:00 setzen!!
+				list($day, $month, $year) = explode(",", strftime("%e,%m,%Y", $incomingFieldArray['date']));
+				$incomingFieldArray['date'] = mktime(0,0,0, $month, $day, $year)  + 7*24*60*60;
 			}
 
 			
