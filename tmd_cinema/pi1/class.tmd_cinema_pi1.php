@@ -299,33 +299,28 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 
 		$now = mktime();
 		switch(strftime("%u", $now)) { # %u = Tag der Woche 1= Montag
-			case 1: $wStart = $now - $oneDay*4; break; # Mo
-			case 2: $wStart = $now - $oneDay*5; break; # DI
-			case 3: $wStart = $now - $oneDay*6; break; # MI
-			case 4: $wStart = $now - $oneDay*0; break; # DO
-			case 5: $wStart = $now - $oneDay*1; break; # FR
-			case 6: $wStart = $now - $oneDay*2; break; # SA
-			case 7: $wStart = $now - $oneDay*3; break; # SO
+			case 1: $wStart = mktime(0, 0, 0, date("m", $now)  , date("d", $now)-4, date("Y", $now)); break; # Mo
+			case 2: $wStart = mktime(0, 0, 0, date("m", $now)  , date("d", $now)-5, date("Y", $now)); break; # DI
+			case 3: $wStart = mktime(0, 0, 0, date("m", $now)  , date("d", $now)-6, date("Y", $now)); break; # MI
+			case 4: $wStart = mktime(0, 0, 0, date("m", $now)  , date("d", $now)  , date("Y", $now)); break; # DO
+			case 5: $wStart = mktime(0, 0, 0, date("m", $now)  , date("d", $now)-1, date("Y", $now)); break; # FR
+			case 6: $wStart = mktime(0, 0, 0, date("m", $now)  , date("d", $now)-2, date("Y", $now)); break; # SA
+			case 7: $wStart = mktime(0, 0, 0, date("m", $now)  , date("d", $now)-3, date("Y", $now)); break; # SO
 		}
 #debug(strftime("%u  %d.%m.%y", $wStart), 'start');
-
-		$wStart += $startWeek*$oneWeek; #-$oneDay;	# n-te Woche vom jetzigen DO an - 1 tag damit Mittwoch das Ende ist.
-		if(strftime("%u", $now) != 3) {
-			$wStart -= $oneDay;
-		}
+/*
+$tomorrow  = mktime(0, 0, 0, date("m")  , date("d")+1, date("Y"));
+$lastmonth = mktime(0, 0, 0, date("m")-1, date("d"),   date("Y"));
+$nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
+ */
+		$wStart = mktime(0, 0, 0, date("m", $wStart)  , date("d", $wStart)+$startWeek*7  , date("Y", $wStart));
+		$wEnd   = mktime(0, 0, 0, date("m", $wStart)  , date("d", $wStart)+$nextWeeks*7-1, date("Y", $wStart));		
 debug(strftime("%u  %d.%m.%y", $wStart), 'start');
-
-		$wStart = mktime ( 0, 0, 0, strftime("%m", $wStart), strftime("%d", $wStart),strftime("%Y", $wStart)); # Auf 0:00 Uhr setzten!
+debug(strftime("%u  %d.%m.%y", $wEnd), 'end');
 		$wStart_tmp = $wStart; # für "kein progamm" zwischenspeichern
-
-			# Programm vorzeitig wechseln
-		if(mktime() + $this->conf['switchPrgBevore']*60*60 >= $wStart+$oneWeek) {
-			$wStart += $oneWeek;
-		}
-
-		$wEnd   = $wStart + $oneWeek*$nextWeeks;
-#debug(strftime("%d.%m.%y", $startWeek).'-'.strftime("%d.%m.%y", $wEnd));
-
+		
+		
+		
 		if($startWeek == 0) {
 			if ($type != "RSS") {
 				$items[] = "<h1>Programm ab ".strftime($this->conf['timeFormat'], $wStart)."</h1>";
@@ -1398,13 +1393,8 @@ debug(strftime("%u  %d.%m.%y", $wStart), 'start');
 			break;
 			case 'movie_fbw':
 				$field = $this->film->fbw;
-				for($i = 0; $i < 2; $i++)
-					if ($field & pow(2,$i))
-						$res .= $this->conf['fbw.'][$i]." ";
-
 				if($field) {
-					$out = $this->cObj->wrap(trim($res), $this->conf[$this->ff['wrap.']['def']['mode'].'.']['MOVIE_FBW']);
-					return $out;
+					return $this->cObj->wrap(trim($this->conf['fbw.'][$field]), $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_FBW.'][$field]);
 				}
 			break;
 

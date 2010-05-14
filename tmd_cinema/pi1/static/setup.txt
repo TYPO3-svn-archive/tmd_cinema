@@ -42,8 +42,8 @@ plugin.tx_tmdcinema_pi1 {
 
 	supportedSound = DolbySR,DolbyDIGITAL,DTS,SDDS,Mono,Stereo,DolbyDIGITAL-EX,DTS-EX
 
-	fbw.0 = wertvoll
-	fbw.1 = besonders wertvoll
+	fbw.1 = wertvoll
+	fbw.2 = besonders wertvoll
 
 	artikel.0 =
 	artikel.1 = Der
@@ -135,7 +135,8 @@ plugin.tx_tmdcinema_pi1.wrap {
 		MOVIE_RATING = |
 		MOVIE_RATINGTOOLTIP = |
 		MOVIE_DISTRIBUTOR = |
-		MOVIE_FBW = |
+		MOVIE_FBW.1 = |
+		MOVIE_FBW.2 = |
 		MOVIE_TITLE = |
 		MOVIE_TITLE_ORIGINAL = |
 		MOVIE_TITLE_SHORT = |
@@ -165,7 +166,8 @@ longView {
 		MOVIE_RATING = |&nbsp;- 
 		MOVIE_RATINGTOOLTIP = |
 		MOVIE_DISTRIBUTOR = |
-		MOVIE_FBW = |
+		MOVIE_FBW.1 = |
+		MOVIE_FBW.2 = |
 		MOVIE_TITLE = |
 		MOVIE_TITLE_ORIGINAL = |
 		MOVIE_TITLE_SHORT = |
@@ -203,7 +205,8 @@ special {
 		MOVIE_RATING = |
 		MOVIE_RATINGTOOLTIP = |
 		MOVIE_DISTRIBUTOR = |
-		MOVIE_FBW = |
+		MOVIE_FBW.1 = |
+		MOVIE_FBW.2 = |
 		MOVIE_TITLE = |
 		MOVIE_TITLE_ORIGINAL = |
 		MOVIE_TITLE_SHORT = |
@@ -241,7 +244,8 @@ special {
 		MOVIE_RATING = |
 		MOVIE_RATINGTOOLTIP = |
 		MOVIE_DISTRIBUTOR = im Verleih von&nbsp; | <br />
-		MOVIE_FBW = Prädikat:&nbsp; |
+		MOVIE_FBW.1 = <div class="fbw-1">Prädikat:&nbsp; |</div>
+		MOVIE_FBW.2 = <div class="fbw-2">Prädikat:&nbsp; |</div>
 		MOVIE_TITLE = <h1> | </h1>
 		MOVIE_TITLE_SHORT = <b> | </b>
 		MOVIE_TITLE_ORIGINAL = (|)<br />
@@ -277,7 +281,8 @@ special {
 		MOVIE_RATING = |
 		MOVIE_RATINGTOOLTIP = |
 		MOVIE_DISTRIBUTOR = im Verleih von&nbsp; | <br />
-		MOVIE_FBW = Prädikat:&nbsp; |
+		MOVIE_FBW.1 = |
+		MOVIE_FBW.2 = |
 		MOVIE_TITLE = | 
 		MOVIE_TITLE_SHORT = <b> | </b>
 		MOVIE_TITLE_ORIGINAL = (|)<br />

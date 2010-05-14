@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>module</type>
+		<description>Language labels for plugin &quot;tx_tmdcinema_pi3&quot;</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="listFieldHeader_date">First day of program</label>
+			<label index="listFieldHeader_info">Info</label>
+			<label index="listFieldHeader_info2">Info 2</label>
+			<label index="listFieldHeader_nores">No Reservation!</label>
+			<label index="listFieldHeader_cinema">Cinema</label>
+			<label index="listFieldHeader_showtype">Show Type</label>
+			<label index="listFieldHeader_movie">Movie</label>
+			<label index="listFieldHeader_program">Program</label>
+			<label index="listFieldHeader_3d">3D</label>
+			<label index="list_mode_1">Mode 1</label>
+			<label index="list_mode_2">Mode 2</label>
+			<label index="list_mode_3">Mode 3</label>
+			<label index="back">Back</label>
+			
+			<label index="today">Today</label>
+			<label index="timeNN">Programm nicht bekannt</label>
+			
+			<label index="pi_list_browseresults_prev">&lt; Previous</label>
+			<label index="pi_list_browseresults_page">Page</label>
+			<label index="pi_list_browseresults_next">Next &gt;</label>
+			<label index="pi_list_browseresults_displays">Displaying results ###SPAN_BEGIN###%s to %s&lt;/span&gt; out of ###SPAN_BEGIN###%s&lt;/span&gt;</label>
+			<label index="pi_list_searchBox_search">Search</label>
+		</languageKey>
+	</data>
+</T3locallang>

@@ -1,0 +1,51 @@
+
+
+plugin.tx_tmdcinema_pi3 {
+	template = EXT:tmd_cinema/pi3/res/boxoffice_template.html
+	
+		# Wie sollen leere Spielzeiten markiert werden?
+		# Für die Volldeppen die zu doof sind einen Stundenplan zu lesen...
+		# ...wenn's bloß was helfen würde... #-(
+	emptyTable = <span style="color: lightgrey">&nbsp;-&nbsp;</span>
+	todaysColor = #EEEEEE
+		# today oder date
+	todayStyle = today
+	tableTime = %a<br />%d.%m.
+	tableTimeBO  = %a %d.%m<br />€ - Bes.
+	
+	#zeitformat im Tabellenkopf
+	timeFormat = %A, %d.%m.%Y
+
+	image.file.width = 80
+	
+	wrap {
+		MOVIE_RATING = |
+		MOVIE_RATINGTOOLTIP = |
+		MOVIE_DISTRIBUTOR = |
+		MOVIE_FBW.1 = |
+		MOVIE_FBW.2 = |
+		MOVIE_TITLE = |
+		MOVIE_TITLE_ORIGINAL = |
+		MOVIE_TITLE_SHORT = |
+		MOVIE_IMAGE = |
+		MOVIE_TIME = |min.
+		MOVIE_WWW = |
+		MOVIE_YOUTUBE = |
+		MOVIE_RELEASEDATE = |
+		MOVIE_FORMAT = |
+		MOVIE_SOUND = |
+		MOVIE_DESCRIPTION = |
+		MOVIE_DESCRIPTION_SHORT  = |
+
+		VERSION3D = <span style="color: red;">3D</span>
+
+		PRG_TIMETABLE = |
+		PRG_TIMETABLE_STYLE =
+		PRG_INFO = |
+		PRG_SHOWTYPE = |
+		PRG_WEEK = |
+		PRG_THEATRE	 = |
+		PRG_DATE = |
+	}
+}
+	

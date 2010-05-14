@@ -15,7 +15,10 @@
 			<label index="tmd_cinema_program.showtype">Show Type</label>
 			<label index="tmd_cinema_program.movie">Movie</label>
 			<label index="tmd_cinema_program.program">Program</label>
+			
             <label index="tx_tmdcinema_program.3d">3D</label>
+            <label index="tx_tmdcinema_program.boxoffice">Box Office</label>
+            
 			<label index="tmd_cinema_program.week">Week</label>
 			<label index="tmd_cinema_booking">Reservations</label>
 			<label index="tmd_cinema_booking.name">Customer Name</label>
@@ -31,6 +34,7 @@
 			<label index="tmd_cinema_showtype.link">Description</label>
 			<label index="tt_content.list_type_pi1">Cinema Program</label>
 			<label index="tt_content.list_type_pi2">Book Reservation</label>
+            <label index="tt_content.list_type_pi3">BoxOffice</label>			
 
             <label index="tx_tmdcinema_spamlog">Spamlog</label>
             <label index="tx_tmdcinema_spamlog.ip">ip</label>
@@ -76,6 +80,7 @@
 			<label index="tmd_cinema_program.movie">Film</label>
 			<label index="tmd_cinema_program.program">Programm</label>
             <label index="tx_tmdcinema_program.3d">3D</label>
+            <label index="tx_tmdcinema_program.boxoffice">Tagesumsatz</label>
 			<label index="tmd_cinema_program.week">Woche</label>
 			<label index="tmd_cinema_booking">Reservierungen</label>
 			<label index="tmd_cinema_booking.name">Kundenname</label>
@@ -91,6 +96,7 @@
 			<label index="tmd_cinema_showtype.link">Weiterführender Link</label>
 			<label index="tt_content.list_type_pi1">Kino Programm</label>
 			<label index="tt_content.list_type_pi2">Reservierungen Bearbeiten</label>
+            <label index="tt_content.list_type_pi3">Besucherzahlen</label>
 
 			<label index="tx_tmdcinema_spamlog">Spamlog</label>
             <label index="tx_tmdcinema_spamlog.ip">ip</label>

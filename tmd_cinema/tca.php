@@ -4,7 +4,7 @@ if (!defined ('TYPO3_MODE')) 	die ('Access denied.');
 $TCA["tx_tmdcinema_program"] = array (
 	"ctrl" => $TCA["tx_tmdcinema_program"]["ctrl"],
 	"interface" => array (
-		"showRecordFieldList" => "hidden,starttime,endtime,date,info,info2,nores,movie,program,3d"
+		"showRecordFieldList" => "hidden,starttime,endtime,date,info,info2,nores,movie,program,3d,boxoffice"
 	),
 	"feInterface" => $TCA["tx_tmdcinema_program"]["feInterface"],
 	"columns" => array (
@@ -190,10 +190,22 @@ $TCA["tx_tmdcinema_program"] = array (
 				),
 			)
 		),
+	"boxoffice" => Array (        
+            "exclude" => 1,        
+            "label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tx_tmdcinema_program.boxoffice",        
+			"config" => Array (
+				"type" => "text",
+				"cols" => "30",	
+				"rows" => "4",
+				"default" => "",	
+			)
+		),
+		
 	),
 	"types" => array (
 		"0" => array("showitem" => "--div--;Programm,hidden;;1;;1-1-1, temp_title, movie, date, week, cinema, showtype, info,3d,nores, program,
-		--div--;Besondere Veranstaltungshinweise,info2;;;richtext[cut|copy|paste|formatblock|textcolor|bold|italic|underline|left|center|right|orderedlist|unorderedlist|outdent|indent|link|table|image|line|chMode]:rte_transform[mode=ts_css|imgpath=uploads/tx_tmdcinema/rte/],
+									--div--;Besondere Veranstaltungshinweise,info2;;;richtext[cut|copy|paste|formatblock|textcolor|bold|italic|underline|left|center|right|orderedlist|unorderedlist|outdent|indent|link|table|image|line|chMode]:rte_transform[mode=ts_css|imgpath=uploads/tx_tmdcinema/rte/],
+									--div--;Umsatzzahlen,boxoffice
 		")
 	),
 # "types" => array (

@@ -511,8 +511,8 @@ class  tx_tmdcinema_module1 extends t3lib_SCbase {
 			case 'cinema':
 				$id = $this->row[$fN];
 				if(!$this->cache['cinema'][$id]) {
-					$t = t3lib_BEfunc::getRecord('tt_address', $id,'name');
-					$this->cache['cinema'][$id] = $t['name'];
+					$t = t3lib_BEfunc::getRecord('tt_address', $id,'company');
+					$this->cache['cinema'][$id] = $t['company'];
 				} 
 				return $this->cache['cinema'][$id];
 			break;
