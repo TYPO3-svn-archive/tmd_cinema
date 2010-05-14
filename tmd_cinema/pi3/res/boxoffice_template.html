@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html lang="de" xml:lang="de" xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+		<title>EXT: tmd_cinema</title>
+		<link href="../style.css" rel="stylesheet" type="text/css" media="all" />
+	</head>
+
+	<body>
+
+
+		
+		<!-- ###PROGRAMM_BOXOFFICE### begin -->
+		
+		<div class="weekBrowser" style="padding: 10px 10px 20px 10px;">
+			<div style="float: left; width: 33%; text-align:left;">###WEEK_PREV###</div>
+			<div style="float: left; width: 33%; text-align:center;">###WEEK_NOW###</div>
+			<div style="float: left; width: 33%; text-align:right;">###WEEK_NEXT###</div>
+			<div class="clearLR"><!--  --></div>
+		</div>
+		<div class="infoBox">
+			###MOVIE_TITLE###
+			<div style="margin: 5px 0 5px 0;"><b>###MOVIE_RATING### - ###MOVIE_TIME### -  ###PRG_WEEK### ###PRG_SHOWTYPE###</b></div>
+			<div>
+				<div style="float: left;">###LINK_SINGLE### ###MOVIE_IMAGE### ###LINK_SINGLE###</div>
+				<div style="float: left; margin-left: 10px;">
+					###PRG_TIMETABLE###
+				</div>
+				<div class="clearLR"><!-- --></div>
+			</div>
+		</div>
+		<!-- ###PROGRAMM_BOXOFFICE### end -->
+
+
+
+<hr class="clearLR" />		
+
+
+		
+	<!-- ###SINGLE_VIEW### begin -->
+	<div class="singleView">
+		###MOVIE_SUBTITLE###
+		###MOVIE_TITLE###
+
+		<div>
+			<div style="float: left;">###MOVIE_IMAGE###</div>
+		
+			<div class="techInfo" style="margin-left: 235px;">
+				###MOVIE_RATING###
+				###MOVIE_TIME###
+				###MOVIE_GENRE###
+				###MOVIE_FBW###
+				###MOVIE_FORMAT###
+				###MOVIE_SOUND###
+				###MOVIE_DISTRIBUTOR###
+				###PRG_SHOWTYPE### 
+				###PRG_WEEK###
+				###MOVIE_WWW###
+				###MOVIE_YOUTUBE###
+
+				<div class="time">
+					###PRG_TIMETABLE###
+				</div>		
+
+				###PRG_INFO###
+			</div>
+		</div>
+			
+		<div class="bodytext clearLR">###MOVIE_DESCRIPTION###</div>
+
+		<div id="mediaInfo">
+			###MEDIA_1### ###MEDIA_2### ###MEDIA_3### ###MEDIA_4### ###MEDIA_5###<br />
+			###MOVIE_DIRECTOR###
+			###MOVIE_PRODUCER###
+			###MOVIE_ACTOR###
+		</div>
+
+		<div class="tmd-cinema-pi1" align="center">
+			<form name="zurueck" style="align: center" action="(EmptyReference!)" >
+				<input onclick="window.history.back()" type="button" value="Zurück"/>
+			</form>
+		</div>
+	
+	</div>
+	<!-- ###SINGLE_VIEW### end -->
+	
+<hr />		
+		
+		
+
+	
+	
+	</body>
+
+</html>
