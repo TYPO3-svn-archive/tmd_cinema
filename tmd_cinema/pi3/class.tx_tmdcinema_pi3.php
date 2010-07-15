@@ -66,10 +66,11 @@ class tx_tmdcinema_pi3 extends tslib_pibase {
 		$this->film = t3lib_div::makeInstance("tx_tmdmovie");
 		$this->initFF();
 		
+#debug($this->piVars);
 
-		
-		if($this->piVars['week'] == '') $this->piVars['week'] = mktime();
-		if($this->piVars['boDay'] == '') $this->piVars['boDay'] = mktime();
+		$now = mktime(0, 0, 0, date("m", time()) ,date("d", time())  , date("Y", time()));
+		if($this->piVars['week'] == '')  $this->piVars['week']  = $now;
+		if($this->piVars['boDay'] == '') $this->piVars['boDay'] = $now;
 		
 		
 		$now = $this->piVars['week'];
@@ -87,8 +88,11 @@ class tx_tmdcinema_pi3 extends tslib_pibase {
 debug(strftime("%a %d.%m.%y %H:%M:%S", $this->wStart).'-'.strftime("%a %d.%m.%y  %H:%M:%S", $this->wEnd), "Zeitspanne");
 		
 
- 
-		
+ 		if($this->piVars['visitors'] || $this->piVars['visitors']) {
+ 			$this->addNewData();
+ 		}
+
+ 		
 			/* Todo: gegen FF ersetzten
 			 *
 			 * inkl Recursion die PIDs als Liste ermitteln.
@@ -105,6 +109,40 @@ debug(strftime("%a %d.%m.%y %H:%M:%S", $this->wStart).'-'.strftime("%a %d.%m.%y 
 
 
 
+	
+	function addNewData(){
+		#$boxOffice = t3lib_div::xml2array($this->internal['currentRow']['boxoffice']);
+		debug($this->internal['currentRow']);
+
+			# alte daten holen
+		$dbRecord = $this->pi_getRecord('tx_tmdcinema_program', $this->piVars['prgId']);
+		if(is_array($dbRecord)) {
+			$dbRecord = $dbRecord['boxoffice'];
+			$dbRecord = t3lib_div::xml2array($dbRecord);
+		}
+
+			# neue Daten Vorbereiten
+		foreach($this->piVars['money'] as $key => $val){
+			$boxOffice[$this->piVars['boDay']][$key]['money'] = $val;
+			$boxOffice[$this->piVars['boDay']][$key]['visitors'] = $this->piVars['visitors'][$key];
+		}
+
+#debug(array($dbRecord, $boxOffice), "BO transformed");
+		
+			# Daten zusammenführen
+		if(is_array($dbRecord)) {
+			$boxOffice = t3lib_div::array_merge($dbRecord, (array)$boxOffice);
+		}
+
+
+		$boxOffice = t3lib_div::array2xml_cs($boxOffice, $docTag='boxoffice');
+
+				
+		$table = 'tx_tmdcinema_program';
+		$where = 'uid = '.$this->piVars['prgId'];
+		$fields_values = array('boxoffice' => $boxOffice);
+		$GLOBALS['TYPO3_DB']->exec_UPDATEquery($table,$where,$fields_values,$no_quote_fields=FALSE); 
+	}
 
 
 
@@ -139,8 +177,6 @@ debug(strftime("%a %d.%m.%y %H:%M:%S", $this->wStart).'-'.strftime("%a %d.%m.%y 
 		$cinemaOrder = explode(",", $this->ff['def']['cinema']);
 
 		while($this->internal['currentRow'] = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-				# Sommerzeit Problem
-				# Uhrzeit des Programms explizip auf 0:0:0  Uhr setzten.
 			$tempTime = $this->internal['currentRow']['date'];
 			list($day, $month, $year) = explode(",", strftime("%e,%m,%Y", $tempTime));
 			$this->internal['currentRow']['date'] = mktime(0,0,0,$month,$day, $year);
@@ -334,48 +370,48 @@ debug(strftime("%a %d.%m.%y %H:%M:%S", $this->wStart).'-'.strftime("%a %d.%m.%y 
 
 
 
-	/**
-	 * [Describe function...]
-	 *
-	 * @param	[type]		$tipData: ...
-	 * @param	[type]		$url: ...
-	 * @return	[type]		...
-	 */
-	function sendTip($senderEMail, $senderName, $recipientName, $recipientEMail, $subject, $msg)	{
-		$headers[]='FROM: '.$senderName.' <'.$senderEMail.'>';
-
-		$plain_message = trim(strip_tags($msg['txt']));
-
-			// HTML
-		$cls=t3lib_div::makeInstanceClassName('t3lib_htmlmail');
-
-		if ($this->conf['sendHTML'] && class_exists($cls))	{	// If htmlmail lib is included, then generate a nice HTML-email
-			$Typo3_htmlmail = t3lib_div::makeInstance('t3lib_htmlmail');
-
-			$Typo3_htmlmail->start();
-			$Typo3_htmlmail->useBase64();
-
-			$Typo3_htmlmail->subject = $subject;
-			$Typo3_htmlmail->from_email = $senderEMail;
-			$Typo3_htmlmail->from_name = $senderName;
-			$Typo3_htmlmail->replyto_email = $senderEMail;
-			$Typo3_htmlmail->replyto_name = $senderName;
-			$Typo3_htmlmail->organisation = '';
-			$Typo3_htmlmail->priority = 3;
-
-				// this will fail if the url is password protected!
-			$Typo3_htmlmail->addPlain($plain_message);
-			$Typo3_htmlmail->setHTML($Typo3_htmlmail->encodeMsg($msg['html']));
-
-			$Typo3_htmlmail->setHeaders();
-			$Typo3_htmlmail->setContent();
-			($recipientName) ? $Typo3_htmlmail->setRecipient($recipientName.' <'.$recipientEMail.'>') : $Typo3_htmlmail->setRecipient($recipientEMail);
-
-			$Typo3_htmlmail->sendtheMail();
-		} else {
-			$this->cObj->sendNotifyEmail($subject.chr(10).$plain_message, $recipientEMail, $cc, $senderEMail, $senderName, $senderEMail);
-		}
-	}
+			/**
+			 * [Describe function...]
+			 *
+			 * @param	[type]		$tipData: ...
+			 * @param	[type]		$url: ...
+			 * @return	[type]		...
+			 */
+			function sendTip($senderEMail, $senderName, $recipientName, $recipientEMail, $subject, $msg)	{
+				$headers[]='FROM: '.$senderName.' <'.$senderEMail.'>';
+		
+				$plain_message = trim(strip_tags($msg['txt']));
+		
+					// HTML
+				$cls=t3lib_div::makeInstanceClassName('t3lib_htmlmail');
+		
+				if ($this->conf['sendHTML'] && class_exists($cls))	{	// If htmlmail lib is included, then generate a nice HTML-email
+					$Typo3_htmlmail = t3lib_div::makeInstance('t3lib_htmlmail');
+		
+					$Typo3_htmlmail->start();
+					$Typo3_htmlmail->useBase64();
+		
+					$Typo3_htmlmail->subject = $subject;
+					$Typo3_htmlmail->from_email = $senderEMail;
+					$Typo3_htmlmail->from_name = $senderName;
+					$Typo3_htmlmail->replyto_email = $senderEMail;
+					$Typo3_htmlmail->replyto_name = $senderName;
+					$Typo3_htmlmail->organisation = '';
+					$Typo3_htmlmail->priority = 3;
+		
+						// this will fail if the url is password protected!
+					$Typo3_htmlmail->addPlain($plain_message);
+					$Typo3_htmlmail->setHTML($Typo3_htmlmail->encodeMsg($msg['html']));
+		
+					$Typo3_htmlmail->setHeaders();
+					$Typo3_htmlmail->setContent();
+					($recipientName) ? $Typo3_htmlmail->setRecipient($recipientName.' <'.$recipientEMail.'>') : $Typo3_htmlmail->setRecipient($recipientEMail);
+		
+					$Typo3_htmlmail->sendtheMail();
+				} else {
+					$this->cObj->sendNotifyEmail($subject.chr(10).$plain_message, $recipientEMail, $cc, $senderEMail, $senderName, $senderEMail);
+				}
+			}
 
 
 
@@ -397,7 +433,10 @@ debug(strftime("%a %d.%m.%y %H:%M:%S", $this->wStart).'-'.strftime("%a %d.%m.%y 
 		 *
 		 * @return string Time Table
 		 */
-	function buildTimeTable() {
+	function buildTimeTable() { 
+		$actionURL = $this->pi_linkTP_keepPIvars_url(array('prgId' => $this->internal['currentRow']['uid']),$cache=0,$clearAnyway=0,$altPageId=0);
+#debug($this->piVars);
+#debug($actionURL, "action");
 		if($this->internal['currentRow']['program']) {
 				# Uhr auf 0 Uhr stellen!
 				# Erster Programmtag
@@ -429,7 +468,11 @@ debug(strftime("%a %d.%m.%y %H:%M:%S", $this->wStart).'-'.strftime("%a %d.%m.%y 
 			
 			$head .= '</tr></thead>';
 
-			
+
+			$boxOffice = array();
+			$boxOffice = t3lib_div::xml2array($this->internal['currentRow']['boxoffice']);
+#debug($boxOffice, "bo-xml");
+
 				# tBody
 			$temp = $this->internal['currentRow']['program'];
 			$temp = explode("\n", trim($temp));
@@ -437,7 +480,8 @@ debug(strftime("%a %d.%m.%y %H:%M:%S", $this->wStart).'-'.strftime("%a %d.%m.%y 
 			$i=0;
 			foreach($temp as $row => $val) {
 				$temp[$i] = explode("|", $val);
-			
+				$emptyFlag = false;
+				
 				foreach($temp[$i] as $key1 => $timeString) {
 					$timeString = trim($timeString); # Zeilenende bereinigen
 					
@@ -445,10 +489,15 @@ debug(strftime("%a %d.%m.%y %H:%M:%S", $this->wStart).'-'.strftime("%a %d.%m.%y 
 						$temp[$i][$key1] = $timeString;
 					} else { # leere Zelle
 						$temp[$i][$key1] = $this->conf['emptyTable'];
+						$emptyFlag = true;
 					}
-					$temp[$i]['bo'] = '<input type="text" name="money" size="5"><input type="text" size="5" name="visitors">';
-					
 
+					if(is_Array($boxOffice)) {
+						$money    = $boxOffice[$this->piVars['boDay']][$i+1]['money'];
+						$visitors = $boxOffice[$this->piVars['boDay']][$i+1]['visitors'];
+					}  
+					$temp[$i]['bo'] = '	<input type="text" name="'.$this->prefixId.'[money]['.($i+1).']" 	size="5" value="'.$money.'">
+										<input type="text" name="'.$this->prefixId.'[visitors]['.($i+1).']" size="5" value="'.$visitors.'">';
 					
 				}
 				$i++;
@@ -462,11 +511,7 @@ debug(strftime("%a %d.%m.%y %H:%M:%S", $this->wStart).'-'.strftime("%a %d.%m.%y 
 				foreach($val as $key1 => $val1) {
 					$val1 = $this->cObj->wrap($val1, $this->conf['wrap.']['PRG_TIMETABLE_TD']);
 					if($key1 == $todaysNr) {# Heute!
-#						if(isset($this->conf['todaysColor'])) { # eigene Hintergundfarbe
-#							$tmp[$i] .= '<td style="'.$this->conf['wrap.']['PRG_TIMETABLE_TD_STYLE'].' background-color: '.$this->conf['todaysColor'].';">'.$val1.'</td>';
-#						} else {
-							$tmp[$i] .= '<td style="'.$this->conf['wrap.']['PRG_TIMETABLE_TD_STYLE'].';">'.$val1.'</td>';
-#						}
+						$tmp[$i] .= '<td style="'.$this->conf['wrap.']['PRG_TIMETABLE_TD_STYLE'].';">'.$val1.'</td>';
 					} else {
 						$tmp[$i] .= '<td style="'.$this->conf['wrap.']['PRG_TIMETABLE_TD_STYLE'].'">'.$val1.'</td>';
 					}
@@ -474,19 +519,40 @@ debug(strftime("%a %d.%m.%y %H:%M:%S", $this->wStart).'-'.strftime("%a %d.%m.%y 
 				$tmp[$i] .= "</tr>";
 				$i++;
 			}
-			
-			# Umsatz anzeigen
-			$bo = explode("|", $this->internal['currentRow']['boxoffice']);
-			$tmp[$i]  = "<tr>";
-			foreach($bo as $val) {
-				list($customer, $boxoffice) = explode('#', $val);
-				$tmp[$i] .= '<td class="boxoffice" style="'.$this->conf['wrap.']['PRG_TIMETABLE_TD_STYLE'].';">'.$customer.'<br />'.$boxoffice.'</td>';
-			}
-			$tmp[$i] .= '<td class="boxoffice" style="'.$this->conf['wrap.']['PRG_TIMETABLE_TD_STYLE'].';">summe?<br /><input type="submit" value="verschicken"></td>';
-			$tmp[$i] .= "</tr>";
 
-	
-			$temp  = '<form>';
+
+
+				# Umsatz anzeigen
+			$bo = t3lib_div::xml2array($this->internal['currentRow']['boxoffice']);
+#			asort($bo);
+#debug($bo);
+
+			$tmp[$i]  = "<tr>";
+			for($col=0; $col<7; $col++) {
+				$theDay = mktime(0, 0, 0, date("m", $this->wStart), date("d", $this->wStart)+$col, date("Y", $this->wStart));
+				$customer = 0; 
+				$boxoffice = 0;
+				
+				foreach($bo[$theDay] as $data) {
+					$customer += $data['visitors']; 
+					$boxoffice += $data['money'];
+				}
+
+			$tmp[$i] .= '<td class="boxoffice" style="'.$this->conf['wrap.']['PRG_TIMETABLE_TD_STYLE'].';">'.$boxoffice.'<br />'.$customer.'</td>';
+			}
+/*			
+			for($t=$col; $t<7; $t++) {
+				$tmp[$i] .= '<td class="boxoffice" colspstyle="'.$this->conf['wrap.']['PRG_TIMETABLE_TD_STYLE'].';">&nbsp;</td>';
+			}
+*/
+			$tmp[$i] .= '<td class="boxoffice" style="'.$this->conf['wrap.']['PRG_TIMETABLE_TD_STYLE'].';">summe?<br /><input type="submit" value="speichern"></td>';
+			$tmp[$i] .= "</tr>";
+			
+
+			
+			
+			
+			$temp  = '<form name="tx-tmdcinema-pi3" action="'.$actionURL.'" method="post" >';
 			$temp .= '<table class="program" style="'.$this->conf['wrap.']['PRG_TIMETABLE_STYLE'].'">'.$head."<tbody>".implode(chr(10),$tmp).'</tbody></table>';
 			$temp .= '</form>'; 
 		} else { # Spielplan nicht bekannt
@@ -494,7 +560,6 @@ debug(strftime("%a %d.%m.%y %H:%M:%S", $this->wStart).'-'.strftime("%a %d.%m.%y 
 			$temp .= $this->pi_getLL('timeNN');
 			$temp .= '</b>';
 		}
-
 	return $temp;
 	}
 
@@ -705,7 +770,7 @@ debug(strftime("%a %d.%m.%y %H:%M:%S", $this->wStart).'-'.strftime("%a %d.%m.%y 
 					$this->adrCache[$this->internal['currentRow'][$fN]] = $this->pi_getRecord("tt_address", $this->internal['currentRow'][$fN]);
 				}
 
-				$out = $this->cObj->wrap($this->adrCache[$this->internal['currentRow'][$fN]]['name'], $this->conf['wrap.']['PRG_THEATRE']);
+				$out = $this->cObj->wrap($this->adrCache[$this->internal['currentRow'][$fN]]['company'], $this->conf['wrap.']['PRG_THEATRE']);
 
 				return $out;
 			break;

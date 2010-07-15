@@ -1,20 +1,32 @@
-TODO:
+TODO pi1:
+---------
+RSS
 Fronend Editing
 Marker im Template mit tmd_movie abgleichen
-Programm vorbelegen durch setup-Konfiguration (install)
-Listen Ansicht im BE: Name des Filmes nicht die uid anzeigen (idee?)
 lokalisieren
 Erster Tag der Woche ändern (flexibel)
+
+TODO pi2: (Reservierung)
+------------------------
 Reservierung: Namen des Users der Datensatz bearbeitet ablegen (uid?)
-		
+	
+TODO pi3: (Besucherzahlen)
+--------------------------
+
+
 History:
+--------
+11.07.10	* checkSummerWinterBug Enfernt Datumsberechnung per date()
+12.12.20	* TipAFriend integriert
+			* BE: Liste zeigt Name des Filmes und Woche des Programms
+			* Modul zum Programmbearbeiten eingeführt
 18.07.09	* extra wraps für Newsletter
 			* ext-key auf tmd_cinema geändert
 20.03.08	* shortProgramm / longProgramm zusammenfassen
 			* Kino in FF berücksichtigen
-19.03.08	* ShowType: Hauptprogramm etc. Wird rot dargestellt
+19.03.08	* ShowType: Hauptprogramm etc. Wird "rot" dargestellt
 			* TS.hideType id -> nicht anzeigen
-			* Tonsysteme: nur erlaubte anzeigen (Kino abh�ngig)
+			* Tonsysteme: nur erlaubte anzeigen (Kino abhängig)
 			* Druckversion: Internet ausblenden (CSS)
 			* Programmassistenen schreiben (-> tabelle)
 			* Kino wird von Datensatz referenziert.

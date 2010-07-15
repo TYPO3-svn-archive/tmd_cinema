@@ -314,13 +314,13 @@ $lastmonth = mktime(0, 0, 0, date("m")-1, date("d"),   date("Y"));
 $nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
  */
 		$wStart = mktime(0, 0, 0, date("m", $wStart)  , date("d", $wStart)+$startWeek*7  , date("Y", $wStart));
-		$wEnd   = mktime(0, 0, 0, date("m", $wStart)  , date("d", $wStart)+$nextWeeks*7-1, date("Y", $wStart));		
-debug(strftime("%u  %d.%m.%y", $wStart), 'start');
-debug(strftime("%u  %d.%m.%y", $wEnd), 'end');
+		$wEnd   = mktime(0, 0, 0, date("m", $wStart)  , date("d", $wStart)+$nextWeeks*7-1, date("Y", $wStart));
+#debug(strftime("%u  %d.%m.%y", $wStart), 'start');
+#debug(strftime("%u  %d.%m.%y", $wEnd), 'end');
 		$wStart_tmp = $wStart; # für "kein progamm" zwischenspeichern
-		
-		
-		
+
+
+
 		if($startWeek == 0) {
 			if ($type != "RSS") {
 				$items[] = "<h1>Programm ab ".strftime($this->conf['timeFormat'], $wStart)."</h1>";
@@ -354,7 +354,7 @@ debug(strftime("%u  %d.%m.%y", $wEnd), 'end');
 			$tempTime = $this->internal['currentRow']['date'];
 			list($day, $month, $year) = explode(",", strftime("%e,%m,%Y", $tempTime));
 			$this->internal['currentRow']['date'] = mktime(0,0,0,$month,$day, $year);
-			
+
 			$all[] = $this->internal['currentRow'];
 		}
 
@@ -366,7 +366,7 @@ debug(strftime("%u  %d.%m.%y", $wEnd), 'end');
 
 			return $out;
 		}
-		
+
 		foreach($cinemaOrder as $cinema) {
 			foreach($all as $this->internal['currentRow']) {
 
@@ -377,7 +377,7 @@ debug(strftime("%u  %d.%m.%y", $wEnd), 'end');
 						$wStart = $this->internal['currentRow']['date'];
 
 						if($wStart > 0 && $this->conf['showWeekDate'] != 0 ) {
-							if ($type != "RSS") 
+							if ($type != "RSS")
 								$items[] = '<h2>'.((!$startWeek)?"Programm": "")." ab ".strftime($this->conf['timeFormat'], $wStart)."</h2>";
 						} elseif($wStart == 0) {
 							$noDate[] = '<h2>Demnächst</h2>';
@@ -595,7 +595,7 @@ debug(strftime("%u  %d.%m.%y", $wEnd), 'end');
 						break;
 					}
 
-					
+
 					$n = 0;
 					foreach($this->piVars['friendName'] as $key => $name) {
 						$recipient[$n]['name']  = htmlspecialchars($name);
@@ -608,7 +608,7 @@ debug(strftime("%u  %d.%m.%y", $wEnd), 'end');
 						$recipient[$n]['name']  = htmlspecialchars($this->piVars['myName']);
 						$recipient[$n]['EMail'] = htmlspecialchars($this->piVars['myEMail']);
 					}
-					
+
 					foreach($recipient as $key => $data){
 						if ($data['EMail'] && t3lib_div::validEmail($data['EMail'])) {
 							list($date, $movie, $cinema) 			= explode("-", $this->decrypt($this->piVars['tipDate']));
@@ -623,11 +623,11 @@ debug(strftime("%u  %d.%m.%y", $wEnd), 'end');
 							$email['txt']  = html_entity_decode($this->substituteMarkers("TIPAFRIEND_TXTEMAIL",  $markerArray),  ENT_COMPAT, "utf-8" );
 
 							$this->sendTip($markerArray['###MYEMAIL###'], $markerArray['###MYNAME###'], $data['name'], $data['EMail'], $subject, $email);
-							
+
 							if($this->conf['spamLog'] > 0 && $this->conf['logMail'] == 1) { # log every entry
 								$this->writeTAFLogfile(0,1); # anonym
 							}
-							
+
 						}
 					}
 
@@ -641,7 +641,7 @@ debug(strftime("%u  %d.%m.%y", $wEnd), 'end');
 				case 'honeyPot':
 					$content = $this->pi_getLL("err_honeyPot", "_err_honeyPot_");
 
-					if($this->conf['spamLogPid'] > 0 && $this->conf['logSpam'] == 1) { 
+					if($this->conf['spamLogPid'] > 0 && $this->conf['logSpam'] == 1) {
 						$this->writeTAFLogfile(1,0); # log everything
 					}
 				default:
@@ -654,7 +654,7 @@ debug(strftime("%u  %d.%m.%y", $wEnd), 'end');
 	}
 
 
-	
+
 		/**
 		 * Writes Logfileentry to DB
 		 * @param $spam		bool	spam flag
@@ -671,17 +671,17 @@ debug(strftime("%u  %d.%m.%y", $wEnd), 'end');
 		    'tstamp'	=> time(),
 		    'crdate'	=> time(),
 		    'ip'		=> getenv(REMOTE_ADDR),
-		    'sender'	=> $anonym ? '' : htmlspecialchars($this->piVars['myName']).' '.htmlspecialchars($this->piVars['myEMail']), 
-		    'recipient'	=> $anonym ? '' : htmlspecialchars(implode(', ', $this->piVars['friendMail'])), 
-		    'msg'		=> $anonym ? '' : htmlspecialchars($this->piVars['message']), 
+		    'sender'	=> $anonym ? '' : htmlspecialchars($this->piVars['myName']).' '.htmlspecialchars($this->piVars['myEMail']),
+		    'recipient'	=> $anonym ? '' : htmlspecialchars(implode(', ', $this->piVars['friendMail'])),
+		    'msg'		=> $anonym ? '' : htmlspecialchars($this->piVars['message']),
 			'spam'		=> $spam,
 			'showdata'	=> $this->getFieldContent('movie_title').' - '.strftime("%d.%m.%y %H:%M", $date).' - '.$this->getFieldContent('cinema'),
 		);
 		$GLOBALS['TYPO3_DB']->exec_INSERTquery($table,$fields_values,$no_quote_fields=FALSE);
 	}
 
-	
-	
+
+
 	function validateStep1() {
 		$setStepTo = $this->piVars['step'];
 
@@ -823,9 +823,9 @@ debug(strftime("%u  %d.%m.%y", $wEnd), 'end');
 		 * @return unknown_type
 		 */
 	function checkExpiredProgram() {
-		if($this->getFieldContent('firstday_raw') > time()) // Programm in der Zukunft 
-			return false; 
-		
+		if($this->getFieldContent('firstday_raw') > time()) // Programm in der Zukunft
+			return false;
+
 		$today= strftime("%w", time()); # 0 = Sonntag
 		$table = $this->getFieldContent('program_raw');
 		$lines = explode(chr(10), $table);
@@ -1060,7 +1060,7 @@ debug(strftime("%u  %d.%m.%y", $wEnd), 'end');
 
 				# Reservierungs Link
 		$linkconf = array(
-	    	 "title" => $this->pi_getLL("howtoReserve"),
+	    	 "title" => $this->conf['howtoReserve'],
 		     "parameter" => $this->conf['pageReserve'],
 		     );
 		list($date, $movie, $cinema) = explode("-", $this->decrypt($this->piVars['tipDate']));
@@ -1121,33 +1121,31 @@ debug(strftime("%u  %d.%m.%y", $wEnd), 'end');
 
 				# tHead
 			$head = '<thead><tr>';
-			for($i=0; $i<7; $i++)
-				{
+			for($i=0; $i<7; $i++) {
 				$time[$i] = $theDay+60*60*24*$i;
-				$time[$i] = $this->checkSummerWinterBug($time[$i]); /* Sommerzeit-Bug */
+				$time[$i] = mktime(0, 0, 0, date("m", $theDay)  , date("d", $theDay)+$i, date("Y", $theDay));
 
-				if($i == $todaysNr)
-					{
+				if($i == $todaysNr) {
 					$head .= '<th style="background-color:'.$this->conf['todaysColor'].';">';
 
-					if(date("d", $time[$i]) == date("d", time()) && $this->conf['todayStyle'] == 'today')
+					if(date("d", $time[$i]) == date("d", time()) && $this->conf['todayStyle'] == 'today') {
 						$head .= $this->cObj->wrap($this->pi_getLL("today"), $this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_TIMETABLE_TH']);
-
-					else
+					} else {
 						$head .= $this->cObj->wrap(strftime($this->conf['tableTime'], $time[$i]), $this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_TIMETABLE_TH']);
+					}
 
 					$head .= '</th>';
-					}
-				else
-					{
+				} else {
 					$head .= '<th align="center">';
 					$head .= $this->cObj->wrap(strftime($this->conf['tableTime'], $time[$i]), $this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_TIMETABLE_TH']);
 					$head .= '</th>';
-					}
 				}
+			}
 			unset($this->correctDate); /* Sommerzeit-Bug  - damit alle Filme berücksichtigt werden */
 
 			$head .= '</tr></thead>';
+
+
 
 				# tBody
 			$temp = $this->internal['currentRow']['program'];
@@ -1155,23 +1153,21 @@ debug(strftime("%u  %d.%m.%y", $wEnd), 'end');
 
 			# Mit Zeit verlinken
 			$i=0; $n =0;
-			foreach($temp as $row => $val)
-				{
-				#if(strlen($temp)>0) debug(trim($temp));
+			foreach($temp as $row => $val) {
 
 				$temp[$i] = explode("|", $val);
 
 				foreach($temp[$i] as $key1 => $timeString) {
 					$timeString = trim($timeString); # Zeilenende bereinigen
 
-					if(preg_match( '/[0-9]?[0-9]:[0-9][0-9]/m', $timeString)) /* Exakte Uhrzeit */
-						{
+					if(preg_match( '/[0-9]?[0-9]:[0-9][0-9]/m', $timeString)) { /* Exakte Uhrzeit */
 						list($theHour, $theMinute) = explode(":",$timeString);
 
-						$theTime = mktime((int)$theHour, (int)$theMinute, 0, strftime("%m", $time[$n]), strftime("%d", $time[$n]), strftime("%Y", $time[$n]));
-
+						$theTime = mktime($theHour, $theMinute, 0, date("m", $theDay)  , date("d", $theDay)+$n, date("Y", $theDay));
+#debug(strftime("%d.%m.%Y %H:%M",$theTime));
+						
 						$linkconf = array(
-				    		 "title" => $this->pi_getLL("howtoReserve"),
+				    		 "title" => $this->conf['howtoReserve'],
 						     "parameter" => $this->conf['pageReserve'],
 						     );
 
@@ -1185,6 +1181,7 @@ debug(strftime("%u  %d.%m.%y", $wEnd), 'end');
 
 						if($this->conf['noRes'] == 'ticket') {
 							$linkconf = $this->ticketLink($theTime);
+							$linkconf['title'] = $this->conf['howtoReserve'];
 						}
 
 							# Reservierungsschluss?
@@ -1192,7 +1189,7 @@ debug(strftime("%u  %d.%m.%y", $wEnd), 'end');
 						$thisDay = mktime ( 0, 0, 0, strftime("%m", $thisDay),strftime("%d", $thisDay), strftime("%Y", $thisDay));
 
 							# z.B. 5 Stunden vorher = t-60*60*5
-						if(	(time() > $theTime-60*60*$this->conf['resLimit']) ||
+						if((time() < $theTime + 60*60*$this->conf['resLimit']) ||
 							$this->ff['def']['noRes'] ||
 							$this->conf['noRes'] == '1' ||
 							$this->internal['currentRow']['nores'] ||
@@ -1204,7 +1201,7 @@ debug(strftime("%u  %d.%m.%y", $wEnd), 'end');
 						}
 
 							/* Tip A Friend */
-						if($this->ff['def']['mode'] == 'tipAFriend' && (time() < $theTime-60*60*$this->conf['resLimit'])) {
+						if($this->ff['def']['mode'] == 'tipAFriend' && (time() < $theTime + 60*60*$this->conf['resLimit'])) {
 							$value = $theTime."-".$this->internal['currentRow']['movie']."-".$this->internal['currentRow']['cinema'];
 							$value = $this->encrypt($value);
 							if($this->piVars['tipDate'] == $value) {
@@ -1214,18 +1211,22 @@ debug(strftime("%u  %d.%m.%y", $wEnd), 'end');
 							}
 						}
 
-
 					} elseif(preg_match( '/[0-9]?[0-9]\.[0-9][0-9]/m', $timeString)) { # keine Reservierung
 						$temp[$i][$key1] = str_replace(".", ":", $temp[$i][$key1]);
+					} elseif(preg_match( '/[0-9]?[0-9]\-[0-9][0-9]/m', $timeString)) { # VS abgesagt
+						list($time, $text) = explode('#', $temp[$i][$key1]);
+						if(!$text) $text = $this->conf['showCanceled'];
+						$temp[$i][$key1] = '<span style="text-decoration: line-through;" title="'.$text.'" >'.str_replace("-", ":", $time).'</span>';
 					} else { # leere Zelle
 						$temp[$i][$key1] = $this->conf['emptyTable'];
 					}
 
+
 					$n++;
-					}
-				$i++;
-				$n = 0;
 				}
+ 			$i++;
+			$n = 0;
+			}
 
 
 			# Tabellenzeilen zusammenbauen
@@ -1268,21 +1269,11 @@ debug(strftime("%u  %d.%m.%y", $wEnd), 'end');
 		 *
 		 * @param timestamp UNIX timestamp to be checked
 		 * @return timestamp UNIX timestanp corrected, if needed
+		 * 
+		 * OBSOLETE!!!!!!!!!!!!!!!!!!
 		 */
 	function checkSummerWinterBug($theDay) {
-		if($this->correctDate)
-			return $theDay+$this->correctDate;
-
-		$oneDay = 24*60*60;
-		$oneHour = 60*60;
-
-		if(date("I", $theDay-$oneDay) != date("I", $theDay)) {
-			if(!date("I", $theDay)) { 	# Sommer -> Winter
-				$this->correctDate = $oneHour*24;
-			}
-		}
-
-		return $theDay+$this->correctDate;
+		die("call: checkSummerWinterBug");
 	}
 
 
@@ -1290,8 +1281,7 @@ debug(strftime("%u  %d.%m.%y", $wEnd), 'end');
 		/**
 		 * Reservierung für .ticket System anzapfen
 		 */
-	function ticketLink($theTime)
-		{
+	function ticketLink($theTime) {
 #debug(strftime("%H:%M %d.%m", $theTime), "ticket");
 		$oneWeek = 7*24*60*60;
 
@@ -1309,7 +1299,7 @@ debug(strftime("%u  %d.%m.%y", $wEnd), 'end');
 		$out['parameter'] = $this->cObj->substituteMarker($this->conf['noRes.']['window.']['parameter'], '###URL###', $link);
 
 		return $out;
-		}
+	}
 
 /*
 		 * Adresse als Session speichern
@@ -1433,7 +1423,7 @@ debug(strftime("%u  %d.%m.%y", $wEnd), 'end');
 				# Für welchen Bereich?
 				switch($this->ff['def']['mode']) {
 					case 'shortView': 	$this->conf['image.'] = ($this->ff['image']['pluginWidth'] > 0) ? array("file." => array("width" => $this->ff['image']['pluginWidth'])) : $this->conf['listViewShort.']; 	break;
-					case 'longView':	
+					case 'longView':
 						$this->conf['image.'] = ($this->ff['image']['pluginWidth'] > 0) ? array("file." => array("width" => $this->ff['image']['pluginWidth'])) : $this->conf['listViewLong.'];		break;
 					case 'singleView':	$this->conf['image.'] = ($this->ff['image']['pluginWidth'] > 0) ? array("file." => array("width" => $this->ff['image']['pluginWidth'])) : $this->conf['imageSingle.'];		break;
 					case 'special':		$this->conf['image.'] = ($this->ff['image']['pluginWidth'] > 0) ? array("file." => array("width" => $this->ff['image']['pluginWidth'])) : $this->conf['imageSpecial.']; 	break;
@@ -1751,7 +1741,7 @@ debug(strftime("%u  %d.%m.%y", $wEnd), 'end');
 					$this->adrCache[$this->internal['currentRow'][$fN]] = $this->pi_getRecord("tt_address", $this->internal['currentRow'][$fN]);
 				}
 
-				$out = $this->cObj->wrap($this->adrCache[$this->internal['currentRow'][$fN]]['name'], $this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_THEATRE']);
+				$out = $this->cObj->wrap($this->adrCache[$this->internal['currentRow'][$fN]]['company'], $this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_THEATRE']);
 
 				return $out;
 			break;

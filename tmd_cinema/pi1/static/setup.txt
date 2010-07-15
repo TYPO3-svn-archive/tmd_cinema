@@ -3,7 +3,7 @@
 
 plugin.tx_tmdcinema_pi1 {
 	isStaticTemplateLoaded = 1
-	
+
 	DEBUG = 0
 
 		# PID of the Main Time Table View
@@ -11,15 +11,17 @@ plugin.tx_tmdcinema_pi1 {
 		# store Bookings here
 	bookingPid = 379
 	bookingRedirect = 770
-	
+
 		#Verschlsselte Reservierung
 	cryptTime = 1
-		
+
 		# abgelaufenes Programm verbergen
 	hideExpiredProgram = 1
-	
+	showCanceled = Diese Vorstellung mußte kurzfristig abgesagt werden. Wir bitten um ihr Verständnis.
+	howtoReserve = Hier klicken um für diese Vorstellung zu Reservieren!
+
 	dummyPoster = EXT:tmd_cinema/pi1/res/dummy.png
-	
+
 	template = EXT:tmd_cinema/pi1/res/cinema_template.html
 
 		# Wie sollen leere Spielzeiten markiert werden?
@@ -90,11 +92,11 @@ plugin.tx_tmdcinema_pi1 {
 	logMail = 1
 	maxMsgLength = 300
 	dateString = %d.%B %Y - %H:%M Uhr
-	subject = Du hast eine Kino-Einlandung von %s erhalten  
+	subject = Du hast eine Kino-Einlandung von %s erhalten
 	baseURL = http://tmd.dynalias.net/tmd/kinoakt/
 	sendMeMailToo = 0
-	
-	
+
+
 		#-----------
 		# Bilder
 		#-----------
@@ -159,11 +161,11 @@ plugin.tx_tmdcinema_pi1.wrap {
 		PRG_WEEK = |
 		PRG_THEATRE	 = |
 		PRG_DATE = |
-		
+
 		}
 
 longView {
-		MOVIE_RATING = |&nbsp;- 
+		MOVIE_RATING = |&nbsp;-
 		MOVIE_RATINGTOOLTIP = |
 		MOVIE_DISTRIBUTOR = |
 		MOVIE_FBW.1 = |
@@ -228,7 +230,7 @@ special {
 		MOVIE_MEDIA = |
 
 		VERSION3D = <span style="color: red;">3D</span>
-		
+
 		PRG_TIMETABLE = |
 		PRG_TIMETABLE_STYLE =
 		PRG_TIMETABLE_TD = |
@@ -265,7 +267,7 @@ special {
 		MOVIE_MEDIA = |
 
 		VERSION3D = <span style="color: red;">3D</span>
-		
+
 		PRG_TIMETABLE = |
 		PRG_TIMETABLE_STYLE =
 		PRG_TIMETABLE_TD = |
@@ -276,14 +278,14 @@ special {
 		PRG_THEATRE	 = Diesen Film sehen Sie im <b>|</b><br />
 		PRG_DATE = |
 		}
-		
+
 	tipAFriend {
 		MOVIE_RATING = |
 		MOVIE_RATINGTOOLTIP = |
 		MOVIE_DISTRIBUTOR = im Verleih von&nbsp; | <br />
 		MOVIE_FBW.1 = |
 		MOVIE_FBW.2 = |
-		MOVIE_TITLE = | 
+		MOVIE_TITLE = |
 		MOVIE_TITLE_SHORT = <b> | </b>
 		MOVIE_TITLE_ORIGINAL = (|)<br />
 		MOVIE_IMAGE = |
@@ -302,7 +304,7 @@ special {
 		MOVIE_MEDIA = |
 
 		VERSION3D = <span style="color: red;">3D</span>
-		
+
 		PRG_TIMETABLE = |
 		PRG_TIMETABLE_STYLE =
 		PRG_TIMETABLE_TD = |
