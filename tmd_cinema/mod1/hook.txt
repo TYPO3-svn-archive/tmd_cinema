@@ -1,7 +1,7 @@
 
 Hi Christian.
 
-Take a look at the "processDatamap_afterDatabaseOperations" hook in 
+Take a look at the "processDatamap_afterDatabaseOperations" hook in
 t3lib/class.t3lib_tcemain.php.
 
 An example of it in use can be found here:

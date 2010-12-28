@@ -5,9 +5,9 @@
 		<description>Language labels for database tables/fields belonging to extension 'tmd_cinema'</description>
 	</meta>
 	<data type="array">
-	
+
 		<languageKey index="default" type="array">
-	
+
 			<label index="configure">Configure</label>
 			<label index="mode">Mode</label>
 			<label index="shortView">Short View</label>
@@ -18,7 +18,7 @@
 			<label index="booking">Booking</label>
 			<label index="tipafriend">Tip A Friend</label>
 			<label index="trailer">recent Trailer Liste</label>
-			
+
 			<label index="cinemas">Cinemas</label>
 			<label index="showScpecial">Show Special Shows</label>
 			<label index="weeksAheadMin">Weeks ahead min.</label>
@@ -35,22 +35,22 @@
 		</languageKey>
 
 		<languageKey index="de" type="array">
-	                  
+
 			<label index="cinemaConfig">Kinos und Filme</label>
-			<label index="cinemas">Kinos</label>			
+			<label index="cinemas">Kinos</label>
 			<label index="onlyShowType">Auf bestimme Vorstellungen Einschränken</label>
 			<label index="singleView">Dies ist eine Einzelansicht</label>
 			<label index="divider">___Programm Arten___</label>
 			<label index="weeksAheadMin">Wochen voraus min.</label>
 			<label index="weeksAheadMax">Wochen voraus max.</label>
-			
-			
+
+
 			<label index="templatesLinks">Template und Funktion</label>
 			<label index="mode">Modus</label>
 			<label index="templateFile">Template Datei</label>
 			<label index="noPrg">Text wenn kein Programm vorhanden (%s = Datum).</label>
-			
-			
+
+
 			<label index="imageLinks">Bilder &amp; Verlinkung</label>
 			<label index="pageSingelView">Seite der Einzelansicht</label>
 			<label index="pageProgramView">Programmseite</label>
@@ -64,9 +64,9 @@
 
 
 
-			
-			
-			
+
+
+
 			<label index="configure">Konfiguration</label>
 			<label index="showProgram">Programm anzeigen</label>
 			<label index="trailer">aktuelle Trailer Liste</label>
@@ -75,6 +75,6 @@
 			<label index="image">Bilder</label>
 
 		</languageKey>
-		
+
 	</data>
 </T3locallang>

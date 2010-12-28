@@ -12,10 +12,10 @@
 		<languageKey index="de" type="array">
 
 			<label index="backToStart">Hier kommen Sie zurück zum Programm.</label>
-			
+
 			<label index="today">Heute</label>
 			<label index="howtoReserve">Hier klicken um für diese Vorstellung zu Reservieren!</label>
-			
+
 			<label index="WideScreen">Breitwand</label>
 			<label index="CinemaScope">CinemaScope</label>
 			<label index="Normal">Normal</label>
@@ -23,7 +23,7 @@
 			<label index="youtube">Trailer auf YouTube</label>
 			<label index="noValidPRG">Dieses Programm ist bereits abgelaufen!</label>
 			<label index="timeNN">Die Spielzeiten sind noch nicht bekannt!</label>
-			
+
 			<label index="mailForm.name">Ihr Name:</label>
 			<label index="mailForm.email">Ihre E-Mail Adresse:</label>
 			<label index="mailForm.title">Filmtitel:</label>
@@ -39,7 +39,7 @@
 			<label index="mailForm.warning_2">Bitte korrigieren Sie ihre Angaben!</label>
 			<label index="mailForm.requiredNote_missing">diese Angaben werden benötigt!</label>
 
-				<!-- tipAFriend -->			
+				<!-- tipAFriend -->
 			<label index="err_alreadySent">Diese Mail wurde bereits verschickt</label>
 			<label index="err_timeLimit">Leider schon Res. Schluss</label>
 			<label index="err_captcha">Das Spamschutzfeld wurde nicht korrekt ausgefüllt.</label>
@@ -49,13 +49,12 @@
 			<label index="err_yourMail">Deine E-Mail Adresse ist ungültig</label>
 			<label index="err_nameFriend">Der Name von Freund %s fehlt!</label>
 			<label index="err_mailFriend">Die E-Mail Adresse von Freund %s fehlt oder ist ungültig!</label>
-			<label index="err_missFriendMail">Du musst mindestens eine Adresse und einen Namen eines Freundes angeben!</label> 
+			<label index="err_missFriendMail">Du musst mindestens eine Adresse und einen Namen eines Freundes angeben!</label>
 			<label index="err_wrongCinema">Falsche Daten (Cinema not in List)</label>
 			<label index="err_honeyPot">Internet Fehler: Ein Logfile wurde geschrieben.</label>
-			<label index="err_invitePossible">Diese Woche ist der Film leider nicht mehr im Programm. Informieren Sie sich über das weitere Programm über unsere Homepage oder unseren kostenlosen, wöchentlichen Newsletter.</label> 
+			<label index="err_invitePossible">Diese Woche ist der Film leider nicht mehr im Programm. Informieren Sie sich über das weitere Programm über unsere Homepage oder unseren kostenlosen, wöchentlichen Newsletter.</label>
 
 		</languageKey>
 
 	</data>
 </T3locallang>
-

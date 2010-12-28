@@ -5,7 +5,7 @@
 		<description>Language labels for database tables/fields belonging to extension 'tmd_cinema'</description>
 	</meta>
 	<data type="array">
-	
+
 		<languageKey index="default" type="array">
 			<label index="tmd_cinema_program">Cinema Program</label>
 			<label index="tmd_cinema_program.date">First day of program</label>
@@ -46,7 +46,7 @@
 		</languageKey>
 
 		<languageKey index="de" type="array">
-	                  
+
 			<label index="tmd_cinema_program">Kino Programm</label>
 			<label index="tmd_cinema_program.date">Erster Programmtag</label>
 			<label index="tmd_cinema_program.info">Besondere Informationen</label>
@@ -60,7 +60,7 @@
 			<label index="tx_tmdcinema_program.features.I.1">3D</label>
 			<label index="tx_tmdcinema_program.features.I.2">Kinderkino</label>
 
-            
+
 			<label index="tmd_cinema_program.week">Woche</label>
 			<label index="tmd_cinema_booking">Reservierungen</label>
 			<label index="tmd_cinema_booking.name">Kundenname</label>
@@ -83,6 +83,6 @@
             <label index="tx_tmdcinema_spamlog.recipient">Empfänger</label>
 			<label index="tx_tmdcinema_spamlog.msg">Nachricht</label>
 		</languageKey>
-		
+
 	</data>
 </T3locallang>

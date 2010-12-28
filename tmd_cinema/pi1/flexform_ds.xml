@@ -44,11 +44,11 @@
 							<numIndex index="1">
 								<numIndex index="0">LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:divider</numIndex>
 								<numIndex index="1">--div--</numIndex>
-							</numIndex>	
+							</numIndex>
 						</items>
-						
+
 						<exclusiveKeys>-1</exclusiveKeys>
-						
+
 						<foreign_table>tx_tmdcinema_showtype</foreign_table>
 						<foreign_table_where> AND tx_tmdcinema_showtype.pid = ###STORAGE_PID### </foreign_table_where>
 						<size>5</size>
@@ -84,7 +84,7 @@
 					</config>
 				</TCEforms>
 				</previewMax>
-				
+
 			</el>
 		</ROOT>
 	</cinemaConfig>
@@ -99,7 +99,7 @@
 
 			<type>array</type>
 			<el>
-			
+
 				<mode>
 					<TCEforms>
 					<label>LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:mode</label>
@@ -110,7 +110,7 @@
 								<numIndex index="0">LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:showProgram</numIndex>
 								<numIndex index="1">showProgram</numIndex>
 							</numIndex>
-							
+
 							<numIndex index="5">
 								<numIndex index="0">LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:newsFeed</numIndex>
 								<numIndex index="1">RSS</numIndex>
@@ -130,7 +130,7 @@
 								<numIndex index="0">LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:trailer</numIndex>
 								<numIndex index="1">trailer</numIndex>
 							</numIndex>
-							
+
 						</items>
 					</config>
 				</TCEforms>
@@ -168,7 +168,7 @@
 				</previewNote>
 
 
-				
+
 			</el>
 		</ROOT>
 	</template>
@@ -182,7 +182,7 @@
 
 			<type>array</type>
 			<el>
-			
+
 				<pageSingelView>
 				<TCEforms>
 					<exclude>1</exclude>
@@ -284,7 +284,7 @@
 					</config>
 				</TCEforms>
 				</height>
-			
+
 				<clickEnlarge>
 				<TCEforms>
 					<label>LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:clickEnlarge</label>
@@ -293,7 +293,7 @@
 					</config>
 				</TCEforms>
 				</clickEnlarge>
-				
+
 				<disallowBooking>
 				<TCEforms>
 				<label>LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:noBooking</label>
@@ -310,7 +310,6 @@
 
 
 
-	
+
 </sheets>
 </T3DataStructure>
-

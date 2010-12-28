@@ -6,20 +6,30 @@ Listen Ansicht im BE: Name des Filmes nicht die uid anzeigen (idee?)
 lokalisieren
 Erster Tag der Woche ändern (flexibel)
 Reservierung: Namen des Users der Datensatz bearbeitet ablegen (uid?)
-		
+
 History:
+28.12.10	* Alle wraps mit stdWrap ergänzt.
+			* TS Setup kompett neu, feste Ansichten entfernt, jettz alles avom html-Template und dessen Namen abhängig.  
+			* 3D und Sonderkino-Flag ergänzt.
+			* FlexForm pi1 überarbeitet, übersichtlicher
+			* fast alle TS-Werte können im FF überschrieben werden
+			* neues Template-Handling (Danke an Ingo Renner und tt_address!)
+			* BE: Neues Module um das programm zu bearbeiten.
+			* neue Ansicht, lang und kurze Übersicht
+			* Datum-Bugs behoben.
+			* einfache Verlängerung des Programms möglich
 18.07.09	* extra wraps für Newsletter
 			* ext-key auf tmd_cinema geändert
 20.03.08	* shortProgramm / longProgramm zusammenfassen
 			* Kino in FF berücksichtigen
 19.03.08	* ShowType: Hauptprogramm etc. Wird rot dargestellt
 			* TS.hideType id -> nicht anzeigen
-			* Tonsysteme: nur erlaubte anzeigen (Kino abh�ngig)
+			* Tonsysteme: nur erlaubte anzeigen (Kino abhängig)
 			* Druckversion: Internet ausblenden (CSS)
 			* Programmassistenen schreiben (-> tabelle)
 			* Kino wird von Datensatz referenziert.
 			* Sortierung nach Datum, sorting
-24.07.07	* timecode und uid für die Reservierung sind jetzt verschlüsselt.		
+24.07.07	* timecode und uid für die Reservierung sind jetzt verschlüsselt.
 12.06.07	* Spammerschutz: übewrmittelter Timestamp muss größer als "heute" sein.
 			* Vorbelegung in der Programmtabelle im BE
 			* Media-File raus. Hat sich nicht bewärt. dafür mehr Plakate möglich

@@ -5,7 +5,7 @@ define('TYPO3_MOD_PATH', '../typo3conf/ext/tmd_cinema/mod1/');
 $BACK_PATH='../../../../typo3/';
 $MCONF['name']='web_txtmdcinemaM1';
 
-    
+
 $MCONF['access']='user,group';
 $MCONF['script']='index.php';
 
@@ -18,7 +18,7 @@ define('TYPO3_MOD_PATH', '../typo3conf/ext/tmd_cinema/mod1/');
 $BACK_PATH='../../../../typo3/';
 $MCONF['name']='web_txtmdcinemaM1';
 
-	
+
 $MCONF['access']='user,group';
 $MCONF['script']='index.php';
 

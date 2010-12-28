@@ -12,12 +12,12 @@
         <languageKey index="default" type="array">
             <label index=".description">english to follow...</label>
         </languageKey>
-        
+
         <languageKey index="de" type="array">
             <label index=".description">Kino Programm</label>
             <label index="hidden.description">Datensatz verstecken</label>
 
-            <label index="week.description">Spielwoche. 
+            <label index="week.description">Spielwoche.
             							Wird automatisch verlängert wenn man die Kinoverwaltung benutzt, kann aber auch jederzeit von Hand korrigiert werden.</label>
             <label index="date.description">Erster Tag = Beginn der Spiel Woche.
             								Wird automatisch um eine Woche verlängert wenn man die Kinoverwaltung benutzt, kann aber auch jederzeit von Hand korrigiert werden.

@@ -6,20 +6,20 @@
 	xmlns:renderlet="http://www.ameos.com/formidable/1.0.0/renderlet"
 	xmlns:validator="http://www.ameos.com/formidable/1.0.0/validator"
 	xmlns:actionlet="http://www.ameos.com/formidable/1.0.0/actionlet">
-	
+
 	<meta>
 		<name>Standard XML file</name>
 		<form formid="tmd_cinema_pi1"/>
 		<debug>false</debug>
 		<displaylabels>true</displaylabels>
 	</meta>
-	
+
 	<control>
 
- 
-	 
- 		<datahandler:STANDARD /> 
- 		
+
+
+ 		<datahandler:STANDARD />
+
 		<renderer:STANDARD/>
 	</control>
 
@@ -54,7 +54,7 @@
 				<defaultvalue>
 					<userobj>
 						<php>
-							<![CDATA[ 
+							<![CDATA[
 return strftime("%A, %d.%m.%y - %H:%M Uhr", $this->_oParent->piVars['res']);
 
  ]]>
@@ -68,7 +68,7 @@ return strftime("%A, %d.%m.%y - %H:%M Uhr", $this->_oParent->piVars['res']);
 			<data>
 				<value>
 					<userobj>
-		            <php><![CDATA[ 
+		            <php><![CDATA[
 		            return $this->_oParent->piVars['res'];
 		             ]]></php>
 			        </userobj>
@@ -83,7 +83,7 @@ return strftime("%A, %d.%m.%y - %H:%M Uhr", $this->_oParent->piVars['res']);
 					<required message="Bitte geben Sie Ihren Namen an." />
 				</validator:STANDARD>
 			</validators>
-		</renderlet:TEXT>	
+		</renderlet:TEXT>
 
 		<renderlet:TEXT name="email" label="E-Mail Adresse">
 			<validators>
@@ -92,10 +92,10 @@ return strftime("%A, %d.%m.%y - %H:%M Uhr", $this->_oParent->piVars['res']);
 					<required message="Bitte geben Sie Ihre E-mail Adresse an." />
 				</validator:STANDARD>
 			</validators>
-		</renderlet:TEXT>	
+		</renderlet:TEXT>
 
 		<renderlet:LISTBOX name="seats" label="Anzahl Plätze">
-			
+
 			<validator:STANDARD>
 			</validator:STANDARD>
 
@@ -130,7 +130,7 @@ return strftime("%A, %d.%m.%y - %H:%M Uhr", $this->_oParent->piVars['res']);
 		<renderlet:TEXTAREA name="note" label="Anmerkung">
 			<validators>
 				<validator:STANDARD>
-				</validator:STANDARD>	
+				</validator:STANDARD>
 			</validators>
 		</renderlet:TEXTAREA>
 
@@ -154,9 +154,9 @@ return strftime("%A, %d.%m.%y - %H:%M Uhr", $this->_oParent->piVars['res']);
 				</value>
   			</data>
 		</renderlet:HIDDEN>
-		
+
 		<renderlet:SUBMIT label="Reservierug abschicken!" />
-			
+
 </elements>
 
 </formidable>

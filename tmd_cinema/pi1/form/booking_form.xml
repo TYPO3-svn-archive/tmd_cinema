@@ -17,8 +17,8 @@
 				<userobj>
 					<php>
 					<![CDATA[
-						$data = array_pop(func_get_args()); 
-						
+						$data = array_pop(func_get_args());
+
 						$out["pid"] 	= $this->_oParent->conf['resPid'];
 						$out["name"] 	= $data['name'];
 						$out["email"] 	= $data['email'];
@@ -36,10 +36,10 @@
 			</process>
 		</datahandler:DB>
 		<renderer:STANDARD />
-		
+
 		<actionlets>
 
-			
+
 		<actionlet:REDIRECT>
                <pageid>
                   <userobj>
@@ -53,7 +53,7 @@
                                    "useCacheHash" => "1",
                                )
                            );
-                           
+
                            return $out;
                        ]]></php>
 				</userobj>
@@ -61,7 +61,7 @@
 		</actionlet:REDIRECT>
 
 		</actionlets>
-			
+
 	</control>
 
 
@@ -119,7 +119,7 @@
 
 
 
- 
+
 		<renderlet:TEXT name="name" label="Ihr Name" >
 		<validators>
 			<validator:STANDARD>
@@ -127,8 +127,8 @@
 			</validator:STANDARD>
 		</validators>
 		</renderlet:TEXT>
-		
-		
+
+
 		<renderlet:TEXT name="email" label="Ihre EMail Adresse" >
 		<validators>
 			<validator:STANDARD>
@@ -141,7 +141,7 @@
 
 		<renderlet:LISTBOX name="seats" label="Plätze" >
 			<data defaultvalue="2" >
-				
+
 				<userobj>
 					<php>
 					<![CDATA[
@@ -170,9 +170,9 @@
 			</data>
 		</renderlet:LISTBOX>
 
-				
+
 		<renderlet:TEXTAREA name="note" label="Bemerkung" />
-				
+
 		<renderlet:HIDDEN name="formid" label="formid" >
 		<data>
 			<defaultvalue>
@@ -182,12 +182,12 @@
 			</defaultvalue>
 		</data>
 		</renderlet:HIDDEN>
-		
+
 
 		<renderlet:SUBMIT name="btnsend">
-			<label>LLL:EXT:tmd_cinema/pi1/form/form_locallang.xml:btn_submit</label> 
+			<label>LLL:EXT:tmd_cinema/pi1/form/form_locallang.xml:btn_submit</label>
 		</renderlet:SUBMIT>
-	
+
 	</elements>
 
 </formidable>

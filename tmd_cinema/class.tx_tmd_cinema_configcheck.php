@@ -36,7 +36,7 @@
 require_once(t3lib_extMgm::extPath('oelib') . 'class.tx_oeli b_configcheck.php');
 require_once(t3lib_extMgm::extPath('oelib') . 'class.tx_oeli b_db.php');
 
-class tx_tmd_cinema_configcheck extends tx_oelib_configcheckxx { 
+class tx_tmd_cinema_configcheck extends tx_oelib_configcheckxx {
 
 	protected function check_tx_tmd_cinema_pi1() {
 		die("hier");

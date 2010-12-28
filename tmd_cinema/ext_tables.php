@@ -13,7 +13,7 @@ $TCA["tx_tmdcinema_program"] = array (
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
         'cruser_id' => 'cruser_id',
-		'versioningWS' => TRUE, 
+		'versioningWS' => TRUE,
         'origUid' => 't3_origuid',
         'sortby' => 'sorting',
         'delete' => 'deleted',
@@ -79,14 +79,14 @@ $TCA["tx_tmdcinema_showtype"] = array (
 
 $TCA["tx_tmdcinema_spamlog"] = array (
     "ctrl" => array (
-        'title'     => 'LLL:EXT:tmd_cinema/locallang_db.xml:tx_tmdcinema_spamlog',        
+        'title'     => 'LLL:EXT:tmd_cinema/locallang_db.xml:tx_tmdcinema_spamlog',
         'label'     => 'uid',
 		'label_alt'	=> 'spam',
 		'label_alt_force' => 1,
         'tstamp'    => 'tstamp',
         'crdate'    => 'crdate',
         'cruser_id' => 'cruser_id',
-        'default_sortby' => "ORDER BY crdate DESC",    
+        'default_sortby' => "ORDER BY crdate DESC",
         'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY).'tca.php',
         'iconfile'          => t3lib_extMgm::extRelPath($_EXTKEY).'icon_tx_tmdcinema_spamlog.gif',
     ),
@@ -140,10 +140,10 @@ t3lib_extMgm::addStaticFile($_EXTKEY,'static/pi2_booking','Cinema Booking');
 if (TYPO3_MODE == 'BE')    {
     t3lib_extMgm::addModule('web','txtmdcinemaM1','',t3lib_extMgm::extPath($_EXTKEY).'mod1/');
 	t3lib_extMgm::addModule('web','txtmdcinemaM2','',t3lib_extMgm::extPath($_EXTKEY).'mod2/');
-    
+
     		// add folder icon
 	$ICON_TYPES['cinema_prg'] = array('icon' => t3lib_extMgm::extRelPath($_EXTKEY).'ext_icon_prg_folder.gif');
-	
+
 	include_once(t3lib_extMgm::extPath($_EXTKEY).'class.tx_tmd_cinema_addfilestosel.php');
 }
 ?>

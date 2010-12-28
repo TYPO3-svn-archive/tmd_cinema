@@ -40,7 +40,7 @@
 			<label index="listFieldHeader_note">Bemerkung</label>
 			<label index="listFieldHeader_movie">Filmtitel</label>
 			<label index="listFieldHeader_timedate">Spielzeit</label>
-			
+
 			<label index="mailForm.cinema">Kino</label>
 			<label index="mailForm.row">Reihe</label>
 			<label index="mailForm.seats">Platz</label>
@@ -55,7 +55,7 @@
 			<label index="mailForm.warning_1">Das Formular wurde nicht korrekt ausgefüllt!</label>
 			<label index="mailForm.warning_2">Bitte korrigieren Sie ihre Angaben!</label>
 			<label index="mailForm.requiredNote_missing">diese Angaben werden benötigt!</label>			<label index=""></label>
-			
+
 		</languageKey>
 	</data>
 </T3locallang>

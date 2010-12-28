@@ -4,7 +4,7 @@
 		<type>module</type>
 		<description>Formular "Reservierung"</description>
 	</meta>
-	
+
 	<data type="array">
 		<languageKey index="default" type="array">
 			<label index="btn_submit">Send!</label>

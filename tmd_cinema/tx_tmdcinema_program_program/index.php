@@ -115,7 +115,7 @@ class tx_tmdcinema_tx_tmdcinema_program_programwiz extends t3lib_SCbase {
 		if ($_POST['savedok_x'] || $_POST['saveandclosedok_x'])	{
 			$this->include_once[]=PATH_t3lib.'class.t3lib_tcemain.php';
 		}
-		
+
 		$this->tableParsing_delimiter = '|';
 		$this->tableParsing_quote = '';
 	}
@@ -165,7 +165,7 @@ class tx_tmdcinema_tx_tmdcinema_program_programwiz extends t3lib_SCbase {
 
 			// Generation of the Table Wizards HTML code:
 		$content = $this->getTableHTML($tableCfgArray,$row);
-		
+
 			// Return content:
 		return $content;
 	}
@@ -194,12 +194,12 @@ class tx_tmdcinema_tx_tmdcinema_program_programwiz extends t3lib_SCbase {
 
 			// get delimiter settings
 		$flexForm = t3lib_div::xml2array($row['pi_flexform']);
-	
+
 		if (is_array($flexForm)) {
 			$this->tableParsing_quote = $flexForm['data']['s_parsing']['lDEF']['tableparsing_quote']['vDEF']?chr(intval($flexForm['data']['s_parsing']['lDEF']['tableparsing_quote']['vDEF'])):'';
 			$this->tableParsing_delimiter = $flexForm['data']['s_parsing']['lDEF']['tableparsing_delimiter']['vDEF']?chr(intval($flexForm['data']['s_parsing']['lDEF']['tableparsing_delimiter']['vDEF'])):'|';
 		}
-		
+
 			// If some data has been submitted, then construct
 		if (isset($this->TABLECFG['c']))	{
 
@@ -364,7 +364,7 @@ class tx_tmdcinema_tx_tmdcinema_program_programwiz extends t3lib_SCbase {
 
 			// Add CSH:
 		$content.= t3lib_BEfunc::cshItem('xMOD_csh_corebe', 'wizard_table_wiz', $GLOBALS['BACK_PATH'],'');
-		
+
 		$tRowBottom = $tRows;
 		$tRowTop = '<td></td>
 					<td style="text-align: center; font-weight: bold;">Do</td>
@@ -373,11 +373,11 @@ class tx_tmdcinema_tx_tmdcinema_program_programwiz extends t3lib_SCbase {
 					<td style="text-align: center; font-weight: bold;">So</td>
 					<td style="text-align: center; font-weight: bold;">Mo</td>
 					<td style="text-align: center; font-weight: bold;">Di</td>
-					<td style="text-align: center; font-weight: bold;">Mi</td>'; 
+					<td style="text-align: center; font-weight: bold;">Mi</td>';
 
 		$tRows[] = $tRowTop;
 		$tRows[] = $tRowBottom;
-				
+
 			// Implode all table rows into a string, wrapped in table tags.
 		$content.= '
 

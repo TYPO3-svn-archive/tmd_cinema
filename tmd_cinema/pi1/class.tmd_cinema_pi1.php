@@ -59,7 +59,7 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 		 */
 	function main($content,$conf) {
 		$this->conf = $conf;			// Setting the TypoScript passed to this function in $this->conf
-		$this->pi_setPiVarDefaults();		
+		$this->pi_setPiVarDefaults();
 		$this->pi_loadLL();				// Loading the LOCAL_LANG values
 
 		$this->initFF();				// FlexForm Werte
@@ -89,7 +89,7 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 			case 'showProgram':
 			 	$content = $this->program($this->ff['previewMin'], $this->ff['previewMax']);
 			break;
-			
+
 			case 'trailer':
 				$content = $this->program($this->ff['previewMin'], $this->ff['previewMax'], "trailer");
 			break;
@@ -103,7 +103,7 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 				$content = $this->tipaFriendView();
 			break;
 		}
-		
+
 		return $this->pi_wrapInBaseClass($content);
 	}
 
@@ -157,7 +157,7 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 	}
 
 
-	
+
 
 	/**
 	 * Returns the detail View
@@ -173,7 +173,7 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 		// Res Limit berücksichtigen und das Kino auch.
 #		$this->internal['currentTable'] = 'tx_tmdcinema_program';
 		$this->internal['currentRow'] = $this->pi_getRecord('tx_tmdcinema_program', $this->piVars['showUid']);
-			
+
 		if(	$this->internal['currentRow']['date'] > 0 && (
 				7*24*60*60-$this->conf['resLimit'] < time()-$this->internal['currentRow']['date']  ||
 				!in_array($this->internal['currentRow']['cinema'], explode(",", $this->ff['cinema']))   )
@@ -186,7 +186,7 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 		return $content;
 	}
 
-	
+
 
 
 		/**
@@ -197,15 +197,15 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 		 * @param int Wieviele Wochen?
 		 */
 	function program($startWeek, $nextWeeks=1) {
-		
+
 		if ($this->ff['special'] == -1) {	// If a single element should be displayed:
 			return $this->singleView();
 		}
-		
-		
-		
+
+
+
 		$type = "";
-		
+
 		if($this->conf['DEBUG'] == 1 && strlen($this->conf['DEBUG.']['day']) > 1)  {
 			$now = $this->theDay;
 		} else {
@@ -858,17 +858,17 @@ $this->cObj->enableFields('tt_address').
 		*/
 		$val = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'cinema', 		'cinemaConfig');
 		$val ? $this->ff['cinema'] = $val : $this->ff['cinema'] = $this->conf['cinema'];
-		
+
 		$val = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'special',		'cinemaConfig');
 		$val ? $this->ff['special'] = $val : $this->ff['special'] = $this->conf['special'];
-		
+
 		$val = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'previewMin',	'cinemaConfig');
 		$val ? $this->ff['previewMin'] = $val : $this->ff['previewMin'] = $this->conf['previewMin'];
-		
+
 		$val = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'previewMax', 	'cinemaConfig');
 		$val ? $this->ff['previewMax'] = $val : $this->ff['previewMax'] = $this->conf['previewMax'];
-		
-		
+
+
 		/*
 		 <template>
 				<mode>
@@ -877,10 +877,10 @@ $this->cObj->enableFields('tt_address').
 		*/
 		$val = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'mode',	 		'template');
 		$val ? $this->ff['mode'] = $val : $this->ff['mode'] = $this->conf['mode'];
-		 
+
 		$val = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'templateFile',	'template');
 		$val ? $this->ff['templateFile'] = $val : $this->ff['templateFile'] = $this->conf['templateFile'];
-		
+
 		$val = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'previewNote',		'template');
 		$val ? $this->ff['previewNote'] = $val : $this->ff['previewNote'] = $this->conf['previewNote'];
 
@@ -888,9 +888,9 @@ $this->cObj->enableFields('tt_address').
 			# basisname der Datei $this->ff['templateFile']
 		$this->template = $this->cObj->fileResource($this->conf['templatePath'].$this->ff['templateFile']);
 		$this->templateNameTS = substr($this->ff['templateFile'], 0, strrpos($this->ff['templateFile'], '.')) . '.';
-		
 
-		/*		
+
+		/*
 		<imageLinks>
 				<pageSingelView>
 				<pageProgram>
@@ -902,75 +902,75 @@ $this->cObj->enableFields('tt_address').
 		*/
 		$val = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'pageSingelView',	'imageLinks');
 		$val ? $this->ff['pageSingelView'] = $val : $this->ff['pageSingelView'] = $this->conf['pageSingelView'];
-		
+
 		$val = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'pageProgram',		'imageLinks');
 		$val ? $this->ff['pageProgram'] = $val : $this->ff['pageProgram'] = $this->conf['pageProgram'];
-		
+
 		$val = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'pagePreview',		'imageLinks');
 		$val ? $this->ff['pagePreview'] = $val : $this->ff['pagePreview'] = $this->conf['pagePreview'];
-		
+
 		$val = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'pageTipAFriend', 	'imageLinks');
 		$val ? $this->ff['pageTipAFriend'] = $val : $this->ff['pageTipAFriend'] = $this->conf['pageTipAFriend'];
-		
-		$val = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'pageBooking',	 	'imageLinks'); 
-		$val ? $this->ff['pageBooking'] = $val : $this->ff['pageBooking'] = $this->conf['pageBooking'];
-		
 
-		
+		$val = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'pageBooking',	 	'imageLinks');
+		$val ? $this->ff['pageBooking'] = $val : $this->ff['pageBooking'] = $this->conf['pageBooking'];
+
+
+
 			# TS für Bilder, unterschied IMAGE oder GIFBUILDER
 			# Erst TS laden
 		$w = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'width',	'imageLinks');
 		$h = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'height',	'imageLinks');
 
 		if($this->conf[$this->templateNameTS]['poster'] == 'IMAGE') {
-			$this->ff['poster']	= 'IMAGE';			
-			$this->ff['poster.'] = $this->conf[$this->templateNameTS]['poster.']; 
-			
+			$this->ff['poster']	= 'IMAGE';
+			$this->ff['poster.'] = $this->conf[$this->templateNameTS]['poster.'];
+
 			if($w || $h) { # FF hat vorrang
 				$this->ff['poster.']['file.']['width']  = $w;
 				$this->ff['poster.']['file.']['height'] = $h;
-				
+
 #				debug($this->ff['poster.'], "ff IMAGE");
 			} else { # dann halt TS
 				$this->ff['poster.'] = $this->conf[$this->templateNameTS]['poster.'];
-				
+
 #				debug($this->ff['poster.'], "TS IMAGE");
 			}
-			
+
 				# ClickEnlage
 			if($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'clickEnlarge',	'imageLinks')) {
 				$this->ff['poster.']['imageLinkWrap'] = 1;
 				$this->ff['poster.']['imageLinkWrap.'] = $this->conf['imageLinkWrap.'];
 			}
-			
+
 		} elseif($this->conf[$this->templateNameTS]['poster.']['file'] == 'GIFBUILDER') {
 			$this->ff['poster']	= 'GIFBUILDER';
-			$this->ff['poster.'] = $this->conf[$this->templateNameTS]['poster.']; 
-			
+			$this->ff['poster.'] = $this->conf[$this->templateNameTS]['poster.'];
+
 			if($w || $h) { # FF hat vorrang
 				$this->ff['poster.']['file.']['10.']['file.']['width']  = $w;
 				$this->ff['poster.']['file.']['10.']['file.']['height'] = $h;
-				
+
 #			debug($this->ff['poster.'], "ff GIF");
 			} else { # dann halt TS
 				$this->ff['poster.'] = $this->conf[$this->templateNameTS]['poster.'];
-				
+
 #			debug($this->ff['poster.'], "TS GIF");
 			}
-			
+
 			# Keine Klickvergrößerung bei GIFUILDER !!!!
 		}
 
-		
+
 #		$val ? $this->ff['clickEnlarge'] = $val : $this->ff['clickEnlarge'] = $this->conf['clickEnlarge'];
 #		plugin.tx_tmdcinema_pi1.
 #		debug($this->conf['Layout1.']['poster.']);
-		
-		$val = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'disallowBooking',	'imageLinks'); 
+
+		$val = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'disallowBooking',	'imageLinks');
 		$val ? $this->ff['disallowBooking'] = $val : $this->ff['disallowBooking'] = $this->conf['disallowBooking'];
-		
-		
-		
+
+
+
 		#		$this->ff['pageSingelView']
 #		$this->ff['pageProgram']
 #		$this->ff['pagePreview']
@@ -987,7 +987,7 @@ $this->cObj->enableFields('tt_address').
 
 
 	function substituteMarkers($subPart, $markerArray="") {
-		
+
 		$template = $GLOBALS['TSFE']->cObj->getSubpart($this->template, "###PROGRAMM_VIEW###");
 		if(strlen($template) < 1) {
 			debug("Kein Template!! ###".$subPart."###", $this->ff['templateFile']);
@@ -1070,7 +1070,7 @@ $this->cObj->enableFields('tt_address').
 #		$this->ff['pagePreview']
 #		$this->ff['tipAFriend']
 #		$this->ff['pageBooking']
-		
+
 			# Programm verlinken
 		$conf = array(
 						"section" => $this->prefixId."-".$this->internal['currentRow']['uid'],
@@ -1408,7 +1408,7 @@ $this->cObj->enableFields('tt_address').
 			/* kommt aus der Film-Tabelle */
 			case 'movie_title':
 				$out = $this->film->titel;
-				
+
 				$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['MOVIE_TITLE.']);
 				$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['MOVIE_TITLE']);
 				return 	$out;
@@ -1442,7 +1442,7 @@ $this->cObj->enableFields('tt_address').
 					}
 			break;
 			case 'movie_poster':
-				
+
 
 				# first get the imageFile
 				if($this->film->poster) {
@@ -1457,12 +1457,12 @@ $this->cObj->enableFields('tt_address').
 				if(! @is_file($theImage)) {
 					$theImage = $this->conf['dummyPoster'];
 				}
-				
 
-			
-				
+
+
+
 				# Für welchen Bereich?
-/*				
+/*
 				switch($this->ff['mode']) {
 					case 'tipAFriend':
 						if($this->ff[$this->templateNameTS]['poster']['pluginWidth'] > 0) { # Plugin hat vorrang
@@ -1478,7 +1478,7 @@ $this->cObj->enableFields('tt_address').
 				}
 */
 
-				
+
 				# IMAGE oder GIFBUILDER
 				if($this->ff['poster'] == 'IMAGE') {
 					$this->ff['poster.']['file'] = $theImage;
@@ -1487,9 +1487,9 @@ $this->cObj->enableFields('tt_address').
 				}
 #debug($this->ff['poster.']['file'], "img");
 				$this->ff['poster.']['altText'] = $this->film->titel;
-				
+
 				$out = $this->cObj->IMAGE($this->ff['poster.']);
-				
+
 				$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['MOVIE_IMAGE.']);
 				$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['MOVIE_IMAGE']);
 				return $out;
@@ -1526,7 +1526,7 @@ $this->cObj->enableFields('tt_address').
 				$out = $this->film->web;
 				if($out) {
 					$out =  $this->pi_linkToPage($this->pi_getLL("website", "web"), $this->film->web, "_blank");
-					
+
 					$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['MOVIE_WWW.']);
 					$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['MOVIE_WWW']);
 					return $out;
@@ -1536,7 +1536,7 @@ $this->cObj->enableFields('tt_address').
 				$out = $this->film->trailer;
 				if($out) {
 					$out = $this->pi_linkToPage($this->pi_getLL("trailer", "_trailer_"), $this->film->trailer, "_blank");
-					
+
 					$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['MOVIE_TRAILER.']);
 					$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['MOVIE_TRAILER']);
 					return $out;
@@ -1552,7 +1552,7 @@ $this->cObj->enableFields('tt_address').
 			break;
 			case 'movie_format':
 				$out = $this->conf['format.'][$this->film->screenformat];
-				
+
 				if($out) {
 					$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['MOVIE_FORMAT.']);
 					$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['MOVIE_FORMAT']);
@@ -1581,7 +1581,7 @@ $this->cObj->enableFields('tt_address').
 				$out = $this->film->summary;
 				if($out) {
 					$out = $this->pi_RTEcssText($out);
-					
+
 					$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['MOVIE_DESCRIPTION.']);
 					$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['MOVIE_DESCRIPTION']);
 					return $out;
@@ -1591,8 +1591,8 @@ $this->cObj->enableFields('tt_address').
 				$out = $this->film->summary;
 				if($out) {
 #					$out = $this->pi_RTEcssText($out);
-					
-					
+
+
 					$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['MOVIE_DESCRIPTION_SHORT.']);
 					$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['MOVIE_DESCRIPTION_SHORT']);
 
@@ -1683,7 +1683,7 @@ $this->cObj->enableFields('tt_address').
 			case 'movie_media-5':
 			case 'movie_media-random':
 				$image = $this->conf[$this->templateNameTS]['media.'];
-				
+
 				list(,$nr) = explode("-", $fN);
 				$pic = explode(",", $this->film->media);
 
@@ -1703,7 +1703,7 @@ $this->cObj->enableFields('tt_address').
 				}
 
 				$image['file'] = 'uploads/tx_tmdmovie/'.$pic;
-				
+
 				$out = $this->cObj->IMAGE($image);
 
 				return $out;
@@ -1755,7 +1755,7 @@ $this->cObj->enableFields('tt_address').
 			case 'firstday':
 			case 'date':
 				$out = strftime($this->conf['timeFormat'], $this->internal['currentRow']['date']);
-				
+
 				$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['PRG_DATE.']);
 				$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['PRG_DATE']);
 				return $out;
@@ -1768,7 +1768,7 @@ $this->cObj->enableFields('tt_address').
 			break;
 			case "program":
 				$out = $this->buildTimeTable();
-				
+
 				$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['PRG_TIMETABLE.']);
 				$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['PRG_TIMETABLE']);
 				return $out;
@@ -1826,7 +1826,7 @@ $this->cObj->enableFields('tt_address').
 			break;
 			case 'week':
 				$out = $this->internal['currentRow']['week'];
-				
+
 				$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['PRG_WEEK.']);
 				$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['PRG_WEEK']);
 				return 	$out;
@@ -1837,7 +1837,7 @@ $this->cObj->enableFields('tt_address').
 				}
 
 				$out = $this->adrCache[$this->internal['currentRow'][$fN]]['name'];
-				
+
 				$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['PRG_THEATRE.']);
 				$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['PRG_THEATRE']);
 
