@@ -57,20 +57,18 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 		 * @param	array		$conf: The PlugIn Configuration
 		 * @return	The content that should be displayed on the website
 		 */
-	function main($content,$conf)
-		{
-		$this->conf = $conf;		// Setting the TypoScript passed to this function in $this->conf
-		$this->pi_setPiVarDefaults();
-		$this->pi_loadLL();		// Loading the LOCAL_LANG values
+	function main($content,$conf) {
+		$this->conf = $conf;			// Setting the TypoScript passed to this function in $this->conf
+		$this->pi_setPiVarDefaults();		
+		$this->pi_loadLL();				// Loading the LOCAL_LANG values
 
-/* oelib
-		$this->init($conf);
-		$confCheck = $this->checkConfiguration();
-		if($confCheck) return $this->pi_wrapInBaseClass("->".$confCheck."<-");
-#debug($this->getConfiguration(), "hier");
-*/
-		$this->initFF();
-		$this->initTemplate();
+		$this->initFF();				// FlexForm Werte
+
+		if($this->conf['DEBUG'] == 1 && strlen($this->conf['DEBUG.']['day']) > 1)  {
+			list($d, $m, $y) = explode('-', $this->conf['DEBUG.']['day']);
+			$this->theDay = mktime(0,0,0,$m,$d,$y);
+		}
+
 
 
 		$this->film = t3lib_div::makeInstance("tx_tmdmovie");
@@ -80,160 +78,35 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 			 * inkl Recursion die PIDs als Liste ermitteln.
 			 * Da gibt es eine Funktion...
 			 */
-		if (strstr($this->cObj->currentRecord,'tt_content'))
-			{
+		if (strstr($this->cObj->currentRecord,'tt_content')) {
 			$this->conf['pidList'] = $this->cObj->data['pages'];
 			$this->conf['recursive'] = $this->cObj->data['recursive'];
-			}
-
-		return ($this->ff['def']['mode'] != 'RSS' ) ? $this->pi_wrapInBaseClass($this->view()) : $this->view();
 		}
 
+#debug($this->conf[$this->templateNameTS]);
 
+		switch($this->ff['mode']) {
+			case 'showProgram':
+			 	$content = $this->program($this->ff['previewMin'], $this->ff['previewMax']);
+			break;
+			
+			case 'trailer':
+				$content = $this->program($this->ff['previewMin'], $this->ff['previewMax'], "trailer");
+			break;
 
-		/**
-		 * Shows a list of database entries
-		 *
-		 * @param	string		$content: content of the PlugIn
-		 * @param	array		$conf: PlugIn Configuration
-		 * @return	HTML list of table entries
-		 */
-	function view() {
-		switch($this->ff['def']['mode']) {
-			case 'shortView':
-			 	$content = $this->program($this->ff['def']['previewMin'], $this->ff['def']['previewMax'], "short");
-			break;
-			case 'special':
-			 	$content = $this->program($this->ff['def']['previewMin'], $this->ff['def']['previewMax'], "special");
-			break;
-			case 'longView':
-				$content = $this->program($this->ff['def']['previewMin'], $this->ff['def']['previewMax'], "long");
-			break;
-			case 'RSS':
-				$xmlHeader = $this->getXmlHeader();
-				$content = $this->cObj->substituteMarkerArrayCached($this->template, $xmlHeader, '', $wrappedSubpartArray);
-				$items = $this->program(0, 1, "RSS");
-				$content = $this->cObj->substituteMarkerArrayCached($content, $items, '', $wrappedSubpartArray);
-				$content = $this->substituteMarkers("PROGRAMM_RSS2", $content);
-			break;
 			case 'booking':
 				$content = $this->booking();
-			break;
-			case 'singleView':
-				$this->internal['currentTable'] = 'tx_tmdcinema_program';
-				$this->internal['currentRow'] = $this->pi_getRecord('tx_tmdcinema_program',$this->piVars['showUid']);
-				$content = $this->singleView();
 			break;
 			case 'tipAFriend':
 				$this->internal['currentTable'] = 'tx_tmdcinema_program';
 				$this->internal['currentRow'] = $this->pi_getRecord('tx_tmdcinema_program',$this->piVars['showUid']);
 				$content = $this->tipaFriendView();
 			break;
-
 		}
-
-		return $content;
+		
+		return $this->pi_wrapInBaseClass($content);
 	}
 
-
-
-	/**
-	 * builds the XML header (array of markers to substitute)
-	 * aus tt_news
-	 * @return	array		the filled XML header markers
-	 */
-	function getXmlHeader() {
-		$markerArray = array();
-
-		$markerArray['###SITE_TITLE###'] = $this->conf['displayXML.']['xmlTitle'];
-		$markerArray['###SITE_LINK###'] = $this->config['siteUrl'];
-		$markerArray['###SITE_DESCRIPTION###'] = $this->conf['displayXML.']['xmlDesc'];
-		if(!empty($markerArray['###SITE_DESCRIPTION###'])) {
-			if($this->conf['displayXML.']['xmlFormat'] == 'atom03') {
-				$markerArray['###SITE_DESCRIPTION###'] = '<tagline>'.$markerArray['###SITE_DESCRIPTION###'].'</tagline>';
-			} elseif($this->conf['displayXML.']['xmlFormat'] == 'atom1') {
-				$markerArray['###SITE_DESCRIPTION###'] = '<subtitle>'.$markerArray['###SITE_DESCRIPTION###'].'</subtitle>';
-			}
-		}
-
-		$markerArray['###SITE_LANG###'] = $this->conf['displayXML.']['xmlLang'];
-		if($this->conf['displayXML.']['xmlFormat'] == 'rss2') {
-			$markerArray['###SITE_LANG###'] = '<language>'.$markerArray['###SITE_LANG###'].'</language>';
-		} elseif($this->conf['displayXML.']['xmlFormat'] == 'atom03') {
-			$markerArray['###SITE_LANG###'] = ' xml:lang="'.$markerArray['###SITE_LANG###'].'"';
-		}
-		if(empty($this->conf['displayXML.']['xmlLang'])) {
-			$markerArray['###SITE_LANG###'] = '';
-		}
-
-		$markerArray['###IMG###'] = t3lib_div::getIndpEnv('TYPO3_REQUEST_HOST') . '/' . $this->conf['displayXML.']['xmlIcon'];
-		$imgFile = t3lib_div::getIndpEnv('TYPO3_DOCUMENT_ROOT') . '/' . $this->conf['displayXML.']['xmlIcon'];
-		$imgSize = is_file($imgFile)?getimagesize($imgFile):
-		'';
-
-		$markerArray['###IMG_W###'] = $imgSize[0];
-		$markerArray['###IMG_H###'] = $imgSize[1];
-
-		$markerArray['###NEWS_WEBMASTER###'] = $this->conf['displayXML.']['xmlWebMaster'];
-		$markerArray['###NEWS_MANAGINGEDITOR###'] = $this->conf['displayXML.']['xmlManagingEditor'];
-
-#		$selectConf = Array();
-#		$selectConf['pidInList'] = $this->pid_list;
-#		// select only normal news (type=0) for the RSS feed. You can override this with other types with the TS-var 'xmlNewsTypes'
-#		$selectConf['selectFields'] = 'max(datetime) as maxval';
-
-#		$res = $this->exec_getQuery('tt_news', $selectConf);
-
-
-#		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
-		// optional tags
-		if ($this->conf['displayXML.']['xmlLastBuildDate']) {
-			$markerArray['###NEWS_LASTBUILD###'] = '<lastBuildDate>' . date('D, d M Y H:i:s O', $row['maxval']) . '</lastBuildDate>';
-		} else {
-			$markerArray['###NEWS_LASTBUILD###'] = '';
-		}
-
-		if($this->conf['displayXML.']['xmlFormat'] == 'atom03' ||
-		   $this->conf['displayXML.']['xmlFormat'] == 'atom1') {
-			$markerArray['###NEWS_LASTBUILD###'] = $this->getW3cDate($row['maxval']);
-		}
-
-		if ($this->conf['displayXML.']['xmlWebMaster']) {
-			$markerArray['###NEWS_WEBMASTER###'] = '<webMaster>' . $this->conf['displayXML.']['xmlWebMaster'] . '</webMaster>';
-		} else {
-			$markerArray['###NEWS_WEBMASTER###'] = '';
-		}
-
-		if ($this->conf['displayXML.']['xmlManagingEditor']) {
-			$markerArray['###NEWS_MANAGINGEDITOR###'] = '<managingEditor>' . $this->conf['displayXML.']['xmlManagingEditor'] . '</managingEditor>';
-		} else {
-			$markerArray['###NEWS_MANAGINGEDITOR###'] = '';
-		}
-
-		if ($this->conf['displayXML.']['xmlCopyright']) {
-			if($this->conf['displayXML.']['xmlFormat'] == 'atom1') {
-				$markerArray['###NEWS_COPYRIGHT###'] = '<rights>' . $this->conf['displayXML.']['xmlCopyright'] . '</rights>';
-			} else {
-				$markerArray['###NEWS_COPYRIGHT###'] = '<copyright>' . $this->conf['displayXML.']['xmlCopyright'] . '</copyright>';
-			}
-		} else {
-			$markerArray['###NEWS_COPYRIGHT###'] = '';
-		}
-
-		$charset = ($GLOBALS['TSFE']->metaCharset?$GLOBALS['TSFE']->metaCharset:'iso-8859-1');
-		if ($this->conf['displayXML.']['xmlDeclaration']) {
-			$markerArray['###XML_DECLARATION###'] = trim($this->conf['displayXML.']['xmlDeclaration']);
-		} else {
-			$markerArray['###XML_DECLARATION###'] = '<?xml version="1.0" encoding="'.$charset.'"?>';
-		}
-
-		// promoting TYPO3 in atom feeds, supress the subversion
-		$version = explode('.',($GLOBALS['TYPO3_VERSION']?$GLOBALS['TYPO3_VERSION']:$GLOBALS['TYPO_VERSION']));
-		unset($version[2]);
-		$markerArray['###TYPO3_VERSION###'] = implode($version,'.');
-
-		return $markerArray;
-	}
 
 
 
@@ -284,6 +157,36 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 	}
 
 
+	
+
+	/**
+	 * Returns the detail View
+	 *
+	 * @return	the view
+	 */
+	function singleView() {
+
+#		debug($this->piVars['showUid'], "showUid");
+
+
+		// Spammern das Handwerk legen
+		// Res Limit berücksichtigen und das Kino auch.
+#		$this->internal['currentTable'] = 'tx_tmdcinema_program';
+		$this->internal['currentRow'] = $this->pi_getRecord('tx_tmdcinema_program', $this->piVars['showUid']);
+			
+		if(	$this->internal['currentRow']['date'] > 0 && (
+				7*24*60*60-$this->conf['resLimit'] < time()-$this->internal['currentRow']['date']  ||
+				!in_array($this->internal['currentRow']['cinema'], explode(",", $this->ff['cinema']))   )
+			) {
+			$content = $this->pi_getLL("noValidPRG", "_noValidPRG_");
+		} else {
+			$content = $this->substituteMarkers();
+		}
+
+		return $content;
+	}
+
+	
 
 
 		/**
@@ -293,79 +196,133 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 		 * @param int Startwoche, 0 = aktuelle Woche, 1=nächste Woche, 2=übernächste u.s.w.
 		 * @param int Wieviele Wochen?
 		 */
-	function program($startWeek, $nextWeeks=1, $type="long") {
-		$oneDay = 60*60*24;
-		$oneWeek = $oneDay * 7;
-
-		$now = mktime();
-		switch(strftime("%u", $now)) { # %u = Tag der Woche 1= Montag
-			case 1: $wStart = mktime(0, 0, 0, date("m", $now)  , date("d", $now)-4, date("Y", $now)); break; # Mo
-			case 2: $wStart = mktime(0, 0, 0, date("m", $now)  , date("d", $now)-5, date("Y", $now)); break; # DI
-			case 3: $wStart = mktime(0, 0, 0, date("m", $now)  , date("d", $now)-6, date("Y", $now)); break; # MI
-			case 4: $wStart = mktime(0, 0, 0, date("m", $now)  , date("d", $now)  , date("Y", $now)); break; # DO
-			case 5: $wStart = mktime(0, 0, 0, date("m", $now)  , date("d", $now)-1, date("Y", $now)); break; # FR
-			case 6: $wStart = mktime(0, 0, 0, date("m", $now)  , date("d", $now)-2, date("Y", $now)); break; # SA
-			case 7: $wStart = mktime(0, 0, 0, date("m", $now)  , date("d", $now)-3, date("Y", $now)); break; # SO
+	function program($startWeek, $nextWeeks=1) {
+		
+		if ($this->ff['special'] == -1) {	// If a single element should be displayed:
+			return $this->singleView();
 		}
-#debug(strftime("%u  %d.%m.%y", $wStart), 'start');
-/*
-$tomorrow  = mktime(0, 0, 0, date("m")  , date("d")+1, date("Y"));
-$lastmonth = mktime(0, 0, 0, date("m")-1, date("d"),   date("Y"));
-$nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
- */
-		$wStart = mktime(0, 0, 0, date("m", $wStart)  , date("d", $wStart)+$startWeek*7  , date("Y", $wStart));
-		$wEnd   = mktime(0, 0, 0, date("m", $wStart)  , date("d", $wStart)+$nextWeeks*7-1, date("Y", $wStart));
-#debug(strftime("%u  %d.%m.%y", $wStart), 'start');
-#debug(strftime("%u  %d.%m.%y", $wEnd), 'end');
+		
+		
+		
+		$type = "";
+		
+		if($this->conf['DEBUG'] == 1 && strlen($this->conf['DEBUG.']['day']) > 1)  {
+			$now = $this->theDay;
+		} else {
+			$now = mktime();
+		}
+
+
+#debug(strftime("%d.%m.%y", $now));
+		switch(strftime("%u", $now)) { # %u = Tag der Woche 1= Montag
+			case 1: $wStart = mktime(0, 0, 0, date("m", $now), date("d", $now)-4, date("Y", $now)); break; # Mo
+			case 2: $wStart = mktime(0, 0, 0, date("m", $now), date("d", $now)-5, date("Y", $now)); break; # DI
+			case 3: $wStart = mktime(0, 0, 0, date("m", $now), date("d", $now)-6, date("Y", $now)); break; # MI
+			case 4: $wStart = mktime(0, 0, 0, date("m", $now), date("d", $now)-0, date("Y", $now)); break; # DO
+			case 5: $wStart = mktime(0, 0, 0, date("m", $now), date("d", $now)-1, date("Y", $now)); break; # FR
+			case 6: $wStart = mktime(0, 0, 0, date("m", $now), date("d", $now)-2, date("Y", $now)); break; # SA
+			case 7: $wStart = mktime(0, 0, 0, date("m", $now), date("d", $now)-3, date("Y", $now)); break; # SO
+		}
+
+			# n-te Woche in die Zukunft
+		$wStart = mktime(0, 0, 0, date("m", $wStart), date("d", $wStart)+7*$startWeek, date("Y", $wStart));
+		$wEnd   = mktime(0, 0, 0, date("m", $wStart), date("d", $wStart)+7*$nextWeeks, date("Y", $wStart))-1;
+
+			# Programm vorzeitig wechseln
+		if($now >= ($wEnd - $this->conf['switchPrgBevore']*60*60) ) {
+			$wStart = mktime(0, 0, 0, date("m", $wStart), date("d", $wStart)+7, date("Y", $wStart));
+			$wEnd   = mktime(0, 0, 0, date("m", $wEnd  ), date("d", $wEnd  )+7, date("Y", $wEnd  ));
+		}
+
+
+#debug(array("start" => strftime("%d.%m.%y %H:%M:%S", $wStart), "stop" => strftime("%d.%m.%y %H:%M:%S", $wEnd)));
+
+
+
+
 		$wStart_tmp = $wStart; # für "kein progamm" zwischenspeichern
 
 
-
 		if($startWeek == 0) {
-			if ($type != "RSS") {
-				$items[] = "<h1>Programm ab ".strftime($this->conf['timeFormat'], $wStart)."</h1>";
+			if(!$this->conf['noDateHead']) { # TEMP!!! geht ins Template
+				$items[] = '<span class="programmStart">Programm ab '.strftime($this->conf['timeFormat'], $wStart).'</span>';
 			}
-			$whereClause   .= 'AND date >= '.$wStart.' AND date < '.($wEnd);
+			$whereClause   .= 'AND tx_tmdcinema_program.date >= '.$wStart.' AND tx_tmdcinema_program.date <= '.($wEnd);
 		} else {
-			if ($type != "RSS") {
-				$items[] = "<h2>Vorschau ab ".strftime($this->conf['timeFormat'], $wStart)."</h2>";
-				#." bis ".strftime($this->conf['timeFormat'], $wEnd-1)."</h2>";
+			if(!$this->conf['noDateHead']) { # TEMP!!! geht ins Template
+				$items[] = '<span class="previewStart">Vorschau ab '.strftime($this->conf['timeFormat'], $wStart).'</span>';
 			}
-			$whereClause .= ' AND (date = 0 OR (date >= '.$wStart.' AND date < '.$wEnd.'))';
+			$whereClause .= ' AND (tx_tmdcinema_program.date = 0 OR (tx_tmdcinema_program.date >= '.$wStart.' AND tx_tmdcinema_program.date < '.$wEnd.'))';
 		}
-		$whereClause .= " AND cinema IN (".$this->ff['def']['cinema'].")";
-		if($type=="special") {
-			$whereClause .= " AND showtype IN (".$this->ff['def']['special'].")";
+		$whereClause .= " AND tx_tmdcinema_program.cinema IN (".$this->ff['cinema'].")";
+
+		if($this->ff['special']) {
+			$whereClause .= " AND tx_tmdcinema_program.showtype IN (".$this->ff['special'].")";
 		}
 
-		$sortBy = "cinema,date,sorting ASC";
+/*
+SELECT DISTINCT mv.rating, prg.uid, mv.title FROM tx_tmdcinema_program AS prg, tx_tmdmovie_movie AS mv
+WHERE 1=1 AND
+prg.date >= 1288216800 AND prg.date <= 1288825199 AND prg.cinema IN (62,61,63)  AND
+prg.movie = mv.uid AND mv.rating IN (1,2,3,4,5,6)
+
+
+
+'DISTINCT tt_address.*',
+'tt_address, tt_address_group_mm, tt_address_group',
+'tt_address_group_mm.uid_foreign IN('.$groupList.
+') AND tt_address.uid = tt_address_group_mm.uid_local '.
+$this->cObj->enableFields('tt_address').
+' AND tt_address.pid IN('.$this->conf['pidList'].')'
+
+*/
+
+		if(strlen($this->conf['additionalWhere']) > 0) {
+			$whereClause .= ' AND '.$this->conf['additionalWhere'];
+		}
+		$whereClause .= ' AND tx_tmdcinema_program.movie = tx_tmdmovie_movie.uid AND tx_tmdmovie_movie.hidden = 0 AND tx_tmdmovie_movie.deleted = 0';
+		$whereClause .= $this->cObj->enableFields('tx_tmdcinema_program');
+
+		$sortBy = "tx_tmdcinema_program.cinema, tx_tmdcinema_program.date, sorting ASC";
+
+
+
+
+
+#debug($whereClause);
 
 			// Make listing query, pass query to SQL database:
-		$res = $this->pi_exec_query('tx_tmdcinema_program', 0, $whereClause,$mm_cat='',$groupBy, $sortBy);
+			# ACHTUNG Reichen folge der tabellen wegen UID!!
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('DISTINCT *', 'tx_tmdmovie_movie, tx_tmdcinema_program', "1=1 ".$whereClause, $groupBy, $sortBy);
+
+
+
 
 			// Make list table rows
-		$items=array();
 		$noDate=array();
-		$cinemaOrder = explode(",", $this->ff['def']['cinema']);
+		$cinemaOrder = explode(",", $this->ff['cinema']);
 
 		while($this->internal['currentRow'] = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-				# Sommerzeit Problem
-				# Uhrzeit des Programms explizip auf 0:0:0  Uhr setzten.
 			$tempTime = $this->internal['currentRow']['date'];
 			list($day, $month, $year) = explode(",", strftime("%e,%m,%Y", $tempTime));
-			$this->internal['currentRow']['date'] = mktime(0,0,0,$month,$day, $year);
-
+			$this->internal['currentRow']['date'] = mktime(0,0,0,  $month,  $day, $year);
 			$all[] = $this->internal['currentRow'];
 		}
+#debug($all);
+
 
 		if (count($all)  == 0) {  /* Es gibt noch kein Programm */
-			if($this->ff['def']['previewNotice'])
-				$out = sprintf($this->ff['def']['previewNotice'], strftime($this->conf['timeFormat'], $wStart));
-			else
+			if($this->ff['previewNotice']) {
+				$out = sprintf($this->ff['previewNotice'], strftime($this->conf['timeFormat'], $wStart));
+				$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['mode'].'.']['PREVIEW_NOTE']);
+			} else {
 				$out = sprintf($this->conf['previewNotice'], strftime($this->conf['timeFormat'], $wStart));
+			}
 
 			return $out;
 		}
+
+
 
 		foreach($cinemaOrder as $cinema) {
 			foreach($all as $this->internal['currentRow']) {
@@ -373,56 +330,51 @@ $nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
 			if(! ($this->conf['hideExpiredProgram'] && $this->checkExpiredProgram())) {
 
 				if($this->internal['currentRow']['cinema'] == $cinema) { # Sammelüberschrift
-					if($wStart != $this->internal['currentRow']['date'] && $type != 'special'/* && $type != 'RSS'*/) {
+					if($wStart != $this->internal['currentRow']['date']) {
 						$wStart = $this->internal['currentRow']['date'];
 
 						if($wStart > 0 && $this->conf['showWeekDate'] != 0 ) {
-							if ($type != "RSS")
-								$items[] = '<h2>'.((!$startWeek)?"Programm": "")." ab ".strftime($this->conf['timeFormat'], $wStart)."</h2>";
+							$items[] = '<span class="programmStart">'.((!$startWeek)?"Programm": "")." ab ".strftime($this->conf['timeFormat'], $wStart)."</span>";
 						} elseif($wStart == 0) {
-							$noDate[] = '<h2>Demnächst</h2>';
+							$noDate[] = '<span class="programmStart">Demnächst</span>';
 						}
 					}
 
+
 						# Film ausgeben
-					switch($type) {
-						case 'short':
-							if($wStart > 0) {
-								$items[] = $this->substituteMarkers("PROGRAMM_SHORTVIEW");
-							} else {
-								$noDate[] = $this->substituteMarkers("PROGRAMM_SHORTVIEW");
+
+					switch($this->ff['mode']) {
+						case 'trailer':
+							if($this->film->trailer != '') {
+								$items[] = $this->substituteMarkers();
 							}
 						break;
-						case 'special':
-							$items[] = $this->substituteMarkers("PROGRAMM_SPECIAL");
-						break;
-						case 'RSS':
-							$items[] = $this->substituteMarkers("PROGRAMM_RSS2_ITEM");
-						break;
+
 						default:
 							if($wStart > 0) {
 								$items[] = '<a name="'.$this->prefixId."-".$this->internal['currentRow']['uid'].'"></a>'.
-									$this->substituteMarkers("PROGRAMM_FULLVIEW");
+									$this->substituteMarkers();
 							} else {
 								$noDate[] = '<a name="'.$this->prefixId."-".$this->internal['currentRow']['uid'].'"></a>'.
-									$this->substituteMarkers("PROGRAMM_FULLVIEW");
+									$this->substituteMarkers();
 							}
 					} # END switch
+
 
 				}
 
 			} # END checkExpiredProgram
 		}
-
+#debug($wStart);
 
 		if(is_array($items)) {
 			if(count($items) > 0) {
-				$prg .= implode(chr(10), $items);
+				$out .= implode(chr(10), $items);
 			}
 		}
 		if(is_array($noDate)) {
 			if(count($noDate) > 0) {
-				$prg .= implode(chr(10), $noDate);
+				$out .= implode(chr(10), $noDate);
 			}
 		}
 
@@ -430,38 +382,18 @@ $nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
 		unset($noDate);
 		}
 
-		if($type == 'RSS') {
-			$out = nl2br(htmlentities($prg));
-		} else {
-			$out .= '<div class="'.$this->pi_getClassName($type.'Program').'">';
-			$out .= $prg;
-			$out .= '</div>';
+		if($type == 'trailer') { # wrap für trailerListe
+			if(strlen($out) > 1) {
+				$out = '<table class="trailerList">'.$prg.'</table>';
+			} else {
+				$out = "Keine Trailer vorhanden";
+			}
 		}
-
 		return $out;
 	}
 
 
 
-	/**
-	 * Returns the detail View
-	 *
-	 * @return	the view
-	 */
-	function singleView() {
-		// Spammern das Handwerk legen
-		// Res Limit berücksichtigen und das Kino auch.
-		if(	$this->internal['currentRow']['date'] > 0 && (
-				7*24*60*60-$this->conf['resLimit'] < time()-$this->internal['currentRow']['date']  ||
-				!in_array($this->internal['currentRow']['cinema'], explode(",", $this->conf['myCinema']))   )
-			) {
-			$content = $this->pi_getLL("noValidPRG", "_noValidPRG_");
-		} else {
-			$content = $this->substituteMarkers("SINGLE_VIEW");
-		}
-
-		return $content;
-	}
 
 
 
@@ -657,6 +589,8 @@ $nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
 
 		/**
 		 * Writes Logfileentry to DB
+		 * part of Tip A Friend
+		 *
 		 * @param $spam		bool	spam flag
 		 * @param $anonym	bool	no names, email
 		 * @return void
@@ -664,8 +598,8 @@ $nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
 	function writeTAFLogfile($spam, $anonym=1) {
 		list($date, $movie, $cinema) = explode("-", $this->decrypt($this->piVars['tipDate']));
 		$table = 'tx_tmdcinema_spamlog';
-		$this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_TITLE'] = '|'; # nicht schön.....
-		$this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_THEATRE'] = '|';
+		$this->conf['wrap.'][$this->ff['mode'].'.']['MOVIE_TITLE'] = '|'; # nicht schön.....
+		$this->conf['wrap.'][$this->ff['mode'].'.']['PRG_THEATRE'] = '|';
 		$fields_values = array(
     		'pid' 		=> $this->conf['spamLog'],
 		    'tstamp'	=> time(),
@@ -823,8 +757,9 @@ $nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
 		 * @return unknown_type
 		 */
 	function checkExpiredProgram() {
-		if($this->getFieldContent('firstday_raw') > time()) // Programm in der Zukunft
+		if($this->getFieldContent('firstday_raw') > mktime()) { // Programm in der Zukunft
 			return false;
+		}
 
 		$today= strftime("%w", time()); # 0 = Sonntag
 		$table = $this->getFieldContent('program_raw');
@@ -913,51 +848,149 @@ $nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
 			# FF Parsen
 		$this->pi_initPIflexForm();
 
-			# Werte auslesen
-		$this->ff['def']['mode']  		= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'mode', 			's_DEF');
-		$this->ff['def']['noRes'] 		= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'disableReserved', 's_DEF');
-		$this->ff['def']['previewMin'] 	= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'previewMin',		's_DEF');
-		$this->ff['def']['previewMax'] 	= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'previewMax', 		's_DEF');
-		$this->ff['def']['previewNotice'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'previewNotice',	's_DEF');
 
-		$this->ff['def']['cinema'] 		= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'cinema',	 		's_DEF');
-		$this->ff['def']['special'] 	= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'special',	 		's_DEF');
-		$this->conf['pageReserve']	= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'pageReserve', 		's_DEF');
+		/*
+		<cinemaConfig>
+				<cinema>
+				<special>
+				<previewMin>
+				<previewMax>
+		*/
+		$val = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'cinema', 		'cinemaConfig');
+		$val ? $this->ff['cinema'] = $val : $this->ff['cinema'] = $this->conf['cinema'];
+		
+		$val = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'special',		'cinemaConfig');
+		$val ? $this->ff['special'] = $val : $this->ff['special'] = $this->conf['special'];
+		
+		$val = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'previewMin',	'cinemaConfig');
+		$val ? $this->ff['previewMin'] = $val : $this->ff['previewMin'] = $this->conf['previewMin'];
+		
+		$val = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'previewMax', 	'cinemaConfig');
+		$val ? $this->ff['previewMax'] = $val : $this->ff['previewMax'] = $this->conf['previewMax'];
+		
+		
+		/*
+		 <template>
+				<mode>
+				<templateFile>
+				<previewNote>
+		*/
+		$val = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'mode',	 		'template');
+		$val ? $this->ff['mode'] = $val : $this->ff['mode'] = $this->conf['mode'];
+		 
+		$val = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'templateFile',	'template');
+		$val ? $this->ff['templateFile'] = $val : $this->ff['templateFile'] = $this->conf['templateFile'];
+		
+		$val = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'previewNote',		'template');
+		$val ? $this->ff['previewNote'] = $val : $this->ff['previewNote'] = $this->conf['previewNote'];
 
-		$this->ff['image']['pluginWidth'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'width', 's_image');
+			# Template name für internes
+			# basisname der Datei $this->ff['templateFile']
+		$this->template = $this->cObj->fileResource($this->conf['templatePath'].$this->ff['templateFile']);
+		$this->templateNameTS = substr($this->ff['templateFile'], 0, strrpos($this->ff['templateFile'], '.')) . '.';
+		
 
-		$this->ff['image']['colums']		= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'colums', 		's_image');
-		$this->ff['image']['clickEnlarge'] 	= $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'clickEnlarge', 's_image');
+		/*		
+		<imageLinks>
+				<pageSingelView>
+				<pageProgram>
+				<pagePreview>
+				<width>
+				<clickEnlarge>
+				<disallowBooking>
+				<bookingPage>
+		*/
+		$val = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'pageSingelView',	'imageLinks');
+		$val ? $this->ff['pageSingelView'] = $val : $this->ff['pageSingelView'] = $this->conf['pageSingelView'];
+		
+		$val = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'pageProgram',		'imageLinks');
+		$val ? $this->ff['pageProgram'] = $val : $this->ff['pageProgram'] = $this->conf['pageProgram'];
+		
+		$val = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'pagePreview',		'imageLinks');
+		$val ? $this->ff['pagePreview'] = $val : $this->ff['pagePreview'] = $this->conf['pagePreview'];
+		
+		$val = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'pageTipAFriend', 	'imageLinks');
+		$val ? $this->ff['pageTipAFriend'] = $val : $this->ff['pageTipAFriend'] = $this->conf['pageTipAFriend'];
+		
+		$val = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'pageBooking',	 	'imageLinks'); 
+		$val ? $this->ff['pageBooking'] = $val : $this->ff['pageBooking'] = $this->conf['pageBooking'];
+		
 
-		$this->ff['special']['pageTipAFriend'] = $this->conf['tipafriend'];
+		
+			# TS für Bilder, unterschied IMAGE oder GIFBUILDER
+			# Erst TS laden
+		$w = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'width',	'imageLinks');
+		$h = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'height',	'imageLinks');
 
-		$this->conf['linkImagePage'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'linkImagePage','s_image');
-
-
-		# besondere Vorrangregelungen
-		if($this->conf['mode'] == 'RSS') {
-			$this->ff['def']['mode']  	= 'RSS';
-			$this->ff['def']['cinema']	= $this->conf['myCinema'];
+		if($this->conf[$this->templateNameTS]['poster'] == 'IMAGE') {
+			$this->ff['poster']	= 'IMAGE';			
+			$this->ff['poster.'] = $this->conf[$this->templateNameTS]['poster.']; 
+			
+			if($w || $h) { # FF hat vorrang
+				$this->ff['poster.']['file.']['width']  = $w;
+				$this->ff['poster.']['file.']['height'] = $h;
+				
+#				debug($this->ff['poster.'], "ff IMAGE");
+			} else { # dann halt TS
+				$this->ff['poster.'] = $this->conf[$this->templateNameTS]['poster.'];
+				
+#				debug($this->ff['poster.'], "TS IMAGE");
+			}
+			
+				# ClickEnlage
+			if($this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'clickEnlarge',	'imageLinks')) {
+				$this->ff['poster.']['imageLinkWrap'] = 1;
+				$this->ff['poster.']['imageLinkWrap.'] = $this->conf['imageLinkWrap.'];
+			}
+			
+		} elseif($this->conf[$this->templateNameTS]['poster.']['file'] == 'GIFBUILDER') {
+			$this->ff['poster']	= 'GIFBUILDER';
+			$this->ff['poster.'] = $this->conf[$this->templateNameTS]['poster.']; 
+			
+			if($w || $h) { # FF hat vorrang
+				$this->ff['poster.']['file.']['10.']['file.']['width']  = $w;
+				$this->ff['poster.']['file.']['10.']['file.']['height'] = $h;
+				
+#			debug($this->ff['poster.'], "ff GIF");
+			} else { # dann halt TS
+				$this->ff['poster.'] = $this->conf[$this->templateNameTS]['poster.'];
+				
+#			debug($this->ff['poster.'], "TS GIF");
+			}
+			
+			# Keine Klickvergrößerung bei GIFUILDER !!!!
 		}
 
-
+		
+#		$val ? $this->ff['clickEnlarge'] = $val : $this->ff['clickEnlarge'] = $this->conf['clickEnlarge'];
+#		plugin.tx_tmdcinema_pi1.
+#		debug($this->conf['Layout1.']['poster.']);
+		
+		$val = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'disallowBooking',	'imageLinks'); 
+		$val ? $this->ff['disallowBooking'] = $val : $this->ff['disallowBooking'] = $this->conf['disallowBooking'];
+		
+		
+		
+		#		$this->ff['pageSingelView']
+#		$this->ff['pageProgram']
+#		$this->ff['pagePreview']
+#		$this->ff['tipAFriend']
+#		$this->ff['pageBooking']
+#		debug($this->ff);
 	}
 
 
 
-	function initTemplate() {
-		$this->template = $this->cObj->fileResource($this->conf['template']);
-		#debug($this->template, $this->conf['template']);
-		#debug($this->template);
-	}
 
 
 
-	function substituteMarkers($subPart, $markerArray="")
-		{
-		$template = $GLOBALS['TSFE']->cObj->getSubpart($this->template, "###".$subPart."###");
+
+
+	function substituteMarkers($subPart, $markerArray="") {
+		
+		$template = $GLOBALS['TSFE']->cObj->getSubpart($this->template, "###PROGRAMM_VIEW###");
 		if(strlen($template) < 1) {
-			debug("Kein Template!! ###".$subPart."###");
+			debug("Kein Template!! ###".$subPart."###", $this->ff['templateFile']);
 			return;
 		}
 
@@ -969,7 +1002,7 @@ $nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
 		$markerArray['###MOVIE_TITLE_SHORT###']		= $this->getFieldContent('movie_subtitle');
 		$markerArray['###MOVIE_TITLE_SHORT_FIRST###'] = $this->getFieldContent('movie_subtitle_first');
 
-		$markerArray['###MOVIE_IMAGE###'] 			= $this->getFieldContent('movie_image');
+		$markerArray['###MOVIE_IMAGE###'] 			= $this->getFieldContent('movie_poster');
 		$markerArray['###MOVIE_RATING###'] 			= $this->getFieldContent('movie_fsk');
 		$markerArray['###MOVIE_RATINGTOOLTIP###'] 	= $this->getFieldContent('movie_fskTooltip');
 		$markerArray['###MOVIE_TIME###'] 			= $this->getFieldContent('movie_time');
@@ -978,18 +1011,22 @@ $nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
 		$markerArray['###MOVIE_SOUND###'] 			= $this->getFieldContent('movie_sound');
 		$markerArray['###MOVIE_DISTRIBUTOR###'] 	= $this->getFieldContent('movie_distributor');
 		$markerArray['###MOVIE_WWW###'] 			= $this->getFieldContent('movie_www');
-		$markerArray['###MOVIE_YOUTUBE###'] 		= $this->getFieldContent('movie_youtube');
+		$markerArray['###MOVIE_TRAILER###'] 		= $this->getFieldContent('movie_trailer');
 		$markerArray['###MOVIE_DESCRIPTION###'] 	= $this->getFieldContent('movie_summary');
 		$markerArray['###MOVIE_DESCRIPTION_SHORT###'] =	$this->getFieldContent('movie_summary_short');
 		$markerArray['###MOVIE_EXTRAPICS###'] 		= $this->getFieldContent('movie_mediafile');
 		$markerArray['###MOVIE_SUBTITLE###'] 		= $this->getFieldContent('movie_subtitle');
 		$markerArray['###MOVIE_IMAGE_LINK###'] 		= $this->getFieldContent('movie_imageLink');
 		$markerArray['###MOVIE_FBW###'] 			= $this->getFieldContent('movie_fbw');
+		$markerArray['###MOVIE_TRAILER_SINGLE###']	= $this->getFieldContent('movie_trailer_single');
+		$markerArray['###MOVIE_TRAILER_LIST###']	= $this->getFieldContent('movie_trailer_list');
+
 		$markerArray['###MEDIA_1###'] 				= $this->getFieldContent('movie_media-1');
 		$markerArray['###MEDIA_2###'] 				= $this->getFieldContent('movie_media-2');
 		$markerArray['###MEDIA_3###'] 				= $this->getFieldContent('movie_media-3');
 		$markerArray['###MEDIA_4###'] 				= $this->getFieldContent('movie_media-4');
 		$markerArray['###MEDIA_5###'] 				= $this->getFieldContent('movie_media-5');
+
 
 		$markerArray['###MOVIE_DIRECTOR###'] 		= $this->getFieldContent('movie_director');
 		$markerArray['###MOVIE_PRODUCER###'] 		= $this->getFieldContent('movie_producer');
@@ -1007,12 +1044,14 @@ $nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
 		$markerArray['###PRG_FIRSTDAY###'] 			= $this->getFieldContent('firstday');
 		$markerArray['###PRG_STARTDAY###'] 			= $this->getFieldContent('date');
 
+		$markerArray['###DEBUG_PGRDATE###'] 			= $this->getFieldContent('debug_firstday');
+
 			// ACHTUNG: Reihenfolge beachten:
 			// diese Feld NACH ###PRG_TIMETABLE###
 		$inviteImPossible = $this->checkExpiredProgram();
 		if($this->ff['def']['mode'] == 'tipAFriend' && !$inviteImPossible) {
 			$markerArray['###INVITE_POSSIBLE###'] = ''; # OK
-		} elseif($this->ff['def']['mode'] == 'tipAFriend') {
+		} elseif($this->ff['mode'] == 'tipAFriend') {
 			$markerArray['###INVITE_POSSIBLE###'] = $this->pi_getLL("err_invitePossible", "_err_invitePossible_");
 			$markerArray['###PRG_TIMETABLE###'] = '';
 		}
@@ -1026,12 +1065,26 @@ $nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
  * Das ist zum Programm
  *
 */
+#		$this->ff['pageSingelView']
+#		$this->ff['pageProgram']
+#		$this->ff['pagePreview']
+#		$this->ff['tipAFriend']
+#		$this->ff['pageBooking']
+		
 			# Programm verlinken
 		$conf = array(
 						"section" => $this->prefixId."-".$this->internal['currentRow']['uid'],
-						"parameter" => $this->conf['linkImagePage']
+						"parameter" => $this->ff['pageProgram'],
 						);
 		$link['###LINK_PROGRAMM###'] = explode('|', $this->cObj->typoLink("|", $conf));
+
+			# Vorschau verlinken
+		$conf = array(
+						"section" => $this->prefixId."-".$this->internal['currentRow']['uid'],
+						"parameter" => $this->ff['pagePreview'],
+						);
+		$link['###LINK_PREVIEW###'] = explode('|', $this->cObj->typoLink("|", $conf));
+
 
 			# Einzelansicht verlinken
 		$conf = $this->pi_list_linkSingle(
@@ -1040,7 +1093,7 @@ $nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
 					TRUE,
 					$mergeArr=array(),
 					$urlOnly=FALSE,
-					$this->conf['linkImagePage']);
+					$this->ff['pageSingelView']);
 		$link['###LINK_SINGLE###'] = explode('|', $conf);
 
 			# Einen Freund einladen
@@ -1050,7 +1103,7 @@ $nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
 					FALSE,
 					array('step' => 1),
 					$urlOnly=FALSE,
-					$this->ff['special']['pageTipAFriend']);
+					$this->ff['pageTipAFriend']);
 		if($inviteImPossible == false) {
 			$link['###TIPAFRIEND###'] = explode('|', $conf);
 		} else {
@@ -1060,7 +1113,7 @@ $nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
 
 				# Reservierungs Link
 		$linkconf = array(
-	    	 "title" => $this->conf['howtoReserve'],
+	    	 "title" => $this->pi_getLL("howtoReserve"),
 		     "parameter" => $this->conf['pageReserve'],
 		     );
 		list($date, $movie, $cinema) = explode("-", $this->decrypt($this->piVars['tipDate']));
@@ -1121,31 +1174,35 @@ $nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
 
 				# tHead
 			$head = '<thead><tr>';
-			for($i=0; $i<7; $i++) {
-				$time[$i] = $theDay+60*60*24*$i;
-				$time[$i] = mktime(0, 0, 0, date("m", $theDay)  , date("d", $theDay)+$i, date("Y", $theDay));
+			for($i=0; $i<7; $i++)
+				{
+				$time[$i] = mktime(0, 0, 0, date("m", $theDay), date("d", $theDay)+1*$i,   date("Y",$theDay));
+#$theDay+60*60*24*$i;
 
-				if($i == $todaysNr) {
+#				$time[$i] = $this->checkSummerWinterBug($time[$i]); /* Sommerzeit-Bug */
+
+				if($i == $todaysNr)
+					{
 					$head .= '<th style="background-color:'.$this->conf['todaysColor'].';">';
 
-					if(date("d", $time[$i]) == date("d", time()) && $this->conf['todayStyle'] == 'today') {
-						$head .= $this->cObj->wrap($this->pi_getLL("today"), $this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_TIMETABLE_TH']);
-					} else {
-						$head .= $this->cObj->wrap(strftime($this->conf['tableTime'], $time[$i]), $this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_TIMETABLE_TH']);
-					}
+					if(date("d", $time[$i]) == date("d", time()) && $this->conf['todayStyle'] == 'today')
+						$head .= $this->cObj->wrap($this->pi_getLL("today"), $this->conf['wrap.'][$this->ff['mode'].'.']['PRG_TIMETABLE_TH']);
+
+					else
+						$head .= $this->cObj->wrap(strftime($this->conf['tableTime'], $time[$i]), $this->conf['wrap.'][$this->ff['mode'].'.']['PRG_TIMETABLE_TH']);
 
 					$head .= '</th>';
-				} else {
+					}
+				else
+					{
 					$head .= '<th align="center">';
-					$head .= $this->cObj->wrap(strftime($this->conf['tableTime'], $time[$i]), $this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_TIMETABLE_TH']);
+					$head .= $this->cObj->wrap(strftime($this->conf['tableTime'], $time[$i]), $this->conf['wrap.'][$this->ff['mode'].'.']['PRG_TIMETABLE_TH']);
 					$head .= '</th>';
+					}
 				}
-			}
 			unset($this->correctDate); /* Sommerzeit-Bug  - damit alle Filme berücksichtigt werden */
 
 			$head .= '</tr></thead>';
-
-
 
 				# tBody
 			$temp = $this->internal['currentRow']['program'];
@@ -1153,21 +1210,23 @@ $nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
 
 			# Mit Zeit verlinken
 			$i=0; $n =0;
-			foreach($temp as $row => $val) {
+			foreach($temp as $row => $val)
+				{
+				#if(strlen($temp)>0) debug(trim($temp));
 
 				$temp[$i] = explode("|", $val);
 
 				foreach($temp[$i] as $key1 => $timeString) {
 					$timeString = trim($timeString); # Zeilenende bereinigen
 
-					if(preg_match( '/[0-9]?[0-9]:[0-9][0-9]/m', $timeString)) { /* Exakte Uhrzeit */
+					if(preg_match( '/[0-9]?[0-9]:[0-9][0-9]/m', $timeString)) /* Exakte Uhrzeit */
+						{
 						list($theHour, $theMinute) = explode(":",$timeString);
 
-						$theTime = mktime($theHour, $theMinute, 0, date("m", $theDay)  , date("d", $theDay)+$n, date("Y", $theDay));
-#debug(strftime("%d.%m.%Y %H:%M",$theTime));
-						
+						$theTime = mktime((int)$theHour, (int)$theMinute, 0, strftime("%m", $time[$n]), strftime("%d", $time[$n]), strftime("%Y", $time[$n]));
+
 						$linkconf = array(
-				    		 "title" => $this->conf['howtoReserve'],
+				    		 "title" => $this->pi_getLL("howtoReserve"),
 						     "parameter" => $this->conf['pageReserve'],
 						     );
 
@@ -1181,7 +1240,6 @@ $nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
 
 						if($this->conf['noRes'] == 'ticket') {
 							$linkconf = $this->ticketLink($theTime);
-							$linkconf['title'] = $this->conf['howtoReserve'];
 						}
 
 							# Reservierungsschluss?
@@ -1189,11 +1247,11 @@ $nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
 						$thisDay = mktime ( 0, 0, 0, strftime("%m", $thisDay),strftime("%d", $thisDay), strftime("%Y", $thisDay));
 
 							# z.B. 5 Stunden vorher = t-60*60*5
-						if((time() < $theTime + 60*60*$this->conf['resLimit']) ||
-							$this->ff['def']['noRes'] ||
+						if(	(time() > $theTime-60*60*$this->conf['resLimit']) ||
+							$this->ff['noRes'] ||
 							$this->conf['noRes'] == '1' ||
 							$this->internal['currentRow']['nores'] ||
-							$this->ff['def']['mode'] == 'tipAFriend'
+							$this->ff['mode'] == 'tipAFriend'
 							) {
 							$temp[$i][$key1] = $timeString;
 						} else {
@@ -1201,7 +1259,7 @@ $nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
 						}
 
 							/* Tip A Friend */
-						if($this->ff['def']['mode'] == 'tipAFriend' && (time() < $theTime + 60*60*$this->conf['resLimit'])) {
+						if($this->ff['mode'] == 'tipAFriend' && (time() < $theTime-60*60*$this->conf['resLimit'])) {
 							$value = $theTime."-".$this->internal['currentRow']['movie']."-".$this->internal['currentRow']['cinema'];
 							$value = $this->encrypt($value);
 							if($this->piVars['tipDate'] == $value) {
@@ -1211,22 +1269,18 @@ $nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
 							}
 						}
 
+
 					} elseif(preg_match( '/[0-9]?[0-9]\.[0-9][0-9]/m', $timeString)) { # keine Reservierung
 						$temp[$i][$key1] = str_replace(".", ":", $temp[$i][$key1]);
-					} elseif(preg_match( '/[0-9]?[0-9]\-[0-9][0-9]/m', $timeString)) { # VS abgesagt
-						list($time, $text) = explode('#', $temp[$i][$key1]);
-						if(!$text) $text = $this->conf['showCanceled'];
-						$temp[$i][$key1] = '<span style="text-decoration: line-through;" title="'.$text.'" >'.str_replace("-", ":", $time).'</span>';
 					} else { # leere Zelle
 						$temp[$i][$key1] = $this->conf['emptyTable'];
 					}
 
-
 					$n++;
+					}
+				$i++;
+				$n = 0;
 				}
- 			$i++;
-			$n = 0;
-			}
 
 
 			# Tabellenzeilen zusammenbauen
@@ -1234,22 +1288,22 @@ $nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
 			foreach($temp as $key => $val) {
 				$tmp[$i] = "<tr>";
 				foreach($val as $key1 => $val1) {
-					$val1 = $this->cObj->wrap($val1, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_TIMETABLE_TD']);
+					$val1 = $this->cObj->wrap($val1, $this->conf['wrap.'][$this->ff['mode'].'.']['PRG_TIMETABLE_TD']);
 					if($key1 == $todaysNr) {# Heute!
 						if(isset($this->conf['todaysColor'])) { # eigene Hintergundfarbe
-							$tmp[$i] .= '<td style="'.$this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_TIMETABLE_TD_STYLE'].' background-color: '.$this->conf['todaysColor'].';">'.$val1.'</td>';
+							$tmp[$i] .= '<td style="'.$this->conf['wrap.'][$this->ff['mode'].'.']['PRG_TIMETABLE_TD_STYLE'].' background-color: '.$this->conf['todaysColor'].';">'.$val1.'</td>';
 						} else {
-							$tmp[$i] .= '<td style="'.$this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_TIMETABLE_TD_STYLE'].';">'.$val1.'</td>';
+							$tmp[$i] .= '<td style="'.$this->conf['wrap.'][$this->ff['mode'].'.']['PRG_TIMETABLE_TD_STYLE'].';">'.$val1.'</td>';
 						}
 					} else {
-						$tmp[$i] .= '<td style="'.$this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_TIMETABLE_TD_STYLE'].'">'.$val1.'</td>';
+						$tmp[$i] .= '<td style="'.$this->conf['wrap.'][$this->ff['mode'].'.']['PRG_TIMETABLE_TD_STYLE'].'">'.$val1.'</td>';
 					}
 				}
 				$tmp[$i] .= "</tr>";
 				$i++;
 			}
 
-			$temp = '<table class="program" style="'.$this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_TIMETABLE_STYLE'].'">'.$head."<tbody>".implode(chr(10),$tmp).'</tbody></table>';
+			$temp = '<table class="program" style="'.$this->conf['wrap.'][$this->ff['mode'].'.']['PRG_TIMETABLE_STYLE'].'">'.$head."<tbody>".implode(chr(10),$tmp).'</tbody></table>';
 		} else { # Spielplan nicht bekannt
 			$temp = "<br /><b>";
 			if($this->internal['currentRow']['date']) {
@@ -1263,18 +1317,6 @@ $nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
 	}
 
 
-
-		/**
-		 * The Dates of the day are calculated wrong if the time is changed for Summer/winter time
-		 *
-		 * @param timestamp UNIX timestamp to be checked
-		 * @return timestamp UNIX timestanp corrected, if needed
-		 * 
-		 * OBSOLETE!!!!!!!!!!!!!!!!!!
-		 */
-	function checkSummerWinterBug($theDay) {
-		die("call: checkSummerWinterBug");
-	}
 
 
 
@@ -1301,42 +1343,9 @@ $nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
 		return $out;
 	}
 
-/*
-		 * Adresse als Session speichern
-		 * wird für den Link zum Newsletter benötigt!
-		 *
-	function saveAddressToSession()
-		{
-		$my_vars = $GLOBALS["TSFE"]->fe_user->getKey('ses','tx_myextension');
-
-		you then will add your own values the same way:
-
-		$my_vars['somevalue'] = "Hello World";
-
-		Again, Don't forget to save the data to the session in the end:
-
-		$GLOBALS["TSFE"]->fe_user->setKey('ses','tx_myextension',$my_vars);
 
 
-		$fields_values = array(
-			"salutation" => $this->piVars[salutation],
-			"title" => $this->piVars[title],
-			"firstname" => $this->piVars[firstname],
-			"lastname" => $this->piVars[lastname],
-			"street" => $this->piVars[street],
-			"streetnr" => $this->piVars[streetNr],
-			"zip" => $this->piVars[zip],
-			"city" => $this->piVars[city],
-			"country" => $this->piVars[country],
-			"email" => $this->piVars[email],
-			"fon" => $this->piVars[fon],
-			"fax" => $this->piVars[fax],
-			);
 
-		$GLOBALS["TSFE"]->fe_user->setKey('ses', $this->prefixId, $fields_values);
-		}
-
- */
 
 
 
@@ -1353,21 +1362,21 @@ $nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
 #			$this->film->debug();
 		}
 
-
 		switch($fN)	{
 			case 'movie_fsk':
 					/* FSK-Cache erstellen */
 				$out = $this->film->rating;
-				if($out)
-					{
-					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_RATING']);
+				if($out){
+					$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['MOVIE_RATING.']);
+					$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['MOVIE_RATING']);
 					return $out;
-					}
+				}
 			break;
 			case 'movie_fskTooltip':
 				$out = $this->film->ratingTooltip;
 				if($out) {
-					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_RATINGTOOLTIP']);
+					$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['MOVIE_RATINGTOOLTIP.']);
+					$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['MOVIE_RATINGTOOLTIP']);
 					return $out;
 				}
 			break;
@@ -1377,34 +1386,46 @@ $nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
 				$out = $this->film->distibutor;
 
 				if($out) {
-					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_DISTRIBUTOR']);
+					$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['MOVIE_DISTRIBUTOR.']);
+					$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['MOVIE_DISTRIBUTOR']);
 					return $out;
 				}
 			break;
 			case 'movie_fbw':
 				$field = $this->film->fbw;
+
+				$res = $this->conf['fbw.'][$field];
+
 				if($field) {
-					return $this->cObj->wrap(trim($this->conf['fbw.'][$field]), $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_FBW.'][$field]);
+					$out = trim($res);
+					$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['MOVIE_FBW.'][$field]);
+					$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['MOVIE_FBW']);
+					return $out;
 				}
 			break;
 
 
 			/* kommt aus der Film-Tabelle */
 			case 'movie_title':
-				$out = $this->cObj->wrap($this->film->titel, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_TITLE']);
+				$out = $this->film->titel;
+				
+				$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['MOVIE_TITLE.']);
+				$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['MOVIE_TITLE']);
 				return 	$out;
 			break;
 			case 'movie_originaltitle':
 				$out = $this->film->originaltitle;
 				if($out) {
-					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_TITLE_ORIGINAL']);
+					$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['MOVIE_TITLE_ORIGINAL.']);
+					$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['MOVIE_TITLE_ORIGINAL']);
 					return 	$out;
 				}
 			break;
 			case 'movie_subtitle':
 				$out = $this->film->short;
 				if($out) {
-					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_TITLE_SHORT']);
+					$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['MOVIE_TITLE_SHORT.']);
+					$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['MOVIE_TITLE_SHORT']);
 					return $out;
 				}
 			break;
@@ -1415,65 +1436,89 @@ $nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
 					$out = $this->film->titel;
 
 				if($out) {
-					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_TITLE_SHORT']);
+					$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['MOVIE_TITLE_SHORT.']);
+					$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['MOVIE_TITLE_SHORT']);
 					return $out;
 					}
 			break;
-			case 'movie_image':
-				# Für welchen Bereich?
-				switch($this->ff['def']['mode']) {
-					case 'shortView': 	$this->conf['image.'] = ($this->ff['image']['pluginWidth'] > 0) ? array("file." => array("width" => $this->ff['image']['pluginWidth'])) : $this->conf['listViewShort.']; 	break;
-					case 'longView':
-						$this->conf['image.'] = ($this->ff['image']['pluginWidth'] > 0) ? array("file." => array("width" => $this->ff['image']['pluginWidth'])) : $this->conf['listViewLong.'];		break;
-					case 'singleView':	$this->conf['image.'] = ($this->ff['image']['pluginWidth'] > 0) ? array("file." => array("width" => $this->ff['image']['pluginWidth'])) : $this->conf['imageSingle.'];		break;
-					case 'special':		$this->conf['image.'] = ($this->ff['image']['pluginWidth'] > 0) ? array("file." => array("width" => $this->ff['image']['pluginWidth'])) : $this->conf['imageSpecial.']; 	break;
-					case 'tipAFriend':
-						if($this->ff['image']['pluginWidth'] > 0) { # Plugin hat vorrang
-							$this->conf['image.']['file.']['width'] = $this->ff['image']['pluginWidth'];
-						} else { # größe kommt aus TS
-							$this->conf['image.'] = $this->conf['imageTipAFriend1.'];
-							if($this->piVars['step'] == 2) $this->conf['image.'] = $this->conf['imageTipAFriend2.'];
-							if($this->piVars['step'] == 3) $this->conf['image.'] = $this->conf['imageTipAFriend3.'];
-						}
-					break;
-				}
+			case 'movie_poster':
+				
 
-#debug($this->conf['image.']);
+				# first get the imageFile
 				if($this->film->poster) {
 					$temp = explode(',', $this->film->poster); # mehrere Poster?
 					$temp = $temp[rand(0,count($temp)-1)];
 
-					if($this->conf['image.']['file'] == 'GIFBUILDER') {
-						$this->conf['image.']['file.']['10.']['file'] = $this->uploadPath.$temp;
-					} else {
-						$this->conf['image.']['file'] = $this->uploadPath.$temp;
-#						$this->conf['image.']['file.']['width'] = $this->conf['image.']['file.']['width'];
-					}
+					$theImage = $this->uploadPath.$temp;
 				} else { // Media File als Alternative
-					if($this->conf['image.']['file'] == 'GIFBUILDER') {
-						$this->conf['image.']['file.']['10.']['file'] = $this->uploadPath.$this->getFieldContent('movie_media-random');
+					$theImage = $this->uploadPath.$this->getFieldContent('movie_media-random');
+				}
+				# Kein File? -> Dummy Bild
+				if(! @is_file($theImage)) {
+					$theImage = $this->conf['dummyPoster'];
+				}
+				
 
-						if($this->conf['image.']['file.']['10.']['file'] == '') {
-							$this->conf['image.']['file.']['10.']['file'] = $this->conf['dummyPoster'];
+			
+				
+				# Für welchen Bereich?
+/*				
+				switch($this->ff['mode']) {
+					case 'tipAFriend':
+						if($this->ff[$this->templateNameTS]['poster']['pluginWidth'] > 0) { # Plugin hat vorrang
+							$image['file.']['width'] = $this->ff['width'];
+						} else { # größe kommt aus TS
+							$image = $this->conf['imageTipAFriend1.'];
+							if($this->piVars['step'] == 2) $image = $this->conf['imageTipAFriend2.'];
+							if($this->piVars['step'] == 3) $image = $this->conf['imageTipAFriend3.'];
 						}
-					} else {
-							$this->conf['image.']['file'] = $this->uploadPath.$this->getFieldContent('movie_media-random');
-					}
+					break;
+#					default:
+#						$image = ($image['width'] > 0) ? array("file." => array("width" => $this->ff['width'])) : $this->conf['listViewTrailer.']; 	break;
 				}
+*/
 
-				if($this->conf['image.']['file'] == 'uploads/tx_tmdmovie/') {
-					$this->conf['image.']['file'] = $this->conf['dummyPoster'];
+				
+				# IMAGE oder GIFBUILDER
+				if($this->ff['poster'] == 'IMAGE') {
+					$this->ff['poster.']['file'] = $theImage;
+				} elseif($this->ff['poster'] == 'GIFBUILDER') {
+					$this->ff['poster.']['file.']['10.']['file'] = $theImage;
 				}
-
-				$this->conf['image.']['altText'] = $this->film->titel;
-				$out = $this->cObj->IMAGE($this->conf['image.']);
-				$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_IMAGE']);
+#debug($this->ff['poster.']['file'], "img");
+				$this->ff['poster.']['altText'] = $this->film->titel;
+				
+				$out = $this->cObj->IMAGE($this->ff['poster.']);
+				
+				$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['MOVIE_IMAGE.']);
+				$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['MOVIE_IMAGE']);
 				return $out;
 			break;
+
+			case 'movie_trailer_single':
+			case 'movie_trailer_list':
+				if($this->film->trailer) {
+					$width  = ($fN=='movie_trailer_single') ? $this->conf['trailer.']['single_width']  : $this->conf['trailer.']['list_width'];
+					$height = ($fN=='movie_trailer_single') ? $this->conf['trailer.']['single_height'] : $this->conf['trailer.']['list_height'];
+
+					$out = $this->cObj->fileResource($this->conf['template']);
+					$out = $GLOBALS['TSFE']->cObj->getSubpart($out, "###TRAILER_TEMPLATE###");
+
+					$out = $this->cObj->substituteMarker($out, '###MOVIE_TRAILER_WIDTH###',  $width);
+					$out = $this->cObj->substituteMarker($out, '###MOVIE_TRAILER_HEIGHT###', $height);
+					$out = $this->cObj->substituteMarker($out, '###MOVIE_TRAILER_LINK###', 	$this->film->trailer);
+
+					return ($fN=='movie_trailer_single') ? $out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['wrap.']['MOVIE_TRAILER_SINGLE']) : $out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['wrap.']['MOVIE_TRAILER_LIST']);
+				}
+			break;
+
+
+
 			case 'movie_time':
 				$out = $this->film->length;
 				if($out) {
-					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_TIME']);
+					$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['MOVIE_TIME.']);
+					$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['MOVIE_TIME']);
 					return $out;
 				}
 			break;
@@ -1481,34 +1526,36 @@ $nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
 				$out = $this->film->web;
 				if($out) {
 					$out =  $this->pi_linkToPage($this->pi_getLL("website", "web"), $this->film->web, "_blank");
-					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_WWW']);
+					
+					$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['MOVIE_WWW.']);
+					$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['MOVIE_WWW']);
 					return $out;
 				}
 			break;
-			case 'movie_youtube':
-				$out = $this->film->youtube;
+			case 'movie_trailer':
+				$out = $this->film->trailer;
 				if($out) {
-					$out = $this->pi_linkToPage($this->pi_getLL("youtube", "_youtube_"), $this->film->youtube, "_blank");
-					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_YOUTUBE']);
+					$out = $this->pi_linkToPage($this->pi_getLL("trailer", "_trailer_"), $this->film->trailer, "_blank");
+					
+					$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['MOVIE_TRAILER.']);
+					$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['MOVIE_TRAILER']);
 					return $out;
 				}
 			break;
 			case 'movie_start':
 				$out = $this->film->releasedate;
 				if($out) {
-					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_RELEASEDATE']);
+					$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['MOVIE_RELEASEDATE.']);
+					$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['MOVIE_RELEASEDATE']);
 					return $out;
 				}
 			break;
 			case 'movie_format':
-				switch($this->film->screenformat) {
-				  case 1: $out = $this->pi_getLL("WideScreen"); break;
-				  case 2: $out = $this->pi_getLL("CinemaScope"); break;
-				  case 3: $out = $this->pi_getLL("Normal"); break;
-				  default: $out = "";
-				  }
+				$out = $this->conf['format.'][$this->film->screenformat];
+				
 				if($out) {
-					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_FORMAT']);
+					$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['MOVIE_FORMAT.']);
+					$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['MOVIE_FORMAT']);
 					return $out;
 				}
 			break;
@@ -1516,37 +1563,40 @@ $nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
 				$out = explode(" ", $this->film->sound);
 				$temp = explode(",", $this->conf['supportedSound']);
 
-				foreach ($temp as $key=>$value)
-					{
-				    if (!in_array($value,$out))
-				    	{
+				foreach ($temp as $key=>$value) {
+				    if (!in_array($value,$out)) {
 				        unset($temp[$key]);
-				    	}
-					}
+				    }
+				}
 
 				$out = implode(" ", $temp);
 
-				if($out)
-					{
-					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_SOUND']);
+				if($out) {
+					$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['MOVIE_SOUND.']);
+					$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['MOVIE_SOUND']);
 					return $out;
-					}
+				}
 			break;
 			case 'movie_summary':
 				$out = $this->film->summary;
 				if($out) {
 					$out = $this->pi_RTEcssText($out);
-					$out = $this->cObj->stdWrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_DESCRIPTION']);
+					
+					$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['MOVIE_DESCRIPTION.']);
+					$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['MOVIE_DESCRIPTION']);
 					return $out;
 				}
 			break;
 			case 'movie_summary_short':
 				$out = $this->film->summary;
 				if($out) {
-					$out = $this->cObj->stdWrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_DESCRIPTION_SHORT.']);
-					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_DESCRIPTION_SHORT']);
+#					$out = $this->pi_RTEcssText($out);
+					
+					
+					$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['MOVIE_DESCRIPTION_SHORT.']);
+					$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['MOVIE_DESCRIPTION_SHORT']);
 
-	#				return $this->pi_RTEcssText($out);
+
 					return strip_tags($out); // z.B. <b> die nicht geschlossen werden duch crop
 				}
 			break;
@@ -1567,7 +1617,8 @@ $nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
 				$out = implode(", ", $names);
 
 				if($out) {
-					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_DIRECTOR']);
+					$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['MOVIE_DIRECTOR.']);
+					$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['MOVIE_DIRECTOR']);
 					return $out;
 				}
 			break;
@@ -1587,11 +1638,11 @@ $nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
 				}
 				$out = implode(", ", $names);
 
-				if($out)
-					{
-					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_PRODUCER']);
+				if($out) {
+					$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['MOVIE_PRODUCER.']);
+					$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['MOVIE_PRODUCER']);
 					return $out;
-					}
+				}
 			break;
 			case 'movie_actor':
 				$out = $this->film->actor;
@@ -1610,19 +1661,20 @@ $nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
 				}
 				$out = implode(", ", $names);
 
-				if($out)
-					{
-					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_ACTOR']);
+				if($out) {
+					$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['MOVIE_ACTOR.']);
+					$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['MOVIE_ACTOR']);
 					return $out;
-					}
+				}
 			break;
 			case 'movie_genre':
+#debug($this->conf[$this->templateNameTS]);
 				$out = $this->film->genre;
-				if($out)
-					{
-					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['MOVIE_GENRE']);
+				if($out) {
+					$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['MOVIE_GENRE']);
+					$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['MOVIE_GENRE']);
 					return $out;
-					}
+				}
 			break;
 			case 'movie_media-1':
 			case 'movie_media-2':
@@ -1630,6 +1682,8 @@ $nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
 			case 'movie_media-4':
 			case 'movie_media-5':
 			case 'movie_media-random':
+				$image = $this->conf[$this->templateNameTS]['media.'];
+				
 				list(,$nr) = explode("-", $fN);
 				$pic = explode(",", $this->film->media);
 
@@ -1648,17 +1702,47 @@ $nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
 					$pic = $pic[$nr];
 				}
 
-				$this->conf['media.']['file'] = 'uploads/tx_tmdmovie/'.$pic;
-				$out = $this->cObj->IMAGE($this->conf['media.']);
+				$image['file'] = 'uploads/tx_tmdmovie/'.$pic;
+				
+				$out = $this->cObj->IMAGE($image);
 
 				return $out;
 			break;
+			case 'trailer_single':
+			case 'trailer_list':
+				$out = $this->film->trailer;
+				if($out) {
+					$width  = ($fN=='trailer_single') ? $this->conf['trailer.']['single_width']  : $this->conf['trailer.']['list_width'];
+					$height = ($fN=='trailer_single') ? $this->conf['trailer.']['single_height'] : $this->conf['trailer.']['list_height'];
 
-			case 'version3d':
-				if($this->film->version3D || $this->internal['currentRow']['3d'] ) {
-					return $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['VERSION3D']);
+					$out = $this->cObj->fileResource($this->conf['template']);
+					$out = $GLOBALS['TSFE']->cObj->getSubpart($template, "###TRAILER_TEMPLATE###");
+
+					$out = $this->cObj->substituteMarker($out, '###TRAILER_WIDTH###', 	$width);
+					$out = $this->cObj->substituteMarker($out, '###TRAILER_HEIGHT###',	$height);
+					$out = $this->cObj->substituteMarker($out, '###TRAILER_LINK###', 	$out);
+
+					if($out) {
+						$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['MOVIE_YOUTUBE.']);
+						$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['MOVIE_YOUTUBE']);
+						return $out;
+					}
 				}
 			break;
+
+
+
+
+			case 'version3d':
+				if($this->film->version3D || $this->internal['currentRow']['features']&1 ) {
+					$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['VERSION3D.']);
+					$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['VERSION3D']);
+					return $out;
+				}
+			break;
+
+
+
 
 
 			/* Ab hier die Programm-Tabelle */
@@ -1671,14 +1755,22 @@ $nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
 			case 'firstday':
 			case 'date':
 				$out = strftime($this->conf['timeFormat'], $this->internal['currentRow']['date']);
-				$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode']]['PRG_DATE']);
+				
+				$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['PRG_DATE.']);
+				$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['PRG_DATE']);
 				return $out;
+			break;
+			case 'debug_firstday':
+				return strftime("%d.%m.%y %H:%M:%S", $this->internal['currentRow']['date']);
 			break;
 			case 'firstday_raw':
 				return $this->internal['currentRow']['date'];
 			break;
 			case "program":
-				$out = $this->cObj->wrap($this->buildTimeTable(), $this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_TIMETABLE']);
+				$out = $this->buildTimeTable();
+				
+				$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['PRG_TIMETABLE.']);
+				$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['PRG_TIMETABLE']);
 				return $out;
 			break;
 			case "program_raw":
@@ -1686,19 +1778,18 @@ $nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
 			break;
 			case 'info':
 				$out = $this->internal['currentRow']['info'];
-				if($out)
-					{
-#debug($this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_INFO']);
-
-					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_INFO']);
+				if($out) {
+					$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['PRG_INFO.']);
+					$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['PRG_INFO']);
 					return $out;
 					}
 			break;
 			case 'info2':
 				$out = $this->internal['currentRow']['info2'];
-				if($out)
-					{
-					$out = $this->cObj->wrap($this->pi_RTEcssText($out), $this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_INFO2']);
+				if($out) {
+					$out = $this->pi_RTEcssText($out);
+					$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['PRG_INFO2.']);
+					$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['PRG_INFO2']);
 					return $out;
 					}
 			break;
@@ -1723,17 +1814,21 @@ $nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
 							$this->showType[$this->internal['currentRow']['showtype']]['link']
 							);
 					} else {
-						$out = $this->showType[$this->internal['currentRow']['showtype']]['showtype'];
+						$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['wrap.']['showtype']);
 					}
 				}
 
 				if($out) {
-					$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_SHOWTYPE']);
+					$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['PRG_SHOWTYPE.']);
+					$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['PRG_SHOWTYPE']);
 					return $out;
 				}
 			break;
 			case 'week':
-				$out = $this->cObj->wrap($this->internal['currentRow']['week'], $this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_WEEK']);
+				$out = $this->internal['currentRow']['week'];
+				
+				$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['PRG_WEEK.']);
+				$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['PRG_WEEK']);
 				return 	$out;
 			break;
 			case 'cinema':
@@ -1741,7 +1836,10 @@ $nextyear  = mktime(0, 0, 0, date("m"),   date("d"),   date("Y")+1);
 					$this->adrCache[$this->internal['currentRow'][$fN]] = $this->pi_getRecord("tt_address", $this->internal['currentRow'][$fN]);
 				}
 
-				$out = $this->cObj->wrap($this->adrCache[$this->internal['currentRow'][$fN]]['company'], $this->conf['wrap.'][$this->ff['def']['mode'].'.']['PRG_THEATRE']);
+				$out = $this->adrCache[$this->internal['currentRow'][$fN]]['name'];
+				
+				$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['PRG_THEATRE.']);
+				$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['PRG_THEATRE']);
 
 				return $out;
 			break;

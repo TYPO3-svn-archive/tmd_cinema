@@ -1,0 +1,309 @@
+
+
+
+plugin.tx_tmdcinema_pi1 {
+	
+	# Default konfiguration analog zu den FF Feldern
+	# FF Werte überschreiben diese
+
+		/*
+		<cinemaConfig>
+				<cinema>
+				<special>
+				<previewMin>
+				<previewMax>
+		*/
+	cinema = 47
+	special =
+	previewMin = 0
+	previewMax = 2
+		
+		
+		/*
+		 <template>
+				<mode>
+				<templateFile>
+				<previewNote>
+				
+				TS ONLY:
+				templatePath
+		*/
+	mode =
+	templateFile = Layout1.html
+	templatePath = EXT:tmd_cinema/pi1/res/
+	previewNote =
+
+		/*		
+		<image & Links>
+				<pageSingelView>
+				<pageProgram>
+				<pagePreview>
+				<width>
+				<clickEnlarge>
+				<disallowBooking>
+				<bookingPage>
+		*/
+	pageSingelView = 281
+	pageProgram = 284
+	pagePreview = 283
+	pageTipAFriend = 768
+	pageBooking = 379
+	width = 			# default.poster.file.width ????? überarbeiten!  
+	clickEnlarge = 
+	disallowBooking = 	# -> noRes ????
+		
+		
+			
+	
+		#Verschlsselte Reservierung
+	cryptTime = 1
+		
+		# abgelaufenes Programm verbergen
+	hideExpiredProgram = 1
+	
+	dummyPoster = EXT:tmd_cinema/pi1/res/dummy.png
+	
+	
+		# Wie sollen leere Spielzeiten markiert werden?
+		# Für die Volldeppen die zu doof sind einen Stundenplan zu lesen...
+		# ...wenn's bloß was helfen würde... #-(
+	emptyTable = <span style="color: lightgrey">&nbsp;-&nbsp;</span>
+	todaysColor = #EEEEEE
+		# today oder date
+	todayStyle = today
+	tableTime = %a<br />%d.%m.
+
+	#zeitformat im Tabellenkopf
+	timeFormat = %A, %d.%m.%Y
+
+	#wenn es kein Programm gibt.
+	previewNotice = Das Programm ab %s ist noch nicht bekannt.
+
+	# bool: Programm ab Donnerstag, %s
+	showWeekDate = 1
+
+	supportedSound = DolbySR,DolbyDIGITAL,DTS,SDDS,Mono,Stereo,DolbyDIGITAL-EX,DTS-EX
+
+	fbw.1 = wertvoll
+	fbw.2 = besonders wertvoll
+
+	artikel.0 =
+	artikel.1 = Der
+	artikel.2 = Die
+	artikel.3 = Das
+	artikel.4 = The
+	artikel.5 = Lé
+
+	format.1 = WideScreen
+	format.2 = CinemaScope
+	format.3 = Normal
+	
+	
+	
+		# TEMP!!! geht ins Template
+    noDateHead = 0
+    
+    
+		# Film Trailer
+		# Einzelansicht
+	trailer.single_width = 580
+	trailer.single_height = 385
+		# Liste
+	trailer.list_width = 320
+	trailer.list_height = 192
+
+
+		# Übersicht
+	supportedSound = DolbySR,DTS
+
+		# Reservierung Schluß
+		# n-Stunden vorher
+	resLimit = 4
+
+		# pageLinkOnly: Nur link auf Res. Seite (ticket iFrame)
+		# 0: An
+		# 1: Aus
+#	noRes = 0
+
+		# Mittwochs Programm n-Stunden vorher wechseln
+	switchPrgBevore = 3
+
+		# Bundesstart, Vorpremiere etc.
+	hideType = 1,2,3
+
+}
+
+
+
+plugin.tx_tmdcinema_pi1 {
+		# Wenn mans braucht
+	imageLinkWrap {
+		enable = 1
+		bodyTag = <body style="margin:0;background-color:black">
+		JSwindow = 1
+		JSwindow.newWindow = 1
+		JSwindow.expand = 20,20
+		bodyTag = <body bgcolor="black">
+		wrap = <a href="javascript:close();"> | </a>
+		width = 600m
+		}
+
+
+		# Poster
+	default.poster = IMAGE
+	default.poster.file.width = 100c
+	default.poster.file.height = 150c
+	
+		# Mediafiles
+	default.media.file.width = 80
+	default.media.file.width = 110c
+	default.media.file.maxH = 75c
+	default.media.imageLinkWrap = 1
+	default.media.imageLinkWrap < .imageLinkWrap
+
+	default {
+		MOVIE_RATING = | 
+		MOVIE_RATINGTOOLTIP = |
+		MOVIE_DISTRIBUTOR = |
+		MOVIE_FBW.1 = |
+		MOVIE_FBW.2 = |
+		MOVIE_TITLE = | 
+		MOVIE_TITLE_ORIGINAL = |
+		MOVIE_TITLE_SHORT = |
+		MOVIE_IMAGE = |
+		MOVIE_TIME = | 
+		MOVIE_WWW = |
+		MOVIE_YOUTUBE = |
+		MOVIE_RELEASEDATE = |
+		MOVIE_FORMAT = |
+		MOVIE_SOUND = |
+		MOVIE_DESCRIPTION = |
+		MOVIE_DESCRIPTION_SHORT  = |
+		MOVIE_TRAILER = |
+		MOVIE_GENRE = |
+
+		VERSION3D = <span style="color: red;">3D</span>
+
+		PRG_TIMETABLE = |
+		PRG_TIMETABLE_STYLE =
+		PRG_INFO = |
+		PRG_SHOWTYPE = |
+		PRG_WEEK = |
+		PRG_THEATRE	 = |
+		PRG_DATE = |
+		
+		PREVIEW_NOTE = <span class="preViewNote">|</span>
+		}
+
+
+
+		# kurze Listen Ansicht
+	Layout1 < .default
+	Layout1 {
+		poster >
+		poster.file = GIFBUILDER
+		poster.file {
+			format = png
+		    XY = [10.w],[10.h]
+		    10 = IMAGE
+				# kann im FF überschrieben werden
+		    10.file.width = 150c
+		    10.file.height = 210c
+		}
+	}
+  
+
+
+	
+		# lange Listen Ansicht
+	Layout2 < .default
+	Layout2 {
+		poster >
+		poster.file = GIFBUILDER
+		poster.file {
+			format = png
+		    XY = [10.w],[10.h]
+		    10 = IMAGE
+				# kann im FF überschrieben werden
+		    10.file.width = 150c
+		    10.file.height = 210c
+		}
+	}
+	
+		# Ausführliche Liste
+	Layout2 {
+		MOVIE_RATING = |&nbsp;-&nbsp; 
+		MOVIE_TIME = |&nbsp;-&nbsp;
+		MOVIE_TITLE = <div class="movieTitle"> | </div>
+		MOVIE_TIME = ca. | min&nbsp;-&nbsp;
+		MOVIE_DESCRIPTION_SHORT.stdWrap.crop = 350 | ... | 1
+		MOVIE_WWW = <span class="hidePrint"> | </span>
+
+		PRG_WEEK = |
+		PRG_SHOWTYPE = |
+		PRG_SHOWTYPE = <span class="showType"> | </span>
+		PRG_INFO = <div class="info">|</div>
+		PRG_WEEK = | te Woche
+	}
+	
+	
+	
+	
+		# Einzelansicht
+	Layout3 < .default
+	Layout3 {
+		poster.file {
+		    width = 170c
+		    height = 240c
+		}
+	}
+	
+	Layout3 {
+  		MOVIE_RATING = |<br /> 
+		MOVIE_RATINGTOOLTIP = |
+		MOVIE_DISTRIBUTOR = im Verleih von&nbsp; | <br />
+		MOVIE_FBW.1 = |
+		MOVIE_FBW.2 = |
+  		MOVIE_TITLE = <div class="movieTitle"> | </div> 
+		MOVIE_TITLE_ORIGINAL = |
+		MOVIE_TITLE_SHORT = |
+		MOVIE_IMAGE = |
+		MOVIE_TIME = ca. | min<br /> 
+		MOVIE_WWW = |
+		MOVIE_YOUTUBE = |
+		MOVIE_RELEASEDATE = | <br />
+		MOVIE_FORMAT = | <br />
+		MOVIE_SOUND = | <br />
+		MOVIE_DESCRIPTION = |
+		MOVIE_DESCRIPTION_SHORT  = |
+		MOVIE_TRAILER = |
+		MOVIE_GENRE = Genre:&nbsp;| <br />
+						
+		VERSION3D = <span style="color: red;">3D</span>
+
+		PRG_TIMETABLE = |
+		PRG_TIMETABLE_STYLE =
+  		PRG_INFO = <div class="info">|</div>
+  		PRG_SHOWTYPE = <span class="showType"> | </span>
+  		PRG_WEEK = | te Woche<br />
+		PRG_THEATRE	 = Diesen Film sehen Sie im <b>|</b><br />
+		PRG_DATE = |
+		
+		PREVIEW_NOTE = <span class="preViewNote">|</span>
+		}
+
+
+
+	
+
+		# special
+	Layout4 < .default
+	
+	tipAFriend < .default
+	trailerListe < .default 
+
+
+}
+
+
+

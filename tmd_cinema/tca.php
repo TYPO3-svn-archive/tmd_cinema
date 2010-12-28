@@ -4,11 +4,11 @@ if (!defined ('TYPO3_MODE')) 	die ('Access denied.');
 $TCA["tx_tmdcinema_program"] = array (
 	"ctrl" => $TCA["tx_tmdcinema_program"]["ctrl"],
 	"interface" => array (
-		"showRecordFieldList" => "hidden,starttime,endtime,date,info,info2,nores,movie,program,3d,boxoffice"
+		"showRecordFieldList" => "hidden,starttime,endtime,date,info,info2,nores,movie,program,features"
 	),
 	"feInterface" => $TCA["tx_tmdcinema_program"]["feInterface"],
 	"columns" => array (
-		'hidden' => array (		
+		'hidden' => array (
 			'exclude' => 1,
 			'label' => 'LLL:EXT:lang/locallang_general.xml:LGL.hidden',
 			'config' => array (
@@ -16,7 +16,7 @@ $TCA["tx_tmdcinema_program"] = array (
 				'default' => '1'
 			)
 		),
-		'starttime' => array (		
+		'starttime' => array (
 			'exclude' => 1,
 			'label' => 'LLL:EXT:lang/locallang_general.xml:LGL.starttime',
 			'config' => array (
@@ -28,7 +28,7 @@ $TCA["tx_tmdcinema_program"] = array (
 				'checkbox' => '0'
 			)
 		),
-		'endtime' => array (		
+		'endtime' => array (
 			'exclude' => 1,
 			'label' => 'LLL:EXT:lang/locallang_general.xml:LGL.endtime',
 			'config' => array (
@@ -44,22 +44,22 @@ $TCA["tx_tmdcinema_program"] = array (
 				)
 			)
 		),
-		
+
 		/*-------------------
-		"temp_title" => Array (	# solange ich über TCA->ctrl nicht eine fremde tabelle ansprechen kann	
-			"exclude" => 0,		
-			"label" => "Titel", 		
+		"temp_title" => Array (	# solange ich über TCA->ctrl nicht eine fremde tabelle ansprechen kann
+			"exclude" => 0,
+			"label" => "Titel",
 			"config" => Array (
-				"type" => "input",	
-				"size" => "30",	
+				"type" => "input",
+				"size" => "30",
 #				"eval" => "required",
 			)
 		),
 		-------------------*/
-		
-		"date" => Array (		
-			"exclude" => 1,		
-			"label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_program.date",		
+
+		"date" => Array (
+			"exclude" => 1,
+			"label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_program.date",
 			"config" => Array (
 				"type" => "input",
 				"size" => "8",
@@ -69,9 +69,9 @@ $TCA["tx_tmdcinema_program"] = array (
 				"default" => "0"
 			)
 		),
-		"week" => Array (		
-			"exclude" => 1,		
-			"label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_program.week",		
+		"week" => Array (
+			"exclude" => 1,
+			"label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_program.week",
 			"config" => Array (
 				"type" => "input",
 				"size" => "8",
@@ -81,30 +81,30 @@ $TCA["tx_tmdcinema_program"] = array (
 				"default" => "1",
 			)
 		),
-        "showtype" => Array (        
-            "exclude" => 1,        
-            "label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_program.showtype",        
+        "showtype" => Array (
+            "exclude" => 1,
+            "label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_program.showtype",
             "config" => Array (
-                "type" => "select",    
-                "foreign_table" => "tx_tmdcinema_showtype",    
-                "foreign_table_where" => " AND (tx_tmdcinema_showtype.pid=###CURRENT_PID### OR tx_tmdcinema_showtype.pid = ###STORAGE_PID### ) ORDER BY tx_tmdcinema_showtype.sorting",    
-                "size" => 1,    
+                "type" => "select",
+                "foreign_table" => "tx_tmdcinema_showtype",
+                "foreign_table_where" => " AND (tx_tmdcinema_showtype.pid=###CURRENT_PID### OR tx_tmdcinema_showtype.pid = ###STORAGE_PID### ) ORDER BY tx_tmdcinema_showtype.sorting",
+                "size" => 1,
                 "minitems" => 0,
                 "maxitems" => 1,
             )
         ),
-        "info" => Array (		
-			"exclude" => 1,		
-			"label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_program.info",		
+        "info" => Array (
+			"exclude" => 1,
+			"label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_program.info",
 			"config" => Array (
 				"type" => "text",
-				"cols" => "30",	
+				"cols" => "30",
 				"rows" => "2",
 			)
 		),
-		"info2" => Array (        
-            "exclude" => 1,        
-            "label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_program.info2",        
+		"info2" => Array (
+            "exclude" => 1,
+            "label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_program.info2",
             "config" => Array (
                 "type" => "text",
                 "cols" => "30",
@@ -122,62 +122,78 @@ $TCA["tx_tmdcinema_program"] = array (
 				),
             )
         ),
-		"3d" => Array (        
-            "exclude" => 1,        
-            "label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tx_tmdcinema_program.3d",        
+/*
+		"3d" => Array (
+            "exclude" => 1,
+            "label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tx_tmdcinema_program.3d",
             "config" => Array (
                 "type" => "check",
             )
         ),
-    	"nores" => Array (		
-			"exclude" => 1,		
-			"label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_program.nores",		
+*/
+		"features" => Array (
+			"exclude" => 1,
+			"label" => "LLL:EXT:tmd_cinema/locallang_db.php:tx_tmdcinema_program.features",
+			"config" => Array (
+				"type" => "check",
+				"cols" => 4,
+				"default" => 0,
+				"items" => Array (
+					Array("LLL:EXT:tmd_cinema/locallang_db.php:tx_tmdcinema_program.features.I.1", ""),
+					Array("LLL:EXT:tmd_cinema/locallang_db.php:tx_tmdcinema_program.features.I.2", ""),
+				),
+			)
+		),
+
+    	"nores" => Array (
+			"exclude" => 1,
+			"label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_program.nores",
 			"config" => Array (
 				"type" => "check",
 			)
 		),
 
-		"movie" => Array (		
-			"exclude" => 1,		
-			"label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_program.movie",		
+		"movie" => Array (
+			"exclude" => 1,
+			"label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_program.movie",
 			"config" => Array (
-			    'type' => 'group',    
+			    'type' => 'group',
 				"internal_type" => "db",
 			    'foreign_table' => "tx_tmdmovie_movie",
-			    'allowed' => "tx_tmdmovie_movie",    
+			    'allowed' => "tx_tmdmovie_movie",
 				"eval" => "required",
-			    'size' => 1,    
+			    'size' => 1,
 			    'minitems' => 1,
 			    'maxitems' => 1,
 			    'wizards' => array(
-			        'suggest' => array(    
+			        'suggest' => array(
 			            'type' => 'suggest',
 			        ),
 			    ),
 			),
 		),
 
-		
-		"cinema" => Array (        
-            "exclude" => 1,        
-            "label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_program.cinema",        
+
+		"cinema" => Array (
+            "exclude" => 1,
+            "label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_program.cinema",
             "config" => Array (
-                "type" => "select",    
-                "foreign_table" => "tt_address",    
+                "type" => "select",
+                "foreign_table" => "tt_address",
 				"foreign_table_where" => " AND tt_address.PID = ###STORAGE_PID### ORDER BY tt_address.company",
-                "size" => 1,    
+                "size" => 1,
                 "minitems" => 0,
                 "maxitems" => 1,
             )
         ),
-		"program" => Array (		
-			"exclude" => 1,		
-			"label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_program.program",		
+		"program" => Array (
+			"exclude" => 1,
+			"label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_program.program",
 			"config" => Array (
 				"type" => "text",
-				"cols" => "30",	
+				"cols" => "30",
 				"rows" => "4",
-				"default" => "",	
+				"default" => "",
 				"wizards" => Array(
 					"_PADDING" => 2,
 					"example" => Array(
@@ -190,29 +206,17 @@ $TCA["tx_tmdcinema_program"] = array (
 				),
 			)
 		),
-	"boxoffice" => Array (        
-            "exclude" => 1,        
-            "label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tx_tmdcinema_program.boxoffice",        
-			"config" => Array (
-				"type" => "text",
-				"cols" => "30",	
-				"rows" => "4",
-				"default" => "",	
-			)
-		),
-		
 	),
 	"types" => array (
-		"0" => array("showitem" => "--div--;Programm,hidden;;1;;1-1-1, temp_title, movie, date, week, cinema, showtype, info,3d,nores, program,
-									--div--;Besondere Veranstaltungshinweise,info2;;;richtext[cut|copy|paste|formatblock|textcolor|bold|italic|underline|left|center|right|orderedlist|unorderedlist|outdent|indent|link|table|image|line|chMode]:rte_transform[mode=ts_css|imgpath=uploads/tx_tmdcinema/rte/],
-									--div--;Umsatzzahlen,boxoffice
+		"0" => array("showitem" => "--div--;Programm,hidden;;1;;1-1-1, temp_title, movie, date, week, cinema, showtype, info,features,nores, program,
+		--div--;Besondere Veranstaltungshinweise,info2;;;richtext[cut|copy|paste|formatblock|textcolor|bold|italic|underline|left|center|right|orderedlist|unorderedlist|outdent|indent|link|table|image|line|chMode]:rte_transform[mode=ts_css|imgpath=uploads/tx_tmdcinema/rte/],
 		")
 	),
 # "types" => array (
 # "0" => array("showitem" => "--div--;Produkt,sys_language_uid;;;;1-1-1, l18n_parent, l18n_diffsource, hidden;;1, name, text;;;richtext[paste|bold|italic|underline|formatblock|class|left|center|right|orderedlist|unorderedlist|outdent|indent|link|image]:rte_transform[mode=ts], icon, mood, related, detail, multicolorimage,--div--;ProduktFinder,artikelnr, temphigh, templow, prodcategory, sports, sex,sortgroup,sizes,sizecorrect,lengthcorrect"),
 # ),
-	
-	
+
+
 	"palettes" => array (
 		"1" => array("showitem" => "starttime, endtime")
 	)
@@ -230,7 +234,7 @@ $TCA["tx_tmdcinema_booking"] = array (
 	),
 	"feInterface" => $TCA["tx_tmdcinema_booking"]["feInterface"],
 	"columns" => array (
-		'hidden' => array (		
+		'hidden' => array (
 			'exclude' => 1,
 			'label' => 'LLL:EXT:lang/locallang_general.xml:LGL.hidden',
 			'config' => array (
@@ -238,25 +242,25 @@ $TCA["tx_tmdcinema_booking"] = array (
 				'default' => '0'
 			)
 		),
-		"name" => Array (		
-			"exclude" => 1,		
-			"label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_booking.name",		
+		"name" => Array (
+			"exclude" => 1,
+			"label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_booking.name",
 			"config" => Array (
-				"type" => "input",	
+				"type" => "input",
 				"size" => "30",
 			)
 		),
-		"email" => Array (		
-			"exclude" => 1,		
-			"label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_booking.email",		
+		"email" => Array (
+			"exclude" => 1,
+			"label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_booking.email",
 			"config" => Array (
-				"type" => "input",	
+				"type" => "input",
 				"size" => "30",
 			)
 		),
-		"seats" => Array (		
-			"exclude" => 1,		
-			"label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_booking.seats",		
+		"seats" => Array (
+			"exclude" => 1,
+			"label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_booking.seats",
 			"config" => Array (
 				"type" => "input",
 				"size" => "4",
@@ -270,27 +274,27 @@ $TCA["tx_tmdcinema_booking"] = array (
 				"default" => 0
 			)
 		),
-		"note" => Array (		
-			"exclude" => 1,		
-			"label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_booking.note",		
+		"note" => Array (
+			"exclude" => 1,
+			"label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_booking.note",
 			"config" => Array (
 				"type" => "text",
-				"cols" => "30",	
+				"cols" => "30",
 				"rows" => "5",
 				"readOnly" => 1,
 			)
 		),
-		"movie" => Array (		
-			"exclude" => 1,		
-			"label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_booking.movie",		
+		"movie" => Array (
+			"exclude" => 1,
+			"label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_booking.movie",
 			"config" => Array (
-				"type" => "input",	
+				"type" => "input",
 				"size" => "30",
 			)
 		),
-		"timedate" => Array (		
-			"exclude" => 1,		
-			"label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_booking.timedate",		
+		"timedate" => Array (
+			"exclude" => 1,
+			"label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_booking.timedate",
 			"config" => Array (
 				"type" => "input",
 				"size" => "12",
@@ -303,26 +307,26 @@ $TCA["tx_tmdcinema_booking"] = array (
 
 
 
-		"cinema" => Array (		
-			"exclude" => 1,		
-            "label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_booking.cinema",		
+		"cinema" => Array (
+			"exclude" => 1,
+            "label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_booking.cinema",
             "config" => Array (
-                "type" => "select",    
-                "foreign_table" => "tt_address",    
+                "type" => "select",
+                "foreign_table" => "tt_address",
 //				"foreign_table_where" => " AND (tt_address.PID = ###PAGE_TSCONFIG_ID### OR tt_address.PID = ###CURRENT_PID###) ORDER BY tt_address.name",
-                "size" => 1,    
+                "size" => 1,
                 "minitems" => 0,
                 "maxitems" => 1,
             )
 		),
 
-		"sentmail" => Array (		
-			"exclude" => 1,		
-			"label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_booking.sentmail",		
+		"sentmail" => Array (
+			"exclude" => 1,
+			"label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_booking.sentmail",
 			"config" => Array (
 				"type" => "text",
-				"readOnly" => 1,  
-				"cols" => "30",	
+				"readOnly" => 1,
+				"cols" => "30",
 				"rows" => "5",
 			)
 		),
@@ -344,7 +348,7 @@ $TCA["tx_tmdcinema_showtype"] = array (
     ),
     "feInterface" => $TCA["tx_tmdcinema_showtype"]["feInterface"],
     "columns" => array (
-        'hidden' => array (        
+        'hidden' => array (
             'exclude' => 1,
             'label' => 'LLL:EXT:lang/locallang_general.xml:LGL.hidden',
             'config' => array (
@@ -352,18 +356,18 @@ $TCA["tx_tmdcinema_showtype"] = array (
                 'default' => '0'
             )
         ),
-        "showtype" => Array (        
-            "exclude" => 1,        
-            "label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_showtype.showtype",        
+        "showtype" => Array (
+            "exclude" => 1,
+            "label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_showtype.showtype",
             "config" => Array (
-                "type" => "input",    
-                "size" => "30",    
+                "type" => "input",
+                "size" => "30",
                 "eval" => "required",
             )
         ),
-        "link" => Array (        
-            "exclude" => 1,        
-            "label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_showtype.link",        
+        "link" => Array (
+            "exclude" => 1,
+            "label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tmd_cinema_showtype.link",
             "config" => Array (
                 "type" => "input",
                 "size" => "15",
@@ -399,49 +403,49 @@ $TCA["tx_tmdcinema_spamlog"] = array (
     ),
     "feInterface" => $TCA["tx_tmdcinema_spamlog"]["feInterface"],
     "columns" => array (
-        "ip" => Array (        
-            "exclude" => 1,        
-            "label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tx_tmdcinema_spamlog.ip",        
+        "ip" => Array (
+            "exclude" => 1,
+            "label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tx_tmdcinema_spamlog.ip",
             "config" => Array (
                 "type" => "none",
             )
         ),
-        "sender" => Array (        
-            "exclude" => 1,        
-            "label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tx_tmdcinema_spamlog.sender",        
+        "sender" => Array (
+            "exclude" => 1,
+            "label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tx_tmdcinema_spamlog.sender",
             "config" => Array (
                 "type" => "none",
             )
         ),
-        "recipient" => Array (        
-            "exclude" => 1,        
-            "label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tx_tmdcinema_spamlog.recipient",        
+        "recipient" => Array (
+            "exclude" => 1,
+            "label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tx_tmdcinema_spamlog.recipient",
             "config" => Array (
                 "type" => "none",
             )
         ),
-        "msg" => Array (        
-            "exclude" => 1,        
-            "label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tx_tmdcinema_spamlog.msg",        
+        "msg" => Array (
+            "exclude" => 1,
+            "label" => "LLL:EXT:tmd_cinema/locallang_db.xml:tx_tmdcinema_spamlog.msg",
             "config" => Array (
                 "type" => "none",
             )
         ),
-		'spam' => array (        
-            'exclude' => 0,        
-            'label' => 'LLL:EXT:tmd_cinema/locallang_db.xml:tx_tmdcinema_spamlog.spam',        
+		'spam' => array (
+            'exclude' => 0,
+            'label' => 'LLL:EXT:tmd_cinema/locallang_db.xml:tx_tmdcinema_spamlog.spam',
             'config' => array (
                 'type' => 'check',
             )
         ),
-        'showdata' => array (        
-            'exclude' => 0,        
-            'label' => 'LLL:EXT:tmd_cinema/locallang_db.xml:tx_tmdcinema_spamlog.showData',        
+        'showdata' => array (
+            'exclude' => 0,
+            'label' => 'LLL:EXT:tmd_cinema/locallang_db.xml:tx_tmdcinema_spamlog.showData',
             'config' => array (
                 'type' => 'none',
             )
         ),
-        
+
     ),
     "types" => array (
         "0" => array("showitem" => "ip;;;;1-1-1, sender, recipient, msg, spam, showdata")

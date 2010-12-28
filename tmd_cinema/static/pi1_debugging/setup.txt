@@ -1,0 +1,57 @@
+
+
+
+plugin.tx_tmdcinema_pi1 {
+	DEBUG = 1
+	DEBUG.day = 28-10-2010
+
+		#Verschlsselte Reservierung
+	cryptTime = 0
+		
+
+	template = Layout1.html
+	templatePath = EXT:tmd_cinema/pi1/res/
+}
+
+
+
+plugin.tx_tmdcinema_pi1 {
+	debug < .default
+	debug {
+		MOVIE_RATING.wrap = 1+|-1
+		MOVIE_RATINGTOOLTIP.wrap = 2+|-2
+		MOVIE_DISTRIBUTOR.wrap = 3+|-3
+		MOVIE_FBW.1.wrap = 4+|-4
+		MOVIE_FBW.2.wrap = 4+|-4
+		MOVIE_TITLE.wrap = 5+|-5
+		MOVIE_TITLE_ORIGINAL.wrap = 6+|-6
+		MOVIE_TITLE_SHORT.wrap = 7+|-7
+		MOVIE_IMAGE.wrap = 8+|-8
+		MOVIE_TIME.wrap = 9+|-9
+		MOVIE_WWW.wrap = 10+|-10
+		MOVIE_YOUTUBE.wrap = 11+|-11
+		MOVIE_RELEASEDATE.wrap = 12+|-12
+		MOVIE_FORMAT.wrap = 13+|-13
+		MOVIE_SOUND.wrap = 14+|-14
+		MOVIE_DESCRIPTION.wrap = 15+|-15
+		MOVIE_DESCRIPTION_SHORT {
+			crop = 350 | ... | 1
+			wrap  = 16+|-16
+		}
+		MOVIE_TRAILER.wrap = 17+|-17
+
+		VERSION3D.wrap = <span style="color: red;">3D</span>
+
+		PRG_TIMETABLE.wrap = 18+|-18
+		PRG_TIMETABLE_STYLE.wrap = 19+|-19
+		PRG_INFO.wrap = 20+|-20
+		PRG_SHOWTYPE.wrap = 21+|-21
+		PRG_WEEK.wrap = 22+|-22
+		PRG_THEATRE.wrap	= 23+|-23
+		PRG_DATE.wrap = 24+|-24
+		
+		PREVIEW_NOTE.wrap = 25+|-25
+	}
+}
+
+

@@ -28,7 +28,7 @@ $TCA["tx_tmdcinema_program"] = array (
         'iconfile' => t3lib_extMgm::extRelPath($_EXTKEY).'icon_tmd_cinema_program.png',
     ),
     "feInterface" => array (
-        "fe_admin_fieldList" => "hidden, starttime, endtime, date, info,info2,nores, movie, cinema, program, 3d,boxoffice",
+        "fe_admin_fieldList" => "hidden, starttime, endtime, date, info,info2,nores, movie, cinema, program, 3d",
     )
 );
 
@@ -97,49 +97,40 @@ $TCA["tx_tmdcinema_spamlog"] = array (
 
 
 
-	/**
-	 * pi1
-	 * Programm anzeigen
-	 */
+
+/* PI1 */
 t3lib_div::loadTCA('tt_content');
 $TCA['tt_content']['types']['list']['subtypes_excludelist'][$_EXTKEY.'_pi1']='layout,select_key';
-	# Programmseiten markieren
+
+# Programmseiten markieren
 $TCA['pages']['columns']['module']['config']['items'][] = Array('LLL:EXT:'.$_EXTKEY.'/locallang_tca.xml:pages.module.I.5', 'cinema_prg');
-	# Wir blenden die Standard Felder layout,select_key,pages,recursive  von Plugins aus
+
+# Wir blenden die Standard Felder layout,select_key,pages,recursive  von Plugins aus
 $TCA['tt_content']['types']['list']['subtypes_excludelist'][$_EXTKEY.'_pi1']='layout,select_key';
-	# Dafür blenden wir das tt_content Feld pi_flexform ein
+# ,pages,recursive
+
+# Dafür blenden wir das tt_content Feld pi_flexform ein
 $TCA['tt_content']['types']['list']['subtypes_addlist'][$_EXTKEY.'_pi1']='pi_flexform';
-	# Wir definieren die Datei, die unser Flexform Schema enthält
+
+# Wir definieren die Datei, die unser Flexform Schema enthält
 t3lib_extMgm::addPiFlexFormValue($_EXTKEY.'_pi1', 'FILE:EXT:'.$_EXTKEY.'/pi1/flexform_ds.xml');
+
+# TS Einbinden
 t3lib_extMgm::addPlugin(array('LLL:EXT:tmd_cinema/locallang_db.xml:tt_content.list_type_pi1', $_EXTKEY.'_pi1'),'list_type');
-t3lib_extMgm::addStaticFile($_EXTKEY,'pi1/static/','Cinema Program');
-t3lib_extMgm::addStaticFile($_EXTKEY,'pi1/static/rss_feed/','Cinema Program RSS');
+t3lib_extMgm::addStaticFile($_EXTKEY,'static/pi1_base/',		'Cinema Program');
+t3lib_extMgm::addStaticFile($_EXTKEY,'static/pi1_TipAFriend/',	'Cinema Tip A Friend');
+t3lib_extMgm::addStaticFile($_EXTKEY,'static/pi1_debugging/',	'Cinema Debugging');
 
 
-	/**
-	 * pi2
-	 * Reservierungen
-	 */
+
+/* PI2 */
 t3lib_div::loadTCA('tt_content');
 $TCA['tt_content']['types']['list']['subtypes_excludelist'][$_EXTKEY.'_pi2']='layout,select_key';
 t3lib_extMgm::addPlugin(array('LLL:EXT:tmd_cinema/locallang_db.xml:tt_content.list_type_pi2', $_EXTKEY.'_pi2'),'list_type');
-t3lib_extMgm::addStaticFile($_EXTKEY,'pi2/static/','Book Reservation');
+t3lib_extMgm::addStaticFile($_EXTKEY,'static/pi2_booking','Cinema Booking');
 
 
 
-
-	/**
-	 * pi3
-	 * Box Office
-	 */
-t3lib_div::loadTCA('tt_content');
-$TCA['tt_content']['types']['list']['subtypes_excludelist'][$_EXTKEY.'_pi3']='layout,select_key';
-$TCA['tt_content']['types']['list']['subtypes_excludelist'][$_EXTKEY.'_pi3']='layout,select_key';
-$TCA['tt_content']['types']['list']['subtypes_addlist'][$_EXTKEY.'_pi3']='pi_flexform';
-t3lib_extMgm::addPiFlexFormValue($_EXTKEY.'_pi3', 'FILE:EXT:'.$_EXTKEY.'/pi3/flexform_ds.xml');
-
-t3lib_extMgm::addPlugin(array('LLL:EXT:tmd_cinema/locallang_db.xml:tt_content.list_type_pi3', $_EXTKEY.'_pi3'),'list_type');
-t3lib_extMgm::addStaticFile($_EXTKEY,'pi3/static/','BoxOffice');
 
 
 
@@ -152,5 +143,7 @@ if (TYPO3_MODE == 'BE')    {
     
     		// add folder icon
 	$ICON_TYPES['cinema_prg'] = array('icon' => t3lib_extMgm::extRelPath($_EXTKEY).'ext_icon_prg_folder.gif');
+	
+	include_once(t3lib_extMgm::extPath($_EXTKEY).'class.tx_tmd_cinema_addfilestosel.php');
 }
 ?>

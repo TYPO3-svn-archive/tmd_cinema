@@ -76,7 +76,6 @@
 				###MOVIE_RATING###
 				###MOVIE_TIME###
 				###MOVIE_GENRE###
-				###MOVIE_FBW###
 				###MOVIE_FORMAT###
 				###MOVIE_SOUND###
 				###MOVIE_DISTRIBUTOR###
@@ -127,7 +126,6 @@
 				###MOVIE_RATING###
 				###MOVIE_TIME###
 				###MOVIE_GENRE###
-				###MOVIE_FBW###
 				###MOVIE_FORMAT###
 				###MOVIE_SOUND###
 				###MOVIE_DISTRIBUTOR###
@@ -162,6 +160,87 @@
 	</div>
 	<!-- ###TIPAFRIEND_VIEW### start -->
 	
+
+
+	/**
+	 * Beispiel um in der Liste andere größen als in der Einzelansicht zu haben:
+	 * flexibel durch TS, aber nur ein Anbieter möglich!!!!
+	 *
+	 * ist aktiv -> ###
+	 */
+<!--###TRAILER_TEMPLATE### begin -->
+	<object 
+		width="###MOVIE_TRAILER_WIDTH###" 
+		height="###MOVIE_TRAILER_HEIGHT###" >
+		<param 
+			name="movie" 
+			value="http://www.youtube.com/v/###MOVIE_TRAILER_LINK###?fs=1&amp;hl=de_DE"></param>
+		<param name="allowFullScreen" value="true"></param>
+		<param name="allowscriptaccess" value="always"></param>
+		<embed 
+			src="http://www.youtube.com/v/###MOVIE_TRAILER_LINK###?fs=1&amp;hl=de_DE"
+			type="application/x-shockwave-flash" 
+			allowscriptaccess="always"
+			allowfullscreen="true" 
+			width="###MOVIE_TRAILER_WIDTH###" 
+			height="###MOVIE_TRAILER_HEIGHT###" >
+		</embed>
+	</object>
+<!--###TRAILER_TEMPLATE### end -->
+
+
+
+	/**
+	 * so wie der Film eingepflegt wurde wird er auch ausgegeben:
+	 * -> html
+	 *
+	 * ist deaktiviert -> # # #
+	 */
+<!--# # # TRAILER_TEMPLATE### begin -->
+	###MOVIE_TRAILER_LINK###
+<!--# # #TRAILER_TEMPLATE### begin -->
+
+
+
+/**
+ * Übergang: table wrap ist in der EXT Hardcoded
+ */
+<!-- ###TRAILER_LIST### begin -->
+	<tr>
+		<td>###LINKITEM### ###POSTER### ###LINKITEM###</td>
+
+		<td>
+			###MOVIE_TITLE###
+			###MOVIE_ORIGINALTITLE###
+			###MOVIE_SUMMARY_SHORT###
+		</td>
+						
+		<td>
+			###MOVIE_TRAILER_LIST###
+		</td>
+	</tr>
+<!-- ###TRAILER_LIST### begin -->
+
+
+
+/**
+ * Übergang: table wrap ist in der EXT Hardcoded
+ */
+<!-- ###TRAILER_LIST### begin -->
+	<tr>
+		<td>###LINKITEM### ###POSTER### ###LINKITEM###</td>
+
+		<td>
+			###TITLE###
+			###ORIGINALTITLE###
+			###SUMMARY_SHORT###
+		</td>
+						
+		<td>
+			###TRAILER_LIST###
+		</td>
+	</tr>
+<!-- ###TRAILER_LIST### begin -->
 	
 	</body>
 

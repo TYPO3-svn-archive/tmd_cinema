@@ -5,6 +5,7 @@
 		<description>Language labels for database tables/fields belonging to extension 'tmd_cinema'</description>
 	</meta>
 	<data type="array">
+	
 		<languageKey index="default" type="array">
 			<label index="tmd_cinema_program">Cinema Program</label>
 			<label index="tmd_cinema_program.date">First day of program</label>
@@ -15,10 +16,10 @@
 			<label index="tmd_cinema_program.showtype">Show Type</label>
 			<label index="tmd_cinema_program.movie">Movie</label>
 			<label index="tmd_cinema_program.program">Program</label>
-			
-            <label index="tx_tmdcinema_program.3d">3D</label>
-            <label index="tx_tmdcinema_program.boxoffice">Box Office</label>
-            
+            <label index="tx_tmdcinema_program.features">Features</label>
+			<label index="tx_tmdcinema_program.features.I.1">3D</label>
+			<label index="tx_tmdcinema_program.features.I.2">Children</label>
+
 			<label index="tmd_cinema_program.week">Week</label>
 			<label index="tmd_cinema_booking">Reservations</label>
 			<label index="tmd_cinema_booking.name">Customer Name</label>
@@ -34,7 +35,6 @@
 			<label index="tmd_cinema_showtype.link">Description</label>
 			<label index="tt_content.list_type_pi1">Cinema Program</label>
 			<label index="tt_content.list_type_pi2">Book Reservation</label>
-            <label index="tt_content.list_type_pi3">BoxOffice</label>			
 
             <label index="tx_tmdcinema_spamlog">Spamlog</label>
             <label index="tx_tmdcinema_spamlog.ip">ip</label>
@@ -43,33 +43,10 @@
 			<label index="tx_tmdcinema_spamlog.msg">Message</label>
 			<label index="tx_tmdcinema_spamlog.spam">Spam erkannt</label>,
 			<label index="tx_tmdcinema_spamlog.showData">Vorstellung</label>,
-	
-			<label index="configure">Configure</label>
-			<label index="mode">Mode</label>
-			<label index="shortView">Short View</label>
-			<label index="completeView">Long View</label>
-			<label index="singelView">Singel View</label>
-			<label index="specialView">Special Show</label>
-			<label index="newsFeed">RSS 2.0 Newsfeed</label>
-			<label index="booking">Booking</label>
-			<label index="tipafriend">Tip A Friend</label>
-			<label index="cinemas">Cinemas</label>
-			<label index="showScpecial">Show Special Shows</label>
-			<label index="weeksAheadMin">Weeks ahead min.</label>
-			<label index="weeksAheadMax">Weeks ahead max.</label>
-			<label index="noPrg">Text if no program is given (%s = Date).</label>
-			<label index="noPrgDefault">The Program %s is not known.</label>
-			<label index="noBooking">No Booking!</label>
-			<label index="booking">Bookings:</label>
-			<label index="image">Image</label>
-			<label index="specialConfiguration">Special Configuration</label>
-			<label index="linkPage">Link image with this page</label>
-			<label index="width">max width</label>
-			<label index="clickEnlarge">Click Enlarge?</label>
 		</languageKey>
 
 		<languageKey index="de" type="array">
-		                  
+	                  
 			<label index="tmd_cinema_program">Kino Programm</label>
 			<label index="tmd_cinema_program.date">Erster Programmtag</label>
 			<label index="tmd_cinema_program.info">Besondere Informationen</label>
@@ -79,8 +56,11 @@
 			<label index="tmd_cinema_program.showtype">Programmart</label>
 			<label index="tmd_cinema_program.movie">Film</label>
 			<label index="tmd_cinema_program.program">Programm</label>
-            <label index="tx_tmdcinema_program.3d">3D</label>
-            <label index="tx_tmdcinema_program.boxoffice">Tagesumsatz</label>
+            <label index="tx_tmdcinema_program.features">Besonderes</label>
+			<label index="tx_tmdcinema_program.features.I.1">3D</label>
+			<label index="tx_tmdcinema_program.features.I.2">Kinderkino</label>
+
+            
 			<label index="tmd_cinema_program.week">Woche</label>
 			<label index="tmd_cinema_booking">Reservierungen</label>
 			<label index="tmd_cinema_booking.name">Kundenname</label>
@@ -96,41 +76,13 @@
 			<label index="tmd_cinema_showtype.link">Weiterführender Link</label>
 			<label index="tt_content.list_type_pi1">Kino Programm</label>
 			<label index="tt_content.list_type_pi2">Reservierungen Bearbeiten</label>
-            <label index="tt_content.list_type_pi3">Besucherzahlen</label>
 
 			<label index="tx_tmdcinema_spamlog">Spamlog</label>
             <label index="tx_tmdcinema_spamlog.ip">ip</label>
             <label index="tx_tmdcinema_spamlog.sender">Absender</label>
             <label index="tx_tmdcinema_spamlog.recipient">Empfänger</label>
 			<label index="tx_tmdcinema_spamlog.msg">Nachricht</label>
-			
-			<label index="configure">Konfiguration</label>
-			<label index="mode">Modus</label>
-			<label index="shortView">Kurze Übersicht</label>
-			<label index="completeView">Ausführliche Übersicht</label>
-			<label index="singelView">Einzelansicht</label>
-			<label index="specialView">Sondervorstellung</label>
-			<label index="newsFeed">RSS 2.0 Newsfeed</label>
-			<label index="tipafriend">Freunde einladen</label>
-			<label index="booking">Reservierung</label>
-			<label index="cinemas">Kinos</label>
-			<label index="showScpecial">Sondervorstellungen anzeigen</label>
-			<label index="weeksAheadMin">Wochen voraus min.</label>
-			<label index="weeksAheadMax">Wochen voraus max.</label>
-			<label index="noPrg">Text wenn kein Programm vorhanden (%s = Datum).</label>
-			<label index="noPrgDefault">Das Programm ab %s ist noch nicht bekannt.</label>
-			<label index="noBooking">Keine Reservierung!</label>
-			<label index="booking">Reservierung:</label>
-			<label index="image">Bilder</label>
-			<label index="specialConfiguration">Besondere Einstellungen</label>
-			<label index="linkPage">Bilder mit dieser Seite verlinken</label>
-			<label index="width">max width</label>
-			<label index="clickEnlarge">Klick Enlarge?</label>
 		</languageKey>
 		
 	</data>
 </T3locallang>
-
-
-
-

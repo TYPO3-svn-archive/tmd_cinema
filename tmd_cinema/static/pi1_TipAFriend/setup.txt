@@ -1,0 +1,32 @@
+
+
+
+plugin.tx_tmdcinema_pi1 {
+
+		# TipAFriend
+	captcha = 1
+	honeyPot = 1
+	tipafriend = 771
+	friendCount = 3
+	sendHTML = 1
+	spamLogPid = 764
+	logSpam = 1
+	logMail = 1
+	maxMsgLength = 300
+	dateString = %d.%B %Y - %H:%M Uhr
+	subject = Du hast eine Kino-Einlandung von %s erhalten
+	baseURL = http://tmd.dynalias.net/tmd/kinoakt/
+	sendMeMailToo = 0
+
+
+		#-----------
+		# Bilder
+		#-----------
+
+		# Tip A Friend
+	imageTipAFriend1.file.width = 80
+	imageTipAFriend2.file.width = 140
+	imageTipAFriend3.file.width = 200
+
+
+}

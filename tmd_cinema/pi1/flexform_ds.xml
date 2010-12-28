@@ -1,64 +1,23 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <T3DataStructure>
 <sheets>
-	<s_DEF>
+
+
+
+
+	<cinemaConfig>
 		<ROOT>
 			<TCEforms>
-			<sheetTitle>Konfiguration</sheetTitle>
+			<sheetTitle>LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:cinemaConfig</sheetTitle>
 			</TCEforms>
 
 			<type>array</type>
 			<el>
-				<mode>
-					<TCEforms>
-					<label>LLL:EXT:tmd_cinema/locallang_db.xml:mode</label>
-					<config>
-						<type>select</type>
-						<items>
-							<numIndex index="0">
-								<numIndex index="0">LLL:EXT:tmd_cinema/locallang_db.xml:shortView</numIndex>
-								<numIndex index="1">shortView</numIndex>
-							</numIndex>
-							
-							<numIndex index="1">
-								<numIndex index="0">LLL:EXT:tmd_cinema/locallang_db.xml:completeView</numIndex>
-								<numIndex index="1">longView</numIndex>
-							</numIndex>
-							
-							<numIndex index="4">
-								<numIndex index="0">LLL:EXT:tmd_cinema/locallang_db.xml:singelView</numIndex>
-								<numIndex index="1">singleView</numIndex>
-							</numIndex>
-							
-							<numIndex index="5">
-								<numIndex index="0">LLL:EXT:tmd_cinema/locallang_db.xml:specialView</numIndex>
-								<numIndex index="1">special</numIndex>
-							</numIndex>
-
-							<numIndex index="6">
-								<numIndex index="0">LLL:EXT:tmd_cinema/locallang_db.xml:newsFeed</numIndex>
-								<numIndex index="1">RSS</numIndex>
-							</numIndex>
-
-							<numIndex index="7">
-								<numIndex index="0">LLL:EXT:tmd_cinema/locallang_db.xml:booking</numIndex>
-								<numIndex index="1">booking</numIndex>
-							</numIndex>
-
-							<numIndex index="7">
-								<numIndex index="0">LLL:EXT:tmd_cinema/locallang_db.xml:tipafriend</numIndex>
-								<numIndex index="1">tipAFriend</numIndex>
-							</numIndex>
-							
-						</items>
-					</config>
-				</TCEforms>
-				</mode>
 
 
 				<cinema>
 				<TCEforms>
-				<label>LLL:EXT:tmd_cinema/locallang_db.xml:cinemas</label>
+				<label>LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:cinemas</label>
 					<config>
 						<type>select</type>
 						<foreign_table>tt_address</foreign_table>
@@ -71,13 +30,25 @@
 				</cinema>
 
 
-<!-- Condition -->
+
 				<special>
 				<TCEforms>
-					<displayCond>FIELD:mode:IN:special</displayCond>
-					<label>LLL:EXT:tmd_cinema/locallang_db.xml:showScpecial</label>
+					<label>LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:onlyShowType</label>
 					<config>
 						<type>select</type>
+						<items>
+							<numIndex index="0">
+								<numIndex index="0">LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:singleView</numIndex>
+								<numIndex index="1">-1</numIndex>
+							</numIndex>
+							<numIndex index="1">
+								<numIndex index="0">LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:divider</numIndex>
+								<numIndex index="1">--div--</numIndex>
+							</numIndex>	
+						</items>
+						
+						<exclusiveKeys>-1</exclusiveKeys>
+						
 						<foreign_table>tx_tmdcinema_showtype</foreign_table>
 						<foreign_table_where> AND tx_tmdcinema_showtype.pid = ###STORAGE_PID### </foreign_table_where>
 						<size>5</size>
@@ -88,10 +59,9 @@
 				</special>
 
 
-
 				<previewMin>
 				<TCEforms>
-					<label>LLL:EXT:tmd_cinema/locallang_db.xml:weeksAheadMin</label>
+					<label>LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:weeksAheadMin</label>
 					<config>
 						<type>input</type>
 						<size>5</size>
@@ -104,7 +74,7 @@
 
 				<previewMax>
 				<TCEforms>
-				<label>LLL:EXT:tmd_cinema/locallang_db.xml:weeksAheadMax</label>
+				<label>LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:weeksAheadMax</label>
 					<config>
 						<type>input</type>
 						<size>5</size>
@@ -114,65 +84,109 @@
 					</config>
 				</TCEforms>
 				</previewMax>
+				
+			</el>
+		</ROOT>
+	</cinemaConfig>
 
-				<previewNotice>
+
+
+	<template>
+		<ROOT>
+			<TCEforms>
+			<sheetTitle>LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:templatesLinks</sheetTitle>
+			</TCEforms>
+
+			<type>array</type>
+			<el>
+			
+				<mode>
+					<TCEforms>
+					<label>LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:mode</label>
+					<config>
+						<type>select</type>
+						<items>
+							<numIndex index="0">
+								<numIndex index="0">LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:showProgram</numIndex>
+								<numIndex index="1">showProgram</numIndex>
+							</numIndex>
+							
+							<numIndex index="5">
+								<numIndex index="0">LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:newsFeed</numIndex>
+								<numIndex index="1">RSS</numIndex>
+							</numIndex>
+
+							<numIndex index="6">
+								<numIndex index="0">LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:booking</numIndex>
+								<numIndex index="1">booking</numIndex>
+							</numIndex>
+
+							<numIndex index="7">
+								<numIndex index="0">LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:tipafriend</numIndex>
+								<numIndex index="1">tipAFriend</numIndex>
+							</numIndex>
+
+							<numIndex index="8">
+								<numIndex index="0">LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:trailer</numIndex>
+								<numIndex index="1">trailer</numIndex>
+							</numIndex>
+							
+						</items>
+					</config>
+				</TCEforms>
+				</mode>
+
+					<templateFile>
+						<TCEforms>
+							<label>LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:templateFile</label>
+							<config>
+								<type>select</type>
+<!--
+								<items type="array">
+										<numIndex index="0" type="array">
+										<numIndex index="0">LLL:EXT:tt_address/pi1/locallang_ff.xml:pi1_flexform.templateFile.I.0</numIndex>
+										<numIndex index="1">default</numIndex>
+										<numIndex index="2">EXT:tt_address/res/default.gif</numIndex>
+									</numIndex>
+								</items>
+-->
+								<itemsProcFunc>tx_tmd_cinema_addfilestosel->main</itemsProcFunc>
+							</config>
+						</TCEforms>
+					</templateFile>
+
+
+				<previewNote>
 				<TCEforms>
-				<label>LLL:EXT:tmd_cinema/locallang_db.xml:noPrg</label>
+				<label>LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:noPrg</label>
 					<config>
 						<type>input</type>
-						<!-- default>LLL:EXT:tmd_cinema/locallang_db.xml:noPrgDefault</default geht das nicht?-->
+						<!-- default>LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:noPrgText</default geht das nicht?-->
 						<default>Das Programm ab %s ist noch nicht bekannt.</default>
 					</config>
 				</TCEforms>
-				</previewNotice>
+				</previewNote>
 
-				<disableReserved>
-				<TCEforms>
-				<label>LLL:EXT:tmd_cinema/locallang_db.xml:noBooking</label>
-					<config>
-						<type>check</type>
-					</config>
-				</TCEforms>
-				</disableReserved>
-
-				<pageReserve>
-				<TCEforms>
-					<exclude>1</exclude>
-					<label>LLL:EXT:tmd_cinema/locallang_db.xml:booking</label>
-					<config>
-						<type>group</type>
-						<internal_type>db</internal_type>
-						<allowed>pages</allowed>
-						<size>1</size>
-						<maxitems>1</maxitems>
-						<minitems>0</minitems>
-						<show_thumbs>0</show_thumbs>
-					</config>
-				</TCEforms>
-				</pageReserve>
 
 				
 			</el>
 		</ROOT>
-	</s_DEF>
+	</template>
 
 
-
-
-
-	<s_image>
+	<imageLinks>
 		<ROOT>
 			<TCEforms>
-			<sheetTitle>LLL:EXT:tmd_cinema/locallang_db.xml:image</sheetTitle>
+			<sheetTitle>LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:imageLinks</sheetTitle>
 			</TCEforms>
 
 			<type>array</type>
 			<el>
 			
-				<linkImagePage>
+				<pageSingelView>
 				<TCEforms>
 					<exclude>1</exclude>
-					<label>LLL:EXT:tmd_cinema/locallang_db.xml:linkPage</label>
+					<label>LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:pageSingelView</label>
 					<config>
 						<type>group</type>
 						<internal_type>db</internal_type>
@@ -183,47 +197,44 @@
 						<show_thumbs>0</show_thumbs>
 					</config>
 				</TCEforms>
-				</linkImagePage>
+				</pageSingelView>
 
-				<width>
+				<pageProgram>
 				<TCEforms>
-				<label>LLL:EXT:tmd_cinema/locallang_db.xml:width</label>
+					<exclude>1</exclude>
+					<label>LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:pageProgramView</label>
 					<config>
-						<type>input</type>
-						<size>5</size>
-						<eval>int</eval>
-						<default>80</default>
+						<type>group</type>
+						<internal_type>db</internal_type>
+						<allowed>pages</allowed>
+						<size>1</size>
+						<maxitems>1</maxitems>
+						<minitems>0</minitems>
+						<show_thumbs>0</show_thumbs>
 					</config>
 				</TCEforms>
-				</width>
-			
-				<clickEnlarge>
+				</pageProgram>
+
+				<pagePreview>
 				<TCEforms>
-					<label>LLL:EXT:tmd_cinema/locallang_db.xml:clickEnlarge</label>
+					<exclude>1</exclude>
+					<label>LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:pagePreview</label>
 					<config>
-						<type>check</type>
+						<type>group</type>
+						<internal_type>db</internal_type>
+						<allowed>pages</allowed>
+						<size>1</size>
+						<maxitems>1</maxitems>
+						<minitems>0</minitems>
+						<show_thumbs>0</show_thumbs>
 					</config>
 				</TCEforms>
-				</clickEnlarge>
-			</el>
-		</ROOT>
-	</s_image>
-
-
-	<!-- 
-	<s_specialConfiguration>
-		<ROOT>
-			<TCEforms>
-			<sheetTitle>LLL:EXT:tmd_cinema/locallang_db.xml:specialConfiguration</sheetTitle>
-			</TCEforms>
-
-			<type>array</type>
-			<el>
+				</pagePreview>
 
 				<pageTipAFriend>
 				<TCEforms>
 					<exclude>1</exclude>
-					<label>LLL:EXT:tmd_cinema/locallang_db.xml:tipafriend</label>
+					<label>LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:pageTipAFriend</label>
 					<config>
 						<type>group</type>
 						<internal_type>db</internal_type>
@@ -235,11 +246,70 @@
 					</config>
 				</TCEforms>
 				</pageTipAFriend>
+
+				<pageBooking>
+				<TCEforms>
+					<exclude>1</exclude>
+					<label>LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:pageBooking</label>
+					<config>
+						<type>group</type>
+						<internal_type>db</internal_type>
+						<allowed>pages</allowed>
+						<size>1</size>
+						<maxitems>1</maxitems>
+						<minitems>0</minitems>
+						<show_thumbs>0</show_thumbs>
+					</config>
+				</TCEforms>
+				</pageBooking>
+
+				<width>
+				<TCEforms>
+				<label>LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:width</label>
+					<config>
+						<type>input</type>
+						<size>10</size>
+						<default></default>
+					</config>
+				</TCEforms>
+				</width>
+
+				<height>
+				<TCEforms>
+				<label>LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:height</label>
+					<config>
+						<type>input</type>
+						<size>10</size>
+						<default></default>
+					</config>
+				</TCEforms>
+				</height>
+			
+				<clickEnlarge>
+				<TCEforms>
+					<label>LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:clickEnlarge</label>
+					<config>
+						<type>check</type>
+					</config>
+				</TCEforms>
+				</clickEnlarge>
 				
+				<disallowBooking>
+				<TCEforms>
+				<label>LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:noBooking</label>
+					<config>
+						<type>check</type>
+					</config>
+				</TCEforms>
+				</disallowBooking>
+
+
 			</el>
 		</ROOT>
-	</s_specialConfiguration>
-	-->
+	</imageLinks>
+
+
+
 	
 </sheets>
 </T3DataStructure>

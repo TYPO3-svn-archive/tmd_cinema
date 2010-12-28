@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>FlexForm</type>
+		<description>Language labels for database tables/fields belonging to extension 'tmd_cinema'</description>
+	</meta>
+	<data type="array">
+	
+		<languageKey index="default" type="array">
+	
+			<label index="configure">Configure</label>
+			<label index="mode">Mode</label>
+			<label index="shortView">Short View</label>
+			<label index="completeView">Long View</label>
+			<label index="singelView">Singel View</label>
+			<label index="specialView">Special Show</label>
+			<label index="newsFeed">RSS 2.0 Newsfeed</label>
+			<label index="booking">Booking</label>
+			<label index="tipafriend">Tip A Friend</label>
+			<label index="trailer">recent Trailer Liste</label>
+			
+			<label index="cinemas">Cinemas</label>
+			<label index="showScpecial">Show Special Shows</label>
+			<label index="weeksAheadMin">Weeks ahead min.</label>
+			<label index="weeksAheadMax">Weeks ahead max.</label>
+			<label index="noPrg">Text if no program is given (%s = Date).</label>
+			<label index="noPrgDefault">The Program %s is not known.</label>
+			<label index="noBooking">No Booking!</label>
+			<label index="booking">Bookings:</label>
+			<label index="image">Image</label>
+			<label index="specialConfiguration">Special Configuration</label>
+			<label index="linkPage">Link image with this page</label>
+			<label index="width">max width</label>
+			<label index="clickEnlarge">Click Enlarge?</label>
+		</languageKey>
+
+		<languageKey index="de" type="array">
+	                  
+			<label index="cinemaConfig">Kinos und Filme</label>
+			<label index="cinemas">Kinos</label>			
+			<label index="onlyShowType">Auf bestimme Vorstellungen Einschränken</label>
+			<label index="singleView">Dies ist eine Einzelansicht</label>
+			<label index="divider">___Programm Arten___</label>
+			<label index="weeksAheadMin">Wochen voraus min.</label>
+			<label index="weeksAheadMax">Wochen voraus max.</label>
+			
+			
+			<label index="templatesLinks">Template und Funktion</label>
+			<label index="mode">Modus</label>
+			<label index="templateFile">Template Datei</label>
+			<label index="noPrg">Text wenn kein Programm vorhanden (%s = Datum).</label>
+			
+			
+			<label index="imageLinks">Bilder &amp; Verlinkung</label>
+			<label index="pageSingelView">Seite der Einzelansicht</label>
+			<label index="pageProgramView">Programmseite</label>
+			<label index="pagePreview">Programmvorschau</label>
+			<label index="pageTipAFriend">Freunde Einladen</label>
+			<label index="pageBooking">Reservierung</label>
+			<label index="width">Breite</label>
+			<label index="height">Höhe</label>
+			<label index="clickEnlarge">Klick Vergößerung?</label>
+
+
+
+
+			
+			
+			
+			<label index="configure">Konfiguration</label>
+			<label index="showProgram">Programm anzeigen</label>
+			<label index="trailer">aktuelle Trailer Liste</label>
+			<label index="showScpecial">Sondervorstellungen anzeigen</label>
+			<label index="noBooking">Keine Reservierung!</label>
+			<label index="image">Bilder</label>
+
+		</languageKey>
+		
+	</data>
+</T3locallang>

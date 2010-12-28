@@ -33,8 +33,7 @@ CREATE TABLE tx_tmdcinema_program (
 	showtype blob NOT NULL,
 	movie blob NOT NULL,
 	program text NOT NULL,
-    3d tinyint(3) DEFAULT '0' NOT NULL,
-	boxoffice text NOT NULL,
+    features int(11) DEFAULT '0' NOT NULL,
 	
 	PRIMARY KEY (uid),
 	KEY parent (pid)
