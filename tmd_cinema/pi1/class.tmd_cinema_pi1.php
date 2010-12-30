@@ -84,29 +84,31 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 		}
 
 #debug($this->conf[$this->templateNameTS]);
+#debug($this->ff['mode']);
 
 		switch($this->ff['mode']) {
-			case 'showProgram':
+			case 'programView':
 			 	$content = $this->program($this->ff['previewMin'], $this->ff['previewMax']);
 			break;
 
-			case 'trailer':
-				$content = $this->program($this->ff['previewMin'], $this->ff['previewMax'], "trailer");
+			case 'singleView':
+				$content = $this->singleView();
 			break;
 
-			case 'booking':
+			case 'bookingView':
 				$content = $this->booking();
 			break;
-			case 'tipAFriend':
+
+			case 'tipAFriendView':
 				$this->internal['currentTable'] = 'tx_tmdcinema_program';
 				$this->internal['currentRow'] = $this->pi_getRecord('tx_tmdcinema_program',$this->piVars['showUid']);
 				$content = $this->tipaFriendView();
 			break;
 		}
 
-		return $this->pi_wrapInBaseClass($content);
+		
+	return $this->pi_wrapInBaseClass($content);
 	}
-
 
 
 
@@ -117,42 +119,33 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 		 * Plätze Reservieren
 		 */
 	function booking() {
+	
 			# Daten vorbereiten
-		if($this->conf['cryptTime'] == 1) # verschlüsseltes entschlüsseln
-			list($this->piVars['res'], $this->piVars['uid'], $this->piVars['cinema']) = explode("-", $this->decrypt($this->piVars[crypt]));
-		else
-			list($this->piVars['res'], $this->piVars['uid'], $this->piVars['cinema']) = explode("-", $this->piVars[crypt]);
-
-		if($this->conf['DEBUG']) {
-			$out .= t3lib_div::view_array($this->conf);
-			$out .= t3lib_div::view_array(array($this->piVars['res'], $this->piVars['uid'], $this->piVars['cinema']));
+		if($this->conf['cryptTime'] == 1) { # verschlüsseltes entschlüsseln
+			list($this->piVars['res'], $this->piVars['uid'], $this->piVars['cinema']) = explode("-", $this->decrypt($this->piVars['crypt']));
+		} else {
+			list($this->piVars['res'], $this->piVars['uid'], $this->piVars['cinema']) = explode("-", $this->piVars['show']);
 		}
 
-		$this->internal['currentRow']['movie'] = $this->piVars['uid'];
-
-		// Formular wird direkt aufgerufen?
-		if (!$this->piVars['crypt']) {
-		    $out .= "Bitte dieses Formular nicht direkt aufrufen!<br />";
-			$out .= "W&auml;hlen Sie einen Film &uuml;ber die Programm&uuml;bericht<br />";
-			$out .= "und klicken Sie auf die gew&uuml;nschte Spielzeit!<br/><br/>";
-			$out .= $this->pi_linkToPage('Zur Programmübersicht', $this->conf['prgPid']);
-			return $out;
-		}
-
+#debug($this->piVars);
+		
 		// Spammern das Handwerk legen
 		// Res Limit berücksichtigen und das Kino auch.
-		if($this->conf['resLimit'] < time()-$this->piVars['res'] || !in_array($this->piVars['cinema'], explode(",", $this->conf['myCinema'])) ) {
-			$out .= "W&auml;hlen Sie einen Film &uuml;ber die Programm&uuml;bericht<br />";
-			$out .= "und klicken Sie auf die gew&uuml;nschte Spielzeit!<br/><br/>";
-			$out .= $this->pi_linkToPage('Zur Programm&uuml;bersicht', $this->conf['prgPid']);
-
-			return $out;
+		if(		 time()-$this->conf['resLimit'] > $this->piVars['res'] 
+				|| !in_array($this->piVars['cinema'], explode(",", $this->conf['cinema']))
+				) {
+			return $this->substituteMarkers('ERROR_VIEW');
 		}
+		
+		
+		$this->internal['currentRow']['movie'] = $this->piVars['uid'];
 
  		$this->oForm = t3lib_div::makeInstance("tx_ameosformidable");
 		$this->oForm->init($this, t3lib_extmgm::extPath($this->extKey) . "pi1/form/booking_form.xml");
 		$out .= $this->oForm->render();
-
+		
+		$out .= $this->substituteMarkers();
+		
 		return $out;
 	}
 
@@ -198,14 +191,9 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 		 */
 	function program($startWeek, $nextWeeks=1) {
 
-		if ($this->ff['special'] == -1) {	// If a single element should be displayed:
-			return $this->singleView();
-		}
-
-
-
-		$type = "";
-
+		
+		
+		
 		if($this->conf['DEBUG'] == 1 && strlen($this->conf['DEBUG.']['day']) > 1)  {
 			$now = $this->theDay;
 		} else {
@@ -409,7 +397,7 @@ $this->cObj->enableFields('tt_address').
 		// Res Limit berücksichtigen und das Kino auch.
 		if(	$this->internal['currentRow']['date'] > 0 && (
 				7*24*60*60-$this->conf['resLimit'] < time()-$this->internal['currentRow']['date']  ||
-				!in_array($this->internal['currentRow']['cinema'], explode(",", $this->conf['myCinema']))   )
+				!in_array($this->internal['currentRow']['cinema'], explode(",", $this->ff['cinema']))   )
 			) {
 			$content = $this->pi_getLL("noValidPRG", "_noValidPRG_");
 		} else {
@@ -556,7 +544,7 @@ $this->cObj->enableFields('tt_address').
 
 							$this->sendTip($markerArray['###MYEMAIL###'], $markerArray['###MYNAME###'], $data['name'], $data['EMail'], $subject, $email);
 
-							if($this->conf['spamLog'] > 0 && $this->conf['logMail'] == 1) { # log every entry
+							if($this->conf['spamLogPID'] > 0 && $this->conf['logMail'] == 1) { # log every entry
 								$this->writeTAFLogfile(0,1); # anonym
 							}
 
@@ -649,7 +637,7 @@ $this->cObj->enableFields('tt_address').
 		if(isset($this->piVars['tipDate'])) {
 			list($theTimeDate, $theMovie, $theCinema) = explode("-", $this->decrypt($this->piVars['tipDate']));
 
-			if(!t3lib_div::inList($this->conf['myCinema'], $theCinema)) { # Kino ist nicht korrekt
+			if(!t3lib_div::inList($this->conf['cinema'], $theCinema)) { # Kino ist nicht korrekt
 				$error[] = $this->pi_getLL('err_wrongCinema', "_err_wrongCinema_"); /* Formular nochmal ausfüllen! */
 			}
 
@@ -929,12 +917,8 @@ $this->cObj->enableFields('tt_address').
 			if($w || $h) { # FF hat vorrang
 				$this->ff['poster.']['file.']['width']  = $w;
 				$this->ff['poster.']['file.']['height'] = $h;
-
-#				debug($this->ff['poster.'], "ff IMAGE");
 			} else { # dann halt TS
 				$this->ff['poster.'] = $this->conf[$this->templateNameTS]['poster.'];
-
-#				debug($this->ff['poster.'], "TS IMAGE");
 			}
 
 				# ClickEnlage
@@ -950,32 +934,20 @@ $this->cObj->enableFields('tt_address').
 			if($w || $h) { # FF hat vorrang
 				$this->ff['poster.']['file.']['10.']['file.']['width']  = $w;
 				$this->ff['poster.']['file.']['10.']['file.']['height'] = $h;
-
-#			debug($this->ff['poster.'], "ff GIF");
 			} else { # dann halt TS
 				$this->ff['poster.'] = $this->conf[$this->templateNameTS]['poster.'];
-
-#			debug($this->ff['poster.'], "TS GIF");
 			}
 
 			# Keine Klickvergrößerung bei GIFUILDER !!!!
 		}
 
 
-#		$val ? $this->ff['clickEnlarge'] = $val : $this->ff['clickEnlarge'] = $this->conf['clickEnlarge'];
-#		plugin.tx_tmdcinema_pi1.
-#		debug($this->conf['Layout1.']['poster.']);
-
+		
+		
+		
 		$val = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'disallowBooking',	'imageLinks');
 		$val ? $this->ff['disallowBooking'] = $val : $this->ff['disallowBooking'] = $this->conf['disallowBooking'];
 
-
-
-		#		$this->ff['pageSingelView']
-#		$this->ff['pageProgram']
-#		$this->ff['pagePreview']
-#		$this->ff['tipAFriend']
-#		$this->ff['pageBooking']
 #		debug($this->ff);
 	}
 
@@ -986,9 +958,9 @@ $this->cObj->enableFields('tt_address').
 
 
 
-	function substituteMarkers($subPart, $markerArray="") {
+	function substituteMarkers($subPart='PROGRAMM_VIEW', $markerArray="") {
 
-		$template = $GLOBALS['TSFE']->cObj->getSubpart($this->template, "###PROGRAMM_VIEW###");
+		$template = $GLOBALS['TSFE']->cObj->getSubpart($this->template, "###$subPart###");
 		if(strlen($template) < 1) {
 			debug("Kein Template!! ###".$subPart."###", $this->ff['templateFile']);
 			return;
@@ -1049,9 +1021,9 @@ $this->cObj->enableFields('tt_address').
 			// ACHTUNG: Reihenfolge beachten:
 			// diese Feld NACH ###PRG_TIMETABLE###
 		$inviteImPossible = $this->checkExpiredProgram();
-		if($this->ff['def']['mode'] == 'tipAFriend' && !$inviteImPossible) {
+		if($this->ff['mode'] == 'tipAFriendView' && !$inviteImPossible) {
 			$markerArray['###INVITE_POSSIBLE###'] = ''; # OK
-		} elseif($this->ff['mode'] == 'tipAFriend') {
+		} elseif($this->ff['mode'] == 'tipAFriendView') {
 			$markerArray['###INVITE_POSSIBLE###'] = $this->pi_getLL("err_invitePossible", "_err_invitePossible_");
 			$markerArray['###PRG_TIMETABLE###'] = '';
 		}
@@ -1113,17 +1085,17 @@ $this->cObj->enableFields('tt_address').
 
 				# Reservierungs Link
 		$linkconf = array(
-	    	 "title" => $this->pi_getLL("howtoReserve"),
-		     "parameter" => $this->conf['pageReserve'],
+	    	 "title" => $this->pi_getLL("howtoBook"),
+		     "parameter" => $this->conf['pageBooking'],
 		     );
 		list($date, $movie, $cinema) = explode("-", $this->decrypt($this->piVars['tipDate']));
 		if($this->conf['cryptTime'] == 1) {
 			$linkconf["additionalParams"] = "&".$this->prefixId."[crypt]=".$this->encrypt($date."-".$this->internal['currentRow']['movie']."-".$this->internal['currentRow']['cinema']);
 		} else {
-			$linkconf["additionalParams"] = "&".$this->prefixId."[crypt]=".$date."-".$this->internal['currentRow']['movie']."-".$this->internal['currentRow']['cinema'];
+			$linkconf["additionalParams"] = "&".$this->prefixId."[show]=".$date."-".$this->internal['currentRow']['movie']."-".$this->internal['currentRow']['cinema'];
 		}
-		if($this->conf['noRes'] == 'pageLinkOnly') unset($linkconf['additionalParams']);
-		if($this->conf['noRes'] == 'ticket') {
+		if($this->ff['disallowBooking'] == 'pageLinkOnly') unset($linkconf['additionalParams']);
+		if($this->ff['disallowBooking'] == 'ticket') {
 			list($date, $movie, $cinema) = explode("-", $this->decrypt($this->piVars['tipDate']));
 			$linkconf = $this->ticketLink($date);
 		}
@@ -1165,8 +1137,8 @@ $this->cObj->enableFields('tt_address').
 			$theDay = $this->internal['currentRow']['date'];
 			$theDay = mktime ( 0, 0, 0, strftime("%m", $theDay),strftime("%d", $theDay), strftime("%Y", $theDay));
 
-			if( (time() > $theDay ) && 	( time() < $theDay + 7*60*60*24 ) ) {
-				$todaysNr = strftime("%u", time()) + 3;
+			if( (time() > $theDay ) && 	( time() < mktime(0, 0, 0, strftime("%m", $theDay),strftime("%d", $theDay)+7, strftime("%Y", $theDay)) ) ) {
+				$todaysNr = strftime("%u", time()) + 3; #  Do!!
 				if($todaysNr > 6) $todaysNr = $todaysNr%7;
 			} else {
 				$todaysNr = -1;
@@ -1177,30 +1149,23 @@ $this->cObj->enableFields('tt_address').
 			for($i=0; $i<7; $i++)
 				{
 				$time[$i] = mktime(0, 0, 0, date("m", $theDay), date("d", $theDay)+1*$i,   date("Y",$theDay));
-#$theDay+60*60*24*$i;
 
-#				$time[$i] = $this->checkSummerWinterBug($time[$i]); /* Sommerzeit-Bug */
-
-				if($i == $todaysNr)
-					{
+				if($i == $todaysNr) {
 					$head .= '<th style="background-color:'.$this->conf['todaysColor'].';">';
 
-					if(date("d", $time[$i]) == date("d", time()) && $this->conf['todayStyle'] == 'today')
+					if(date("d", $time[$i]) == date("d", time()) && $this->conf['todayStyle'] == 'today') {
 						$head .= $this->cObj->wrap($this->pi_getLL("today"), $this->conf['wrap.'][$this->ff['mode'].'.']['PRG_TIMETABLE_TH']);
-
-					else
+					} else {
 						$head .= $this->cObj->wrap(strftime($this->conf['tableTime'], $time[$i]), $this->conf['wrap.'][$this->ff['mode'].'.']['PRG_TIMETABLE_TH']);
+					}
 
 					$head .= '</th>';
-					}
-				else
-					{
+				} else {
 					$head .= '<th align="center">';
 					$head .= $this->cObj->wrap(strftime($this->conf['tableTime'], $time[$i]), $this->conf['wrap.'][$this->ff['mode'].'.']['PRG_TIMETABLE_TH']);
 					$head .= '</th>';
-					}
 				}
-			unset($this->correctDate); /* Sommerzeit-Bug  - damit alle Filme berücksichtigt werden */
+			}
 
 			$head .= '</tr></thead>';
 
@@ -1210,56 +1175,48 @@ $this->cObj->enableFields('tt_address').
 
 			# Mit Zeit verlinken
 			$i=0; $n =0;
-			foreach($temp as $row => $val)
-				{
-				#if(strlen($temp)>0) debug(trim($temp));
-
+			foreach($temp as $row => $val) {
 				$temp[$i] = explode("|", $val);
 
 				foreach($temp[$i] as $key1 => $timeString) {
 					$timeString = trim($timeString); # Zeilenende bereinigen
 
-					if(preg_match( '/[0-9]?[0-9]:[0-9][0-9]/m', $timeString)) /* Exakte Uhrzeit */
-						{
+					if(preg_match( '/[0-9]?[0-9]:[0-9][0-9]/m', $timeString)) { /* Exakte Uhrzeit */ 
 						list($theHour, $theMinute) = explode(":",$timeString);
 
 						$theTime = mktime((int)$theHour, (int)$theMinute, 0, strftime("%m", $time[$n]), strftime("%d", $time[$n]), strftime("%Y", $time[$n]));
 
 						$linkconf = array(
-				    		 "title" => $this->pi_getLL("howtoReserve"),
-						     "parameter" => $this->conf['pageReserve'],
+				    		 "title" => $this->pi_getLL("howtoBook"),
+						     "parameter" => $this->conf['pageBooking'],
 						     );
 
 						if($this->conf['cryptTime'] == 1) {
 							$linkconf["additionalParams"] = "&".$this->prefixId."[crypt]=".$this->encrypt($theTime."-".$this->internal['currentRow']['movie']."-".$this->internal['currentRow']['cinema']);
 						} else {
-							$linkconf["additionalParams"] = "&".$this->prefixId."[crypt]=".$theTime."-".$this->internal['currentRow']['movie']."-".$this->internal['currentRow']['cinema'];
+							$linkconf["additionalParams"] = "&".$this->prefixId."[show]=".$theTime."-".$this->internal['currentRow']['movie']."-".$this->internal['currentRow']['cinema'];
 						}
 
-						if($this->conf['noRes'] == 'pageLinkOnly') unset($linkconf['additionalParams']);
+						if($this->ff['disallowBooking'] == 'pageLinkOnly') unset($linkconf['additionalParams']);
 
-						if($this->conf['noRes'] == 'ticket') {
+						if($this->ff['disallowBooking'] == 'ticket') {
 							$linkconf = $this->ticketLink($theTime);
 						}
 
 							# Reservierungsschluss?
-						$thisDay = time();
-						$thisDay = mktime ( 0, 0, 0, strftime("%m", $thisDay),strftime("%d", $thisDay), strftime("%Y", $thisDay));
-
 							# z.B. 5 Stunden vorher = t-60*60*5
 						if(	(time() > $theTime-60*60*$this->conf['resLimit']) ||
-							$this->ff['noRes'] ||
-							$this->conf['noRes'] == '1' ||
+							$this->ff['disallowBooking'] ||
 							$this->internal['currentRow']['nores'] ||
 							$this->ff['mode'] == 'tipAFriend'
 							) {
-							$temp[$i][$key1] = $timeString;
+							$temp[$i][$key1] = $timeString;  
 						} else {
 							$temp[$i][$key1] = $this->cObj->typoLink($timeString, $linkconf);
 						}
 
 							/* Tip A Friend */
-						if($this->ff['mode'] == 'tipAFriend' && (time() < $theTime-60*60*$this->conf['resLimit'])) {
+						if($this->ff['mode'] == 'tipAFriendView' && (time() < $theTime-60*60*$this->conf['resLimit'])) {
 							$value = $theTime."-".$this->internal['currentRow']['movie']."-".$this->internal['currentRow']['cinema'];
 							$value = $this->encrypt($value);
 							if($this->piVars['tipDate'] == $value) {
@@ -1277,10 +1234,10 @@ $this->cObj->enableFields('tt_address').
 					}
 
 					$n++;
-					}
-				$i++;
-				$n = 0;
 				}
+			$i++;
+			$n = 0;
+			}
 
 
 			# Tabellenzeilen zusammenbauen
@@ -1332,13 +1289,13 @@ $this->cObj->enableFields('tt_address').
 
 		$weekCount =  (int) ($dif / $oneWeek);
 
-		$link  = $this->conf['noRes.']['server'];
+		$link  = $this->ff['disallowBooking.']['server'];
 		$link .= "?Week=".$weekCount;
-		$link .= "&UserCenterID=".$this->conf['noRes.']['UserCenterID'];
+		$link .= "&UserCenterID=".$this->ff['disallowBooking.']['UserCenterID'];
 
-		$link .= "&SiteID=".$this->conf['noRes.']['SiteID.'][$this->getFieldContent('cinemaID')];
+		$link .= "&SiteID=".$this->ff['disallowBooking.']['SiteID.'][$this->getFieldContent('cinemaID')];
 
-		$out['parameter'] = $this->cObj->substituteMarker($this->conf['noRes.']['window.']['parameter'], '###URL###', $link);
+		$out['parameter'] = $this->cObj->substituteMarker($this->ff['disallowBooking.']['window.']['parameter'], '###URL###', $link);
 
 		return $out;
 	}
@@ -1442,8 +1399,6 @@ $this->cObj->enableFields('tt_address').
 					}
 			break;
 			case 'movie_poster':
-
-
 				# first get the imageFile
 				if($this->film->poster) {
 					$temp = explode(',', $this->film->poster); # mehrere Poster?
@@ -1453,39 +1408,25 @@ $this->cObj->enableFields('tt_address').
 				} else { // Media File als Alternative
 					$theImage = $this->uploadPath.$this->getFieldContent('movie_media-random');
 				}
-				# Kein File? -> Dummy Bild
+					# Kein File? -> Dummy Bild
 				if(! @is_file($theImage)) {
 					$theImage = $this->conf['dummyPoster'];
 				}
 
-
-
-
-				# Für welchen Bereich?
-/*
-				switch($this->ff['mode']) {
-					case 'tipAFriend':
-						if($this->ff[$this->templateNameTS]['poster']['pluginWidth'] > 0) { # Plugin hat vorrang
-							$image['file.']['width'] = $this->ff['width'];
-						} else { # größe kommt aus TS
-							$image = $this->conf['imageTipAFriend1.'];
-							if($this->piVars['step'] == 2) $image = $this->conf['imageTipAFriend2.'];
-							if($this->piVars['step'] == 3) $image = $this->conf['imageTipAFriend3.'];
-						}
-					break;
-#					default:
-#						$image = ($image['width'] > 0) ? array("file." => array("width" => $this->ff['width'])) : $this->conf['listViewTrailer.']; 	break;
+					# TAF braucht eine Extrawurst
+				if($this->ff['mode'] == 'tipAFriendView') {
+					$this->ff['poster.'] = $this->conf['imageTipAFriend1.'];
+					if($this->piVars['step'] == 2) $this->ff['poster.'] = $this->conf['imageTipAFriend2.'];
+					if($this->piVars['step'] == 3) $this->ff['poster.'] = $this->conf['imageTipAFriend3.'];
 				}
-*/
-
-
+				
 				# IMAGE oder GIFBUILDER
 				if($this->ff['poster'] == 'IMAGE') {
 					$this->ff['poster.']['file'] = $theImage;
 				} elseif($this->ff['poster'] == 'GIFBUILDER') {
 					$this->ff['poster.']['file.']['10.']['file'] = $theImage;
 				}
-#debug($this->ff['poster.']['file'], "img");
+						
 				$this->ff['poster.']['altText'] = $this->film->titel;
 
 				$out = $this->cObj->IMAGE($this->ff['poster.']);
@@ -1664,6 +1605,7 @@ $this->cObj->enableFields('tt_address').
 				if($out) {
 					$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['MOVIE_ACTOR.']);
 					$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['MOVIE_ACTOR']);
+
 					return $out;
 				}
 			break;
@@ -1836,7 +1778,7 @@ $this->cObj->enableFields('tt_address').
 					$this->adrCache[$this->internal['currentRow'][$fN]] = $this->pi_getRecord("tt_address", $this->internal['currentRow'][$fN]);
 				}
 
-				$out = $this->adrCache[$this->internal['currentRow'][$fN]]['name'];
+				$out = $this->adrCache[$this->internal['currentRow'][$fN]]['company'];
 
 				$out = $this->cObj->stdWrap($out, $this->conf[$this->templateNameTS]['PRG_THEATRE.']);
 				$out = $this->cObj->wrap($out, $this->conf[$this->templateNameTS]['PRG_THEATRE']);

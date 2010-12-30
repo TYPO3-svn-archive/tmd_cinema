@@ -6,18 +6,23 @@ Listen Ansicht im BE: Name des Filmes nicht die uid anzeigen (idee?)
 lokalisieren
 Erster Tag der Woche ändern (flexibel)
 Reservierung: Namen des Users der Datensatz bearbeitet ablegen (uid?)
+OOP, fluid
+TAF -> eigenes PI
 
 History:
+--------
 28.12.10	* Alle wraps mit stdWrap ergänzt.
 			* TS Setup kompett neu, feste Ansichten entfernt, jettz alles avom html-Template und dessen Namen abhängig.  
 			* 3D und Sonderkino-Flag ergänzt.
 			* FlexForm pi1 überarbeitet, übersichtlicher
 			* fast alle TS-Werte können im FF überschrieben werden
 			* neues Template-Handling (Danke an Ingo Renner und tt_address!)
+			* Datum-Bugs behoben.
+			* Source bereinigt
+30.12.09	* einfache Verlängerung des Programms möglich
 			* BE: Neues Module um das programm zu bearbeiten.
 			* neue Ansicht, lang und kurze Übersicht
-			* Datum-Bugs behoben.
-			* einfache Verlängerung des Programms möglich
+			* Tip-A-Friend: Freunde ins Kino einladen
 18.07.09	* extra wraps für Newsletter
 			* ext-key auf tmd_cinema geändert
 20.03.08	* shortProgramm / longProgramm zusammenfassen

@@ -19,7 +19,7 @@
 					<![CDATA[
 						$data = array_pop(func_get_args());
 
-						$out["pid"] 	= $this->_oParent->conf['resPid'];
+						$out["pid"] 	= $this->_oParent->conf['storeBooking'];
 						$out["name"] 	= $data['name'];
 						$out["email"] 	= $data['email'];
 						$out["seats"] 	= $data['seats'];

@@ -14,7 +14,7 @@
 			<label index="backToStart">Hier kommen Sie zurück zum Programm.</label>
 
 			<label index="today">Heute</label>
-			<label index="howtoReserve">Hier klicken um für diese Vorstellung zu Reservieren!</label>
+			<label index="howtoBook">Hier klicken um für diese Vorstellung zu Reservieren!</label>
 
 			<label index="WideScreen">Breitwand</label>
 			<label index="CinemaScope">CinemaScope</label>

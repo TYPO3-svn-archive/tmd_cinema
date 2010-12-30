@@ -10,52 +10,296 @@
 
 	<body>
 
-	<!-- ###TIPAFRIEND_VIEW### start -->
-		<div class="singleView">
-		###MOVIE_SUBTITLE###
-		###MOVIE_TITLE###
+	<!-- ###TIPAFRIEND_FORM### begin -->
+	<div class="tipafriend">
+		<div class="poster">
+			###MOVIE_IMAGE###
+		</div>
 
-		<div>
-			<div style="float: left;">###MOVIE_IMAGE###</div>
-		
-			<div class="techInfo" style="margin-left: 235px;">
-				###MOVIE_RATING###
-				###MOVIE_TIME###
-				###MOVIE_GENRE###
-				###MOVIE_FORMAT###
-				###MOVIE_SOUND###
-				###MOVIE_DISTRIBUTOR###
-				###PRG_SHOWTYPE### 
-				###PRG_WEEK###
-				###MOVIE_WWW###
-				###MOVIE_YOUTUBE###
+		<p class="bodytext"><b>Triff dich mit deinen Freunden zu ###MOVIE_TITLE### im Kino!</b><br />
+		Einfach die E-Mail Adressen eintragen, eine Vorstellung auswählen und das Formular absenden. Schon erhält dein Freund oder deine Freundin eine E-Mail mit deiner Einladung zugeschickt.</p>
 
-				<div class="time">
-					###PRG_TIMETABLE###
-				</div>		
+		<form name="tx_tmdcinema_pi1_tipafriend" action="###ACTION_URL###" method="post" >
 
-				###PRG_INFO###
+			<div class="label">Dein Name*:</div><input type="text"  id="startfield" name="tx_tmdcinema_pi1[myName]" value="###MYNAME###" /><br />
+			<div class="label">Deine E-Mail*:</div><input type="text" name="tx_tmdcinema_pi1[myEMail]" value="###MYEMAIL###" /><br />
+			<br />
+			<div class="label">Name des Freundes*:</div><input type="text" name="tx_tmdcinema_pi1[friendName][1]" value="###FRIENDNAME_1###" /><br />
+			<div class="label">E-Mail Adresse*:</div><input type="text" name="tx_tmdcinema_pi1[friendMail][1]" value="###FRIENDMAIL_1###" /><br />
+			<br />
+			<div class="label">Name des Freundes:</div><input type="text" name="tx_tmdcinema_pi1[friendName][2]" value="###FRIENDNAME_2###" /><br />
+			<div class="label">E-Mail Adresse:</div><input type="text" name="tx_tmdcinema_pi1[friendMail][2]" value="###FRIENDMAIL_2###" /><br />
+			<br />
+			<div class="label">Name des Freundes:</div><input type="text" name="tx_tmdcinema_pi1[friendName][3]" value="###FRIENDNAME_3###" /><br />
+			<div class="label">E-Mail Adresse:</div><input type="text" name="tx_tmdcinema_pi1[friendMail][3]" value="###FRIENDMAIL_3###" /><br />
+			<br />
+			<b>An welche Vorstellung hast du gedacht?<sup>*</sup></b>
+			###PRG_TIMETABLE###
+			###INVITE_POSSIBLE###
+			<br />
+			<b>Deine Nachricht</b><br />
+			<script type="text/javascript">
+			/*<![CDATA[*/
+			function textcounter( field, count_field, max_limit ) {
+				if( field.value.length > max_limit ) { // Inhalt zu lang -> Inhalt beschneiden
+					field.value = field.value.substring(0, max_limit);
+				} else { // Laenge des Inhalts korrekt -> "Zeichen verbleibend" aktualisieren
+					count_field.value = max_limit - field.value.length;
+				}
+			}
+			/*]]>*/
+			</script>
+
+			<textarea name="tx_tmdcinema_pi1[message]"
+				onkeyup  ='textcounter(document.forms.tx_tmdcinema_pi1_tipafriend.elements["tx_tmdcinema_pi1[message]"], document.tx_tmdcinema_pi1_tipafriend.verbleibende_zeichen, 300)'>###MESSAGE###</textarea>
+			<br/>
+			<input type="text" id="counter" name="verbleibende_zeichen" value="300" readonly="readonly"/>Zeichen verbleibend<br />
+
+
+
+
+			<div id="sec">
+				<div class="label"><b>Spamschutz*:</b></div>
+				###CAPTCHA### ###HONEYPOT###<br />
+				<p class="bodytext">Welche Zeichen stehen in diesem Bild?</p>
+
+			</div>
+
+			<br />* Pflichtfelder
+
+			###ERROR###
+			<input type="hidden" name="tx_tmdcinema_pi1[timestamp]" value="###TIMESTAMP###" />
+			<div class="clearLR"><!-- --></div>
+
+			<div class="tipform-right">
+				<input id="step2" type="submit" name="tx_tmdcinema_pi1[step2]" value="Vorschau" />
+				<input id="step3" type="submit" name="tx_tmdcinema_pi1[step3]" value="Freund Einladen" />
+			</div>
+
+
+		</form>
+	</div>
+
+	<h3>Datenschutzerklärung</h3>
+	<p>Alle Daten, die über diesen Dienst verschickt werden, werden nicht gespeichert oder an Dritte weitergegeben. Verantwortlich für den Inhalt der verschickten E-Mail ist der Absender der E-Mail.</p>
+	<!-- ###TIPAFRIEND_FORM### end -->
+
+
+
+
+
+
+
+
+
+
+	<!-- ###TIPAFRIEND_PREVIEW### begin -->
+	<div id="tipafriend-preview">
+		<div id="info">
+			<div class="formhelper">
+				<form name="tx_tmdcinema_pi1_tipafriend" action="###ACTION_URL###" method="post" >
+					<input id="step2" type="submit" name="tx_tmdcinema_pi1[step1]" value="Ändern" />
+					<input id="step3" type="submit" name="tx_tmdcinema_pi1[step3]" value="Absenden" />
+				</form>
+			</div>
+			<br /><br /><br />
+			<p class="bodytext">
+				Absender:<br />
+				###MYNAME###<br />
+				###MYEMAIL###
+			</p>
+			<p class="bodytext">
+				Empfänger:<br />
+				###FRIENDNAME_1###<br />
+				###FRIENDMAIL_1###
+			</p>
+			<p class="bodytext">
+				###FRIENDNAME_2###<br />
+				###FRIENDMAIL_2###
+			</p>
+			<p class="bodytext">
+				###FRIENDNAME_3###<br />
+				###FRIENDMAIL_3###
+			</p>
+		</div>
+
+
+
+		<p class="bodytext">So wird die Einladung aussehen, wenn du sie jetzt absendest:</p>
+		<h1>Du hast eine Kino-Einladung von ###MYNAME### erhalten:</h1>
+
+		<div id="helper">
+			<div id="poster">
+				###MOVIE_IMAGE###
+			</div>
+
+			<div id="message">
+				###MESSAGE###
+				<br  /><br  />
+				<b>Vorstellung:</b><br  />
+				###TIPDATE_DECRYPT### ###PRG_THEATRE###<br />
+				<br />
+				###BOOKLINK###Karten gleich online Reservieren###BOOKLINK###
 			</div>
 		</div>
-			
-		<div class="bodytext clearLR">###MOVIE_DESCRIPTION###</div>
 
-		<div id="mediaInfo">
-			###MEDIA_1### ###MEDIA_2### ###MEDIA_3### ###MEDIA_4### ###MEDIA_5###<br />
+		<div id="movieData">
+			<h1>###MOVIE_TITLE###</h1>
+			###MOVIE_RATING### ###MOVIE_TIME###<br />
+			###MOVIE_DESCRIPTION###
+			###MOVIE_GENRE###
 			###MOVIE_DIRECTOR###
 			###MOVIE_PRODUCER###
 			###MOVIE_ACTOR###
 		</div>
+		<div class="clearLR"><!-- --></div>
 
-		<div class="tmd-cinema-pi1" align="center">
-			<form name="zurueck" style="align: center" action="(EmptyReference!)" >
-				<input onclick="window.history.back()" type="button" value="Zurück"/>
-			</form>
-		</div>
-	
+
 	</div>
-	<!-- ###TIPAFRIEND_VIEW### start -->
-	
+
+
+	<div style="margin: 15px 0;">
+	<h3>Datenschutzerklärung</h3>
+	<p>Alle Daten, die über diesen Dienst verschickt werden, werden nicht gespeichert oder an Dritte weitergegeben. Verantwortlich für den Inhalt der verschickten E-Mail ist der Absender der E-Mail.</p>
+	</div>
+
+	<!-- ###TIPAFRIEND_PREVIEW### end -->
+
+
+
+
+
+
+
+
+
+	<!-- ###TIPAFRIEND_SENT### begin -->
+	<div class="tx-tmdcinema-pi1-tipafriend">
+		<p class="bodytext"><b>Deine Kino-Einladung wurde verschickt.</b></p>
+		<p class="bodytext">Das Kino Team wünscht viel Spaß im Kino!</p>
+		###LINK_PROGRAMM###Zurück zum Programm###LINK_PROGRAMM###
+	</div>
+	<!-- ###TIPAFRIEND_SENT### end -->
+
+
+
+
+
+
+
+<!-- ###TIPAFRIEND_HTMLEMAIL### begin -->
+<html>
+<head>
+	<title>Freunde ins Kino einladen</title>
+	<base href="###BASEURL###" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<style type="text/css">
+		body * { font-size: 12px; }
+		table td { vertical-align: top; }
+		html  { width: 570px; font-family:Arial; font-size: 12px; }
+		a:link, a:visited { color: black; text-decoration: underline; }
+		a:hover, a:active { color: #08284e; text-decoration: none; }
+		.red { color: #CC0000; }
+		.csc-firstHeader  { color: red;	}
+		h1 {
+			font-size: 14px;
+			color: black;
+			text-transform: uppercase;
+			margin: 10px 0 5px;
+			}
+		p { margin: 5px 0; }
+
+		table#seite {
+			font-family:Tahoma, Verdana, Arial, Helvetica, sans-serif;
+			font-size: 12px;
+			text-align:left;
+			color:#000000;
+			margin:10px;
+			padding:0;
+			border: 0;
+			width: 570px;
+			}
+
+	</style>
+</head>
+<body>
+<table id="seite" style="with: 570px; border-collapse:collapse;">
+	<tr id="contPage">
+		<td colspan="2" style="padding: 5px 0;">
+			<h1>Du hast eine Kino-Einlandung von ###MYNAME### erhalten</h1>
+		</td>
+	</tr>
+
+	<tr>
+		<td style="width: 200px; padding-right: 10px; background: #D3D3D3;">###MOVIE_IMAGE###</td>
+
+		<td style="background: #D3D3D3; padding: 5px;">
+				###MESSAGE###
+				<b>Vorstellung:</b><br  />
+				###TIPDATE_DECRYPT### ###PRG_THEATRE###<br />
+				###MOVIE_RATING### ###MOVIE_TIME###<br />
+				<br />
+				###BOOKLINK###Karten gleich online Reservieren###BOOKLINK###
+		</td>
+	</tr>
+
+	<tr>
+		<td colspan="2" style="paddin-top:10px;">
+			<h1>###MOVIE_TITLE###</h1>
+			###MOVIE_RATING### ###MOVIE_TIME###
+			###MOVIE_DESCRIPTION###
+		</td>
+	</tr>
+
+	<tr>
+		<td colspan="2" id="cast">
+			###MOVIE_GENRE###
+			###MOVIE_DIRECTOR###
+			###MOVIE_PRODUCER###
+			###MOVIE_ACTOR###
+		</td>
+	</tr>
+</table>
+</body>
+<!-- ###TIPAFRIEND_HTMLEMAIL### end -->
+
+
+
+<!-- ###TIPAFRIEND_TXTEMAIL### begin -->
+Du hast eine Kino-Einlandung von ###MYNAME### erhalten
+
+###MESSAGE###
+###MOVIE_TITLE###
+###TIPAFRIND_SHOW### ###PRG_THEATRE###
+###BOOKPAGE###
+###DATE###
+
+###MOVIE TITLE###
+###MOVIE_SUMMARY###
+
+###MOVIE_DIRECTOR###
+###MOVIE_PRODUCER###
+###MOVIE_ACTOR###
+###MOVIE_GENRE###
+
+###MOVIE_RATING### ###MOVIE_RATINGTOOLTIP###
+###PRG_WEEK### ###PRG_SHOWTYPE###
+###MOVIE_TIME###
+###MOVIE_RELEASEDATE###
+###MOVIE_FORMAT###
+###MOVIE_SOUND###
+###MOVIE_DISTRIBUTOR###
+###MOVIE_WWW###
+
+
+###PRG_THEATRE###
+<!-- ###TIPAFRIEND_TXTEMAIL### end -->
+
+
+
+	</body>
+
+</html>	
 
 
 	

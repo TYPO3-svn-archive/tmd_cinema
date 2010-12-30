@@ -36,19 +36,6 @@
 					<label>LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:onlyShowType</label>
 					<config>
 						<type>select</type>
-						<items>
-							<numIndex index="0">
-								<numIndex index="0">LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:singleView</numIndex>
-								<numIndex index="1">-1</numIndex>
-							</numIndex>
-							<numIndex index="1">
-								<numIndex index="0">LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:divider</numIndex>
-								<numIndex index="1">--div--</numIndex>
-							</numIndex>
-						</items>
-
-						<exclusiveKeys>-1</exclusiveKeys>
-
 						<foreign_table>tx_tmdcinema_showtype</foreign_table>
 						<foreign_table_where> AND tx_tmdcinema_showtype.pid = ###STORAGE_PID### </foreign_table_where>
 						<size>5</size>
@@ -107,28 +94,28 @@
 						<type>select</type>
 						<items>
 							<numIndex index="0">
-								<numIndex index="0">LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:showProgram</numIndex>
-								<numIndex index="1">showProgram</numIndex>
+								<numIndex index="0">LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:programView</numIndex>
+								<numIndex index="1">programView</numIndex>
 							</numIndex>
 
-							<numIndex index="5">
-								<numIndex index="0">LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:newsFeed</numIndex>
-								<numIndex index="1">RSS</numIndex>
+							<numIndex index="1">
+								<numIndex index="0">LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:singleView</numIndex>
+								<numIndex index="1">singleView</numIndex>
 							</numIndex>
 
-							<numIndex index="6">
-								<numIndex index="0">LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:booking</numIndex>
-								<numIndex index="1">booking</numIndex>
+							<numIndex index="2">
+								<numIndex index="0">LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:bookingView</numIndex>
+								<numIndex index="1">bookingView</numIndex>
 							</numIndex>
 
-							<numIndex index="7">
-								<numIndex index="0">LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:tipafriend</numIndex>
-								<numIndex index="1">tipAFriend</numIndex>
+							<numIndex index="3">
+								<numIndex index="0">LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:tipafriendView</numIndex>
+								<numIndex index="1">tipAFriendView</numIndex>
 							</numIndex>
 
-							<numIndex index="8">
-								<numIndex index="0">LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:trailer</numIndex>
-								<numIndex index="1">trailer</numIndex>
+							<numIndex index="4">
+								<numIndex index="0">LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:trailerView</numIndex>
+								<numIndex index="1">trailerView</numIndex>
 							</numIndex>
 
 						</items>
