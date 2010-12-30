@@ -1,5 +1,5 @@
 
-
+# DEBUGGING
 
 plugin.tx_tmdcinema_pi1 {
 	DEBUG = 1
@@ -11,6 +11,8 @@ plugin.tx_tmdcinema_pi1 {
 
 	template = Layout1.html
 	templatePath = EXT:tmd_cinema/pi1/res/
+	
+	disallowBooking = 0
 }
 
 

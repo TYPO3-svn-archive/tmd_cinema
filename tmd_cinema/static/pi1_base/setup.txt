@@ -1,6 +1,6 @@
 
-
-
+ # basis
+ 
 plugin.tx_tmdcinema_pi1 {
 	
 	# Default konfiguration analog zu den FF Feldern
@@ -46,14 +46,18 @@ plugin.tx_tmdcinema_pi1 {
 	pageSingelView = 281
 	pageProgram = 284
 	pagePreview = 283
-	pageTipAFriend = 768
-	pageBooking = 379
+	pageBooking = 316
+	storeBooking = 379 
 	width = 			# default.poster.file.width ????? überarbeiten!  
 	clickEnlarge = 
-	disallowBooking = 	# -> noRes ????
+	disallowBooking = 0
 		
 		
-			
+
+	dummyPoster = EXT:tmd_cinema/pi1/res/dummy.png
+	
+	
+				
 	
 		#Verschlsselte Reservierung
 	cryptTime = 1
@@ -61,7 +65,7 @@ plugin.tx_tmdcinema_pi1 {
 		# abgelaufenes Programm verbergen
 	hideExpiredProgram = 1
 	
-	dummyPoster = EXT:tmd_cinema/pi1/res/dummy.png
+
 	
 	
 		# Wie sollen leere Spielzeiten markiert werden?
@@ -123,21 +127,24 @@ plugin.tx_tmdcinema_pi1 {
 		# pageLinkOnly: Nur link auf Res. Seite (ticket iFrame)
 		# 0: An
 		# 1: Aus
-#	noRes = 0
+	pageBooking = 316
+	storeBbooking = 379
+	bookingRedirect = 750
 
 		# Mittwochs Programm n-Stunden vorher wechseln
 	switchPrgBevore = 3
 
 		# Bundesstart, Vorpremiere etc.
 	hideType = 1,2,3
-
+	
+		# vor Wochenende abgelaufenes Programm verstecken
+	hideExpiredProgram = 1
 }
 
 
 
-plugin.tx_tmdcinema_pi1 {
 		# Wenn mans braucht
-	imageLinkWrap {
+plugin.tx_tmdcinema_pi1.imageLinkWrap {
 		enable = 1
 		bodyTag = <body style="margin:0;background-color:black">
 		JSwindow = 1
@@ -150,6 +157,7 @@ plugin.tx_tmdcinema_pi1 {
 
 
 		# Poster
+plugin.tx_tmdcinema_pi1 {
 	default.poster = IMAGE
 	default.poster.file.width = 100c
 	default.poster.file.height = 150c
@@ -301,8 +309,6 @@ plugin.tx_tmdcinema_pi1 {
 	
 	tipAFriend < .default
 	trailerListe < .default 
-
-
 }
 
 

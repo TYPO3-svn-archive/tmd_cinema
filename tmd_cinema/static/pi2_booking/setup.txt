@@ -7,7 +7,7 @@ plugin.tx_tmdcinema_pi2 {
 	email.from = reservierung@kino-isny.de
 	
 			# store Bookings here
-	bookingPid < plugin.tx_tmdcinema_pi1.bookingPid
+#	bookingPid < plugin.tx_tmdcinema_pi1.bookingPid
 }
 
 plugin.tx_tmdcinema_pi2.listView {
@@ -20,10 +20,5 @@ plugin.tx_tmdcinema_pi2.listView {
 #  .tmd-cinema-pi2 H2 { margin-top: 0px; margin-bottom: 0px; }
 #)
 
-  # Example of how to overrule LOCAL_LANG values for the plugin:
-plugin.tx_tmdcinema_pi2._LOCAL_LANG.default {
-	pi_list_searchBox_search = Search!
-	}
-	
-  # Example of how to set default values from TS in the incoming array, $this->piVars of the plugin:
-#plugin.tx_tmdcinema_pi2._DEFAULT_PI_VARS.test = test
+
+

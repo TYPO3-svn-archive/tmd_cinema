@@ -1,32 +1,42 @@
 
 
+		# TipAFriend
+
 
 plugin.tx_tmdcinema_pi1 {
-
-		# TipAFriend
+	pageTipAFriend  = 768
+	
 	captcha = 1
 	honeyPot = 1
-	tipafriend = 771
 	friendCount = 3
 	sendHTML = 1
-	spamLogPid = 764
+	spamLogPID = 767
 	logSpam = 1
 	logMail = 1
-	maxMsgLength = 300
+
+	maxMsgLength = 330
 	dateString = %d.%B %Y - %H:%M Uhr
-	subject = Du hast eine Kino-Einlandung von %s erhalten
-	baseURL = http://tmd.dynalias.net/tmd/kinoakt/
+	subject = Du hast eine Kino-Einlandung von %s erhalten  
 	sendMeMailToo = 0
+	baseURL = http://www.kino-isny.de/
 
-
-		#-----------
-		# Bilder
-		#-----------
-
-		# Tip A Friend
-	imageTipAFriend1.file.width = 80
-	imageTipAFriend2.file.width = 140
+		# Bilder jetzt kein FF
+	imageTipAFriend1.file.width = 170
+	imageTipAFriend2.file.width = 170
 	imageTipAFriend3.file.width = 200
+	}
 
 
+plugin.tx_tmdcinema_pi1.tipAFriend {
+  MOVIE_TITLE = <div class="movieTitle">| </div>
+  MOVIE_GENRE= Genre:&nbsp; | <br />
+  MOVIE_DIRECTOR= Regie:&nbsp; | <br />
+  MOVIE_PRODUCER= Produktion:&nbsp; | <br />
+  MOVIE_ACTOR = mit&nbsp; | <br />
+  MOVIE_TIME = ca. | min<br />
+  MOVIE_RATING = |<br />
+  
+  PRG_SHOWTYPE = <span class="showType"> | </span>
+  PRG_INFO = <div class="info">|</div>
+  PRG_WEEK = | te Woche<br />
 }
