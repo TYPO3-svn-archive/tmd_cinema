@@ -1,0 +1,35 @@
+
+
+# -----------
+# Shadow-Box
+# -------------
+
+plugin.tx_tmdcinema_pi1.imageLinkWrap >
+plugin.tx_tmdcinema_pi1.imageLinkWrap {
+	enable = 1
+	  
+		# Add new typolink wrapping code
+	typolink {
+		  # Set the title of the A tag, which is used as caption inside the Lightbox
+		title.field = {$plugin.pmkshadowbox.tt_products.captionField}
+		        
+		  # This returns a link, pointing to the path + name of the original image.
+		  # or to the path + name of the resized lightbox image (if maxH or maxW is reached.)
+		parameter.cObject = IMG_RESOURCE
+		parameter.cObject.file.import.data = TSFE:lastImageInfo|origFile
+		  
+		  # Add the "rel" attribute needed to activate the lightbox effect.
+		ATagParams = rel="lightbox"
+		ATagParams.override = rel="lightbox[sb{field:uid}]"
+		ATagParams.override.if.isTrue = {$plugin.pmkshadowbox.tt_products.navigable}
+		ATagParams.insertData = 1
+	}
+}
+
+plugin.tx_tmdcinema_pi1.default.media.imageLinkWrap < plugin.tx_tmdcinema_pi1.imageLinkWrap
+plugin.tx_tmdcinema_pi1.Layout3.media.imageLinkWrap < plugin.tx_tmdcinema_pi1.imageLinkWrap
+
+plugin.tx_tmdcinema_pi1.default.poster.imageLinkWrap < plugin.tx_tmdcinema_pi1.imageLinkWrap
+plugin.tx_tmdcinema_pi1.Layout3.poster.imageLinkWrap < plugin.tx_tmdcinema_pi1.imageLinkWrap
+
+

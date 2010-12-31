@@ -1,16 +1,3 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<html lang="de" xml:lang="de" xmlns="http://www.w3.org/1999/xhtml">
-
-	<head>
-		<meta http-equiv="content-type" content="text/html;charset=utf-8" />
-		<title>Trailer Liste</title>
-		<link href="../style.css" rel="stylesheet" type="text/css" media="all" />
-	</head>
-
-	<body>
-	
-
 
 	/**
 	 * Beispiel um in der Liste andere größen als in der Einzelansicht zu haben:
@@ -18,6 +5,30 @@
 	 *
 	 * ist aktiv -> ###
 	 */
+<!-- ###PROGRAMM_VIEW### begin -->
+	<tr class="itemRow">
+		<td>###LINK_SINGLE### ###MOVIE_POSTER### ###LINK_SINGLE###</td>
+
+		<td>
+			###MOVIE_TITLE###
+			###MOVIE_TITLE_ORIGINAL###
+			###MOVIE_DESCRIPTION_SHORT###
+		</td>
+						
+		<td>
+			###MOVIE_TRAILER_LIST###
+		</td>
+	</tr>
+<!-- ###PROGRAMM_VIEW### begin -->
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
 <!--###TRAILER_TEMPLATE### begin -->
 	<object 
 		width="###MOVIE_TRAILER_WIDTH###" 
@@ -40,6 +51,7 @@
 
 
 
+
 	/**
 	 * so wie der Film eingepflegt wurde wird er auch ausgegeben:
 	 * -> html
@@ -52,46 +64,5 @@
 
 
 
-/**
- * Übergang: table wrap ist in der EXT Hardcoded
- */
-<!-- ###TRAILER_LIST### begin -->
-	<tr>
-		<td>###LINKITEM### ###POSTER### ###LINKITEM###</td>
-
-		<td>
-			###MOVIE_TITLE###
-			###MOVIE_ORIGINALTITLE###
-			###MOVIE_SUMMARY_SHORT###
-		</td>
-						
-		<td>
-			###MOVIE_TRAILER_LIST###
-		</td>
-	</tr>
-<!-- ###TRAILER_LIST### begin -->
 
 
-
-/**
- * Übergang: table wrap ist in der EXT Hardcoded
- */
-<!-- ###TRAILER_LIST### begin -->
-	<tr>
-		<td>###LINKITEM### ###POSTER### ###LINKITEM###</td>
-
-		<td>
-			###TITLE###
-			###ORIGINALTITLE###
-			###SUMMARY_SHORT###
-		</td>
-						
-		<td>
-			###TRAILER_LIST###
-		</td>
-	</tr>
-<!-- ###TRAILER_LIST### begin -->
-	
-	</body>
-
-</html>

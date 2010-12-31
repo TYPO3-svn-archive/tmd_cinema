@@ -29,6 +29,7 @@ plugin.tx_tmdcinema_pi1 {
 				templatePath
 		*/
 	mode =
+	templateTrailer = YouTube.html
 	templateFile = Layout1.html
 	templatePath = EXT:tmd_cinema/pi1/res/
 	previewNote =
@@ -170,37 +171,51 @@ plugin.tx_tmdcinema_pi1 {
 	default.media.imageLinkWrap < .imageLinkWrap
 
 	default {
-		MOVIE_RATING = | 
-		MOVIE_RATINGTOOLTIP = |
-		MOVIE_DISTRIBUTOR = |
-		MOVIE_FBW.1 = |
-		MOVIE_FBW.2 = |
-		MOVIE_TITLE = | 
-		MOVIE_TITLE_ORIGINAL = |
-		MOVIE_TITLE_SHORT = |
-		MOVIE_IMAGE = |
-		MOVIE_TIME = | 
-		MOVIE_WWW = |
-		MOVIE_YOUTUBE = |
-		MOVIE_RELEASEDATE = |
-		MOVIE_FORMAT = |
-		MOVIE_SOUND = |
-		MOVIE_DESCRIPTION = |
-		MOVIE_DESCRIPTION_SHORT  = |
-		MOVIE_TRAILER = |
-		MOVIE_GENRE = |
+		###MOVIE_TITLE### = |
+		###MOVIE_TITLE_ORIGINAL### = |
+		###MOVIE_TITLE_SHORT### = |
+		###MOVIE_TITLE_SHORT_FIRST### = |
+		
+		###MOVIE_POSTER### = |
+		###MOVIE_RATING### = |
+		###MOVIE_RATINGTOOLTIP### = |
+		###MOVIE_TIME### = |
+		###MOVIE_RELEASEDATE### = |
+		###MOVIE_FORMAT### = |
+		###MOVIE_SOUND### = |
+		###MOVIE_DISTRIBUTOR### = |
+		###MOVIE_WWW### = |
+		###MOVIE_TRAILER### = |
+		###MOVIE_DESCRIPTION### = |
+		###MOVIE_DESCRIPTION_SHORT### = |
+		###MOVIE_EXTRAPICS### = |
+		###MOVIE_SUBTITLE### = |
+		###MOVIE_IMAGE_LINK### = |
+		###MOVIE_FBW### = |
+		###MOVIE_TRAILER_SINGLE### = |
+		###MOVIE_TRAILER_LIST### = |
+		
+		###MEDIA_1### = |
+		###MEDIA_2### = |
+		###MEDIA_3### = |
+		###MEDIA_4### = |
+		###MEDIA_5### = |
+		
+		###MOVIE_DIRECTOR### = |
+		###MOVIE_PRODUCER### = |
+		###MOVIE_ACTOR### = |
+		###MOVIE_GENRE### = |
 
 		VERSION3D = <span style="color: red;">3D</span>
 
-		PRG_TIMETABLE = |
-		PRG_TIMETABLE_STYLE =
-		PRG_INFO = |
-		PRG_SHOWTYPE = |
-		PRG_WEEK = |
-		PRG_THEATRE	 = |
-		PRG_DATE = |
-		
-		PREVIEW_NOTE = <span class="preViewNote">|</span>
+		###PRG_WEEK### = |
+		###PRG_SHOWTYPE### = |
+		###PRG_TIMETABLE### = |
+		###PRG_INFO### = |
+		###PRG_INFO2### = |
+		###PRG_THEATRE### = |
+		###PRG_FIRSTDAY### = |
+		###PRG_STARTDAY### = |
 		}
 
 
@@ -242,7 +257,7 @@ plugin.tx_tmdcinema_pi1 {
 	Layout2 {
 		MOVIE_RATING = |&nbsp;-&nbsp; 
 		MOVIE_TIME = |&nbsp;-&nbsp;
-		MOVIE_TITLE = <div class="movieTitle"> | </div>
+		MOVIE_TITLE = <h1> | </h1>
 		MOVIE_TIME = ca. | min&nbsp;-&nbsp;
 		MOVIE_DESCRIPTION_SHORT.stdWrap.crop = 350 | ... | 1
 		MOVIE_WWW = <span class="hidePrint"> | </span>
@@ -286,6 +301,9 @@ plugin.tx_tmdcinema_pi1 {
 		MOVIE_DESCRIPTION_SHORT  = |
 		MOVIE_TRAILER = |
 		MOVIE_GENRE = Genre:&nbsp;| <br />
+		MOVIE_ACTOR = mit&nbsp;|
+		MOVIE_DIRECTOR = Regie:&nbsp;|<br />
+		MOVIE_PRODUCER = Produktion:&nbsp;|<br />
 						
 		VERSION3D = <span style="color: red;">3D</span>
 
@@ -308,7 +326,13 @@ plugin.tx_tmdcinema_pi1 {
 	Layout4 < .default
 	
 	tipAFriend < .default
-	trailerListe < .default 
+	
+	YouTube < .default 
+	YouTube {
+		MOVIE_DESCRIPTION_SHORT.stdWrap.crop = 120 | ... | 1
+		MOVIE_TITLE = <h2>| </h2>
+		MOVIE_TITLE_ORIGINAL = | <br />
+	}
 }
 
 

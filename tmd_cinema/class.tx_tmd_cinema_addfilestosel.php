@@ -61,7 +61,7 @@ class tx_tmd_cinema_addfilestosel {
 		$readPath = t3lib_div::getFileAbsFileName(
 			$template->setup['plugin.']['tx_tmdcinema_pi1.']['templatePath']
 		);
-	     
+#debug($template->setup['plugin.']['tx_tmdcinema_pi1.']['templatePath'], "hier");
 			// if that direcotry is valid and is a directory then select files in it
 		if (@is_dir($readPath)) {
 

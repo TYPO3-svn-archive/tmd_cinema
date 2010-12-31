@@ -120,6 +120,7 @@ t3lib_extMgm::addPlugin(array('LLL:EXT:tmd_cinema/locallang_db.xml:tt_content.li
 t3lib_extMgm::addStaticFile($_EXTKEY,'static/pi1_base/',		'Cinema Program');
 t3lib_extMgm::addStaticFile($_EXTKEY,'static/pi1_TipAFriend/',	'Cinema Tip A Friend');
 t3lib_extMgm::addStaticFile($_EXTKEY,'static/pi1_debugging/',	'Cinema Debugging');
+t3lib_extMgm::addStaticFile($_EXTKEY,'static/pi1_shadowbox/',	'Cinema ShadowBox');
 
 
 

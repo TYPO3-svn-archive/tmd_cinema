@@ -87,9 +87,6 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 #debug($this->ff['mode']);
 
 		switch($this->ff['mode']) {
-			case 'programView':
-			 	$content = $this->program($this->ff['previewMin'], $this->ff['previewMax']);
-			break;
 
 			case 'singleView':
 				$content = $this->singleView();
@@ -104,9 +101,18 @@ class tx_tmdcinema_pi1 extends tslib_pibase {
 				$this->internal['currentRow'] = $this->pi_getRecord('tx_tmdcinema_program',$this->piVars['showUid']);
 				$content = $this->tipaFriendView();
 			break;
+			
+			case 'trailerView':
+				$content = $this->trailerView($this->ff['previewMin'], $this->ff['previewMax']);
+			break;
+			
+			default:
+			 	$content = $this->program($this->ff['previewMin'], $this->ff['previewMax']);
+			break;
+			
 		}
 
-		
+#debug($this->ff['mode']);		
 	return $this->pi_wrapInBaseClass($content);
 	}
 
@@ -332,7 +338,7 @@ $this->cObj->enableFields('tt_address').
 						# Film ausgeben
 
 					switch($this->ff['mode']) {
-						case 'trailer':
+						case 'trailerView':
 							if($this->film->trailer != '') {
 								$items[] = $this->substituteMarkers();
 							}
@@ -370,7 +376,7 @@ $this->cObj->enableFields('tt_address').
 		unset($noDate);
 		}
 
-		if($type == 'trailer') { # wrap für trailerListe
+		if($type == 'trailerView') { # wrap für trailerListe
 			if(strlen($out) > 1) {
 				$out = '<table class="trailerList">'.$prg.'</table>';
 			} else {
@@ -386,7 +392,124 @@ $this->cObj->enableFields('tt_address').
 
 
 
+		/**
+		 * Trailer Übersicht
+		 *
+		 * @param string	Welche Art Programm
+		 * @param int Startwoche, 0 = aktuelle Woche, 1=nächste Woche, 2=übernächste u.s.w.
+		 * @param int Wieviele Wochen?
+		 */
+	function trailerView($startWeek, $nextWeeks=1) {
 
+		
+		if($this->conf['DEBUG'] == 1 && strlen($this->conf['DEBUG.']['day']) > 1)  {
+			$now = $this->theDay;
+		} else {
+			$now = mktime();
+		}
+
+
+		switch(strftime("%u", $now)) { # %u = Tag der Woche 1= Montag
+			case 1: $wStart = mktime(0, 0, 0, date("m", $now), date("d", $now)-4, date("Y", $now)); break; # Mo
+			case 2: $wStart = mktime(0, 0, 0, date("m", $now), date("d", $now)-5, date("Y", $now)); break; # DI
+			case 3: $wStart = mktime(0, 0, 0, date("m", $now), date("d", $now)-6, date("Y", $now)); break; # MI
+			case 4: $wStart = mktime(0, 0, 0, date("m", $now), date("d", $now)-0, date("Y", $now)); break; # DO
+			case 5: $wStart = mktime(0, 0, 0, date("m", $now), date("d", $now)-1, date("Y", $now)); break; # FR
+			case 6: $wStart = mktime(0, 0, 0, date("m", $now), date("d", $now)-2, date("Y", $now)); break; # SA
+			case 7: $wStart = mktime(0, 0, 0, date("m", $now), date("d", $now)-3, date("Y", $now)); break; # SO
+		}
+
+			# n-te Woche in die Zukunft
+		$wStart = mktime(0, 0, 0, date("m", $wStart), date("d", $wStart)+7*$startWeek, date("Y", $wStart));
+		$wEnd   = mktime(0, 0, 0, date("m", $wStart), date("d", $wStart)+7*$nextWeeks, date("Y", $wStart))-1;
+
+
+		if($startWeek == 0) {
+			$whereClause   .= 'AND tx_tmdcinema_program.date >= '.$wStart.' AND tx_tmdcinema_program.date <= '.($wEnd);
+		} else {
+			$whereClause .= ' AND (tx_tmdcinema_program.date = 0 OR (tx_tmdcinema_program.date >= '.$wStart.' AND tx_tmdcinema_program.date < '.$wEnd.'))';
+		}
+		$whereClause .= " AND tx_tmdcinema_program.cinema IN (".$this->ff['cinema'].")";
+
+		if($this->ff['special']) {
+			$whereClause .= " AND tx_tmdcinema_program.showtype IN (".$this->ff['special'].")";
+		}
+
+
+		if(strlen($this->conf['additionalWhere']) > 0) {
+			$whereClause .= ' AND '.$this->conf['additionalWhere'];
+		}
+		$whereClause .= ' AND tx_tmdcinema_program.movie = tx_tmdmovie_movie.uid AND tx_tmdmovie_movie.hidden = 0 AND tx_tmdmovie_movie.deleted = 0';
+		$whereClause .= $this->cObj->enableFields('tx_tmdcinema_program');
+
+		$sortBy = "tx_tmdcinema_program.cinema, tx_tmdcinema_program.date, sorting ASC";
+
+
+
+
+
+#debug($whereClause);
+
+			// Make listing query, pass query to SQL database:
+			# ACHTUNG Reichen folge der tabellen wegen UID!!
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('DISTINCT *', '  tx_tmdmovie_movie,tx_tmdcinema_program', "1=1 ".$whereClause, $groupBy, $sortBy);
+
+
+
+
+			// Make list table rows
+		$noDate=array();
+		$cinemaOrder = explode(",", $this->ff['cinema']);
+
+		while($this->internal['currentRow'] = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+			$tempTime = $this->internal['currentRow']['date'];
+			list($day, $month, $year) = explode(",", strftime("%e,%m,%Y", $tempTime));
+			$this->internal['currentRow']['date'] = mktime(0,0,0,  $month,  $day, $year);
+			$all[] = $this->internal['currentRow'];
+		}
+#debug($all);
+
+
+		if (count($all)  == 0) {  /* Es gibt noch kein Programm */
+			if($this->ff['previewNotice']) {
+				$out = sprintf($this->ff['previewNotice'], strftime($this->conf['timeFormat'], $wStart));
+				$out = $this->cObj->wrap($out, $this->conf['wrap.'][$this->ff['mode'].'.']['PREVIEW_NOTE']);
+			} 
+
+			return $out;
+		}
+
+
+
+		foreach($all as $this->internal['currentRow']) {
+			$items[ $this->internal['currentRow']['title'] ] = $this->substituteMarkers();
+		}
+
+
+		if(is_array($items)) {
+			if(count($items) > 0) {
+				$out = implode(chr(10), $items);
+			}
+		}
+
+		
+		
+
+		if(strlen($out) > 1) {
+			$out = '<table class="trailerList">'.$out.'</table>';
+		} else {
+			$out = "Keine Trailer vorhanden";
+		}
+
+		return $out;
+	}
+
+	
+	
+	
+	
+	
+	
 	/**
 	 * Returns the detail View
 	 *
@@ -926,7 +1049,6 @@ $this->cObj->enableFields('tt_address').
 				$this->ff['poster.']['imageLinkWrap'] = 1;
 				$this->ff['poster.']['imageLinkWrap.'] = $this->conf['imageLinkWrap.'];
 			}
-
 		} elseif($this->conf[$this->templateNameTS]['poster.']['file'] == 'GIFBUILDER') {
 			$this->ff['poster']	= 'GIFBUILDER';
 			$this->ff['poster.'] = $this->conf[$this->templateNameTS]['poster.'];
@@ -974,7 +1096,7 @@ $this->cObj->enableFields('tt_address').
 		$markerArray['###MOVIE_TITLE_SHORT###']		= $this->getFieldContent('movie_subtitle');
 		$markerArray['###MOVIE_TITLE_SHORT_FIRST###'] = $this->getFieldContent('movie_subtitle_first');
 
-		$markerArray['###MOVIE_IMAGE###'] 			= $this->getFieldContent('movie_poster');
+		$markerArray['###MOVIE_POSTER###'] 			= $this->getFieldContent('movie_poster');
 		$markerArray['###MOVIE_RATING###'] 			= $this->getFieldContent('movie_fsk');
 		$markerArray['###MOVIE_RATINGTOOLTIP###'] 	= $this->getFieldContent('movie_fskTooltip');
 		$markerArray['###MOVIE_TIME###'] 			= $this->getFieldContent('movie_time');
@@ -1419,7 +1541,7 @@ $this->cObj->enableFields('tt_address').
 					if($this->piVars['step'] == 2) $this->ff['poster.'] = $this->conf['imageTipAFriend2.'];
 					if($this->piVars['step'] == 3) $this->ff['poster.'] = $this->conf['imageTipAFriend3.'];
 				}
-				
+
 				# IMAGE oder GIFBUILDER
 				if($this->ff['poster'] == 'IMAGE') {
 					$this->ff['poster.']['file'] = $theImage;
@@ -1442,7 +1564,7 @@ $this->cObj->enableFields('tt_address').
 					$width  = ($fN=='movie_trailer_single') ? $this->conf['trailer.']['single_width']  : $this->conf['trailer.']['list_width'];
 					$height = ($fN=='movie_trailer_single') ? $this->conf['trailer.']['single_height'] : $this->conf['trailer.']['list_height'];
 
-					$out = $this->cObj->fileResource($this->conf['template']);
+					$out = $this->cObj->fileResource($this->conf['templatePath'].$this->conf['templateTrailer']);
 					$out = $GLOBALS['TSFE']->cObj->getSubpart($out, "###TRAILER_TEMPLATE###");
 
 					$out = $this->cObj->substituteMarker($out, '###MOVIE_TRAILER_WIDTH###',  $width);
@@ -1646,8 +1768,10 @@ $this->cObj->enableFields('tt_address').
 
 				$image['file'] = 'uploads/tx_tmdmovie/'.$pic;
 
+						
 				$out = $this->cObj->IMAGE($image);
 
+				
 				return $out;
 			break;
 			case 'trailer_single':
