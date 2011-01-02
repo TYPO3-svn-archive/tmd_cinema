@@ -23,6 +23,8 @@
 			<label index="youtube">Trailer auf YouTube</label>
 			<label index="noValidPRG">Dieses Programm ist bereits abgelaufen!</label>
 			<label index="timeNN">Die Spielzeiten sind noch nicht bekannt!</label>
+			<label index="programmBeginning">Programm ab %s</label>
+
 
 			<label index="mailForm.name">Ihr Name:</label>
 			<label index="mailForm.email">Ihre E-Mail Adresse:</label>

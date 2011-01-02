@@ -23,7 +23,7 @@
 						<foreign_table>tt_address</foreign_table>
 						<foreign_table_where> AND tt_address.pid = ###STORAGE_PID### </foreign_table_where>
 						<size>5</size>
-						<minitems>1</minitems>
+						<minitems>0</minitems>
 						<maxitems>10</maxitems>
 					</config>
 				</TCEforms>
@@ -128,15 +128,6 @@
 							<label>LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:templateFile</label>
 							<config>
 								<type>select</type>
-<!--
-								<items type="array">
-										<numIndex index="0" type="array">
-										<numIndex index="0">LLL:EXT:tt_address/pi1/locallang_ff.xml:pi1_flexform.templateFile.I.0</numIndex>
-										<numIndex index="1">default</numIndex>
-										<numIndex index="2">EXT:tt_address/res/default.gif</numIndex>
-									</numIndex>
-								</items>
--->
 								<itemsProcFunc>tx_tmd_cinema_addfilestosel->main</itemsProcFunc>
 							</config>
 						</TCEforms>
@@ -145,7 +136,7 @@
 
 				<previewNote>
 				<TCEforms>
-				<label>LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:noPrg</label>
+				<label>LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:previewNote</label>
 					<config>
 						<type>input</type>
 						<!-- default>LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:noPrgText</default geht das nicht?-->
@@ -154,6 +145,24 @@
 				</TCEforms>
 				</previewNote>
 
+				<disallowBooking>
+				<TCEforms>
+				<label>LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:disallowBooking</label>
+					<config>
+						<type>check</type>
+					</config>
+				</TCEforms>
+				</disallowBooking>
+
+
+				<showUndefinedStart>
+				<TCEforms>
+				<label>LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:showUndefinedStart</label>
+					<config>
+						<type>check</type>
+					</config>
+				</TCEforms>
+				</showUndefinedStart>
 
 
 			</el>
@@ -280,15 +289,6 @@
 					</config>
 				</TCEforms>
 				</clickEnlarge>
-
-				<disallowBooking>
-				<TCEforms>
-				<label>LLL:EXT:tmd_cinema/pi1/locallang_ff.xml:noBooking</label>
-					<config>
-						<type>check</type>
-					</config>
-				</TCEforms>
-				</disallowBooking>
 
 
 			</el>

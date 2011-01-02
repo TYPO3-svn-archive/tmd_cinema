@@ -52,8 +52,10 @@
 			<label index="trailerView">Trailer</label>
 
 			<label index="templateFile">Template Datei</label>
-			<label index="noPrg">Text wenn kein Programm vorhanden (%s = Datum).</label>
-
+			<label index="previewNote">Text wenn kein Programm vorhanden (%s = Datum).</label>
+			<label index="disallowBooking">Keine Reservierung!</label>
+			<label index="showUndefinedStart">Zeige auch Vorschau ohne Datum</label>
+			
 
 			<label index="imageLinks">Bilder &amp; Verlinkung</label>
 			<label index="pageSingelView">Seite der Einzelansicht</label>
@@ -74,7 +76,7 @@
 			<label index="showProgram">Programm anzeigen</label>
 			<label index="trailer">aktuelle Trailer Liste</label>
 			<label index="showScpecial">Sondervorstellungen anzeigen</label>
-			<label index="noBooking">Keine Reservierung!</label>
+
 			<label index="image">Bilder</label>
 
 		</languageKey>
