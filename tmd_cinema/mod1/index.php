@@ -190,7 +190,6 @@ class  tx_tmdcinema_module1 extends t3lib_SCbase {
 				'-2' => '-2 Wochen',
 				'-3' => '-3 Wochen',
 				'-4' => '-4 Wochen',
-				'-100' => 'Vergangenheit',
 				),
 			'dateMenu2' => array(
 				'0' => 'diese Woche',
@@ -198,7 +197,7 @@ class  tx_tmdcinema_module1 extends t3lib_SCbase {
 				'2' => '+2 Wochen',
 				'3' => '+3 Wochen',
 				'4' => '+4 Wochen',
-				'100' => 'Zukunft',
+				'future' => 'Zukunft',
 				)
 
 			);
@@ -235,8 +234,8 @@ class  tx_tmdcinema_module1 extends t3lib_SCbase {
 	 * @return	void
 	 */
 	function moduleContent()	{
-		if($this->MOD_SETTINGS['dateMenu1'] == '-100') $this->MOD_SETTINGS['dateMenu1'] = 0 ; # Vergangenheit
-		if($this->MOD_SETTINGS['dateMenu2'] == '100') $this->MOD_SETTINGS['dateMenu2'] = 100; # Zukunft
+#		if($this->MOD_SETTINGS['dateMenu1'] == 'past'  ) $this->MOD_SETTINGS['dateMenu1'] = -100; # Vergangenheit
+		if($this->MOD_SETTINGS['dateMenu2'] == 'future') $this->MOD_SETTINGS['dateMenu2'] =  100; # Zukunft
 
 		switch((string)$this->MOD_SETTINGS['function'])	{
 			case '1': # -1 0 1
@@ -259,7 +258,7 @@ class  tx_tmdcinema_module1 extends t3lib_SCbase {
 			break;
 
 			case '3': # Program Ohne Termin
-				$where = "date = 0";
+				$where = "date <= 0";
 				$content= $this->listProgram($where);
 				$this->content.=$this->doc->section('Programm ohne Termin:',$content,0,1);
 			break;
@@ -632,7 +631,9 @@ class  tx_tmdcinema_module1 extends t3lib_SCbase {
 		switch($fN) {
 			/* tx_cinema */
 			case 'date':
-				return t3lib_BEfunc::date($this->row[$fN]);
+				return 'KW '.strftime('%V, %a %d.%m.%Y', $this->row[$fN]);
+#				return 'KW '.date("W, l d.m.Y", $this->row[$fN]);
+#				return t3lib_BEfunc::date($this->row[$fN]);
 			break;
 			case 'showtype':
 				$id = $this->row[$fN];
@@ -830,15 +831,15 @@ class  tx_tmdcinema_module1 extends t3lib_SCbase {
 	 * @return	timestamp	timestamp, Midnight of thge first day of the week
 	 *
 	 */
-	function weekFirstLastDay($ts, $fl=0, $startWeek) {
-
+	function weekFirstLastDay($ts, $fl=0, $week=0) {
+/*
 		if(t3lib_BEfunc::getModTSconfig($this->id, 'mod.'.$GLOBALS['MCONF']['name'].'.DEBUG')) {
 			$today = t3lib_BEfunc::getModTSconfig($this->id, 'mod.'.$GLOBALS['MCONF']['name'].'.DEBUG');
 			list($d, $m, $y) = explode('-', $today['properties']['day']);
 			$debugDay = mktime(0,0,0,$m,$d,$y);
 #debug(strftime("%d.%m.%y", $debugDay));
 		}
-
+*/
 		if($debugDay > 1)  {
 			$now = $debugDay;
 		} else {
@@ -857,10 +858,10 @@ class  tx_tmdcinema_module1 extends t3lib_SCbase {
 
 
 		if($fl == 0) {
-			return mktime(0, 0, 0, date("m", $wStart), date("d", $wStart)+7*$startWeek, date("Y", $wStart));
+			return mktime(0, 0, 0, date("m", $wStart), date("d", $wStart)+7*$week, date("Y", $wStart));
 		} else {
-			$startWeek++;
-			return mktime(0, 0, 0, date("m", $wStart), date("d", $wStart)+7*$startWeek, date("Y", $wStart))-1;
+			$week++;
+			return mktime(0, 0, 0, date("m", $wStart), date("d", $wStart)+7*$week, date("Y", $wStart))-1;
 		}
 	}
 
